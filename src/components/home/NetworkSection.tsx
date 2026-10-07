@@ -1,10 +1,10 @@
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { HubDirectory } from "@/components/map/HubDirectory";
+import { MapCanvas } from "@/components/map/MapCanvas";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { sectionHeadings } from "@/content/home";
 import { HUBS, REGIONS } from "@/content/hubs";
-import { MapCanvas } from "./MapCanvas";
 
 /* H3 · The network. The count line is derived from `hubs.ts`, never from
    `company.hubsServed` — the map and the directory are the truth, so the

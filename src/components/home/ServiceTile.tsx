@@ -6,6 +6,7 @@ import { motion } from "motion/react";
 import { ImageCurtain } from "@/components/motion/ImageCurtain";
 import ResponsiveImage, { hasImage } from "@/components/media/ResponsiveImage";
 import { SpotlightCard } from "@/components/vendor/reactbits";
+import { serviceImageKey } from "@/content/services";
 import type { Service } from "@/content/types";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
@@ -30,7 +31,9 @@ function spanClass(index: number, total: number): string {
 }
 
 export function ServiceTile({ service, index, total }: ServiceTileProps) {
-  const imageKey = `services/${service.slug}`;
+  /* The tile asks the content layer for its manifest key, so `Service.image`
+     can point anywhere in the manifest. */
+  const imageKey = serviceImageKey(service);
   const hasPhoto = hasImage(imageKey);
 
   return (

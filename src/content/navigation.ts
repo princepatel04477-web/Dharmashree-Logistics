@@ -68,6 +68,13 @@ export const skipLink = {
   label: "Skip to main content",
 };
 
+/** The same CTA, carrying the service the visitor was reading (Prompt 06).
+    `trailingSlash: true` means internal routes resolve as `/quote/`, so the
+    slash is written here rather than left to a redirect. */
+export function quoteHrefForService(serviceSlug: string): string {
+  return `${quoteCta.href}/?service=${encodeURIComponent(serviceSlug)}`;
+}
+
 /* ——— WhatsApp ———
    `wa.me` wants the bare number, so E.164 is stripped of its `+`. When
    company.whatsapp is null every WhatsApp affordance is absent, not empty. */

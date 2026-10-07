@@ -3,6 +3,7 @@
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useRef } from "react";
+import { MapCanvas } from "@/components/map/MapCanvas";
 import { Reveal } from "@/components/motion/Reveal";
 import { Button } from "@/components/ui/button";
 import { Magnet, ShinyText } from "@/components/vendor/reactbits";
@@ -11,7 +12,6 @@ import { hero } from "@/content/home";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { gsap, SplitText, useGSAP } from "@/lib/gsap";
 import { GSAP_EASES, MOTION_DURATIONS } from "@/lib/motion-tokens";
-import { MapCanvas } from "./MapCanvas";
 
 /* H0 · Hero. 100svh minus the fixed header, asymmetric 5/7 at `lg` and up,
    copy above the map when stacked. Entrance is GSAP's: the label, body and

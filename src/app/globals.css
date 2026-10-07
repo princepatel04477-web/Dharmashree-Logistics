@@ -26,6 +26,12 @@
   --default-mono-font-family: var(--font-mono);
   --text-display: var(--step-6);
   --text-headline: var(--step-5);
+  /* The steps below the two display sizes stay named for their token, not for
+     a component, so `/services` can set a row title at `--step-4` without a
+     literal font-size in the markup (house rule 5). */
+  --text-step-2: var(--step-2);
+  --text-step-3: var(--step-3);
+  --text-step-4: var(--step-4);
   --leading-display: var(--leading-display);
   --leading-headline: var(--leading-headline);
   --leading-body: var(--leading-body);
