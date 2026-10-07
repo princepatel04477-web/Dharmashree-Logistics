@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ComponentsShowcase } from "./components-showcase";
 import { TokenGrid } from "./token-grid";
 
 export const metadata: Metadata = {
@@ -101,6 +102,9 @@ export default function StyleguidePage() {
             </a>
           </div>
         </section>
+      </div>
+      <div className="pb-24 sm:pb-32">
+        <ComponentsShowcase />
       </div>
     </main>
   );
