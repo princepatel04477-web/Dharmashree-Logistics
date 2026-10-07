@@ -69,3 +69,30 @@ Keyboard: stepper (buttons), selects (native), radio cards (Radix roving
 tabindex + arrows), accordion (Radix), date picker (native) and checkbox
 (Radix) are all fully operable without a mouse; Magnet/tilt/spotlight never
 remove or trap focus.
+
+## Motion system — Prompt 02
+
+One owner per element (house rule 8): Lenis drives scroll, GSAP's ticker
+drives Lenis's rAF loop, ScrollTrigger reads scroll position, and Motion
+handles the finishing layer (micro-interactions + route transitions).
+Timings live in `src/lib/motion-tokens.ts`; GSAP plugins register once in
+`src/lib/gsap.ts`. Never import `gsap` or `motion` anywhere else, except
+vendor components using their own effect as-is.
+
+| Piece           | Owner  | File                                   | Behaviour                                               |
+| --------------- | ------ | -------------------------------------- | ------------------------------------------------------- |
+| MotionProviders | bridge | `src/providers/MotionProviders.tsx`    | Lenis (root) + `MotionConfig`; skips Lenis when reduced |
+| Page transition | Motion | `src/app/template.tsx`                 | Ink wipe + crossfade; kills dead triggers, scrolls top  |
+| Reveal          | GSAP   | `components/motion/Reveal.tsx`         | Rise 24px + fade, once at 85% viewport                  |
+| SectionHeading  | GSAP   | `components/motion/SectionHeading.tsx` | Index label + masked line reveal (SplitText)            |
+| ImageCurtain    | GSAP   | `components/motion/ImageCurtain.tsx`   | Clip-path wipe + 1.08 → 1 settle                        |
+| DrawLine        | GSAP   | `components/motion/DrawLine.tsx`       | Accent hairline 60% draws on entry                      |
+| CorridorTrace   | GSAP   | `components/motion/CorridorTrace.tsx`  | Traces `path[data-trace]` while corridor is active      |
+| MarqueeLoop     | GSAP   | `components/motion/MarqueeLoop.tsx`    | Seamless xPercent −50 loop, doubled track               |
+| MicroLift       | Motion | `components/motion/MicroLift.tsx`      | Fade-up into view; hover lift; tap press                |
+
+Reduced motion (`useReducedMotionSafe`, SSR-safe): Lenis never mounts, all
+primitives render their final state, the route transition is skipped, and
+`<html data-reduced-motion="true">` mirrors the signal for CSS and E2E.
+`CorridorTrace` exposes `data-corridor-active` for the same purpose. Live
+demos: `/styleguide` section 05 (MO-1…MO-7); the wipe fires on navigation.

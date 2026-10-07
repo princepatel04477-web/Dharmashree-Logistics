@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { company } from "@/content/company";
+import { MotionProviders } from "@/providers/MotionProviders";
 import { fontBody, fontDisplayAccent, fontDisplayFace, fontMono } from "./fonts";
 import "./globals.css";
 
@@ -15,7 +16,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="en-IN"
       className={`${fontDisplayFace.variable} ${fontDisplayAccent.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
     >
-      <body className="bg-paper text-ink flex min-h-full flex-col font-sans">{children}</body>
+      <body className="bg-paper text-ink flex min-h-full flex-col font-sans">
+        <MotionProviders>{children}</MotionProviders>
+      </body>
     </html>
   );
 }
