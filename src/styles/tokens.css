@@ -1,0 +1,77 @@
+/* DharmaShree Logistics — design tokens, ported 1:1 from Maa Sheetla.
+   Provenance for every value: docs/token-map.md.
+   House rule 5: components reference these tokens (directly or via Tailwind
+   utilities) and never hard-code a colour or font stack. */
+
+:root {
+  /* ——— Colour roles ——— */
+  --paper: #fcfbf7;
+  --paper-2: #ffffff;
+  --paper-3: #f6f2ec;
+
+  --ink: #1c1917;
+  --ink-2: #665e59;
+  --muted: #665e59;
+
+  --line: rgba(28, 25, 23, 0.08);
+  --line-strong: rgba(28, 25, 23, 0.18);
+
+  --accent: #8b2628;
+  --accent-ink: #6d1b1d;
+  --signal: #a67c26;
+  --gold-deep: #8a6715;
+
+  --scrollbar-thumb: #e5dfc8;
+
+  /* Map panel (Prompt 03) */
+  --map-ground: #111016;
+  --map-land: #29232a;
+  --map-land-stroke: #665154;
+
+  /* ——— Typography ———
+     --font-display-face / --font-body / --font-mono-face /
+     --font-display-accent are set by next/font/local (see src/app/fonts.ts).
+     They resolve at computed-value time; the stacks below preserve Maa
+     Sheetla's fallback order verbatim. */
+  --font-display: var(--font-display-face), var(--font-display-accent), Georgia, serif;
+  --font-sans: var(--font-body), "DM Sans", system-ui, sans-serif;
+  --font-mono: var(--font-mono-face), "JetBrains Mono", "DM Mono", ui-monospace, monospace;
+
+  --step--1: 0.65625rem;
+  --step-0: 0.875rem;
+  --step-1: 1rem;
+  --step-2: 1.25rem;
+  --step-3: 1.875rem;
+  --step-4: 2.25rem;
+  --step-5: clamp(2.625rem, 5vw, 4.375rem);
+  --step-6: clamp(3.25rem, 8vw, 7.5rem);
+
+  --leading-display: 0.88;
+  --leading-headline: 0.95;
+  --leading-body: 1.65;
+
+  --tracking-caps: 0.24em;
+  --tracking-display: -0.04em;
+
+  --measure: 28rem;
+
+  /* ——— Spacing / container ——— */
+  --container: 80rem;
+  --gutter: 1.5rem;
+  --gutter-wide: 3rem;
+  --space-section: 6rem;
+  --space-section-wide: 8rem;
+
+  /* ——— Radius ——— */
+  --radius-2xs: 1px;
+  --radius-xs: 2px;
+  --radius-sm: 2px;
+
+  /* ——— Shadows ——— */
+  --shadow-2xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-xs: 0 1px 3px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-accent-glow: 0 0 30px rgba(139, 38, 40, 0.18);
+  --shadow-signal-glow: 0 0 30px rgba(166, 124, 38, 0.18);
+  --shadow-card: 0 4px 20px -2px rgba(28, 25, 23, 0.06), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
+  --shadow-card-lift: 0 4px 20px -2px rgba(28, 25, 23, 0.1), 0 2px 6px -1px rgba(28, 25, 23, 0.06);
+}
