@@ -20,6 +20,13 @@ export interface SocialLinks {
   linkedin: string | null;
 }
 
+/** Builder credit in the footer bottom row. With no `url` set the credit
+   renders as plain text — never as a dead link. */
+export interface Credit {
+  name: string;
+  url: string | null;
+}
+
 export interface Company {
   name: string;
   legalName: string | null;
@@ -39,6 +46,7 @@ export interface Company {
   services: string[];
   industries: string[];
   social: SocialLinks;
+  credit: Credit;
 }
 
 export interface Service {

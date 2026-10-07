@@ -115,3 +115,43 @@ full + directory).
 | Shared selection  | `components/map/MapSelection.tsx`                                              |
 | Hub data (gen.)   | `src/content/hubs.ts`                                                          |
 | Generator + check | `scripts/generate-hubs.mts`, `scripts/verify-hubs.mts` (`npm run verify:hubs`) |
+
+## Site chrome — Prompt 04
+
+Header, mobile sheet, footer and the WhatsApp affordances. Chrome copy and
+link data live in `src/content/navigation.ts`; every `null` fact in
+`company.ts` removes its element, so no empty rows render.
+
+| Piece         | Owner      | File                                   | Behaviour                                                                                                                                                                                    | Reduced-motion behaviour                                 |
+| ------------- | ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Header        | GSAP       | `components/chrome/Header.tsx`         | Hairline fades in past 24px (`toggleClass`); bar hides past 120px on scroll-down, reveals on scroll-up (`yPercent`, 0.35s)                                                                   | Slide resolves instantly; hairline still toggles         |
+| Nav underline | Motion     | `components/chrome/Header.tsx`         | 1px accent bar shared by `layoutId="nav-underline"`; inactive links draw on hover (origin-left, 0.3s, CSS)                                                                                   | Underline appears with no travel                         |
+| Quote CTA     | React Bits | `components/chrome/Header.tsx`         | The one filled button (`--ink` on paper, `--accent-ink` on hover), wrapped in `Magnet` (strength 10)                                                                                         | `Magnet` renders its static wrapper (also on touch)      |
+| Mobile sheet  | Motion     | `components/chrome/MobileMenu.tsx`     | Portaled full-screen `--paper` panel, clip-path circle from the trigger (0.5s), links staggered 24px / 0.06s; hamburger ⇄ ×; focus trapped, Escape closes, `lenis.stop()` + pinned body lock | Panel opens at final clip-path, links land instantly     |
+| Footer        | none       | `components/chrome/Footer.tsx`         | One display line + outline quote button, then Company / Services / Help / Reach us columns (empty columns dropped)                                                                           | Static                                                   |
+| Hub band      | React Bits | `components/chrome/Footer.tsx`         | `LogoLoop` of hub cities, `.label-caps`, `·` separator in accent, slow (60s), pauses on hover + offscreen, `aria-hidden`                                                                     | Renders the whole list statically, wrapped and unclipped |
+| WhatsApp      | Motion     | `components/chrome/WhatsAppButton.tsx` | Header chip (≥`lg`) and mobile FAB (56px, appears past 600px, absent on `/quote`); both absent when `company.whatsapp` is null                                                               | FAB fades in at scale 1 with no travel                   |
+| Skip link     | none       | `components/chrome/SkipLink.tsx`       | First focusable element, targets `<main id="main" tabIndex={-1}>`                                                                                                                            | Unchanged                                                |
+
+Two decisions worth keeping:
+
+- **The sheet is portaled to `<body>`.** GSAP leaves a `transform` on the
+  header while the bar is hidden, and a transformed ancestor becomes the
+  containing block for `position: fixed` — the panel would have collapsed into
+  the 64px bar. Portalling also keeps the dialog out of the `banner` landmark.
+- **The panel is not `aria-modal`.** The hamburger in the header is the close
+  control, so the header has to stay live for AT; the Tab ring is therefore
+  trapped by hand across `[trigger, …panel focusables]` and focus returns to
+  the trigger on close.
+
+`LogoLoop` gained `separator`, `separatorClassName`, `itemClassName` and
+`decorative` props (defaults reproduce the ported Maa Sheetla band) plus the
+static wrapped list under reduced motion — it is the only vendor component the
+chrome touched.
+
+Layout order (`src/app/layout.tsx`): fonts → `MotionProviders` →
+`MapSelectionProvider` → `SkipLink` → `Header` → `<main id="main">` →
+`Footer` → floating `WhatsAppButton` → `Toaster` (mounted once, here).
+Route transitions stay in `template.tsx` (Prompt 02). Metadata carries
+`title.template = "%s · DharmaShree Logistics"` and a description from
+`company.tagline` when it is set.

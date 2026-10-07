@@ -5,7 +5,7 @@ import { company } from "@/content/company";
    Prompt 05 replaces this route with the home page. */
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 py-24 sm:px-12">
+    <div className="flex flex-1 flex-col items-center justify-center px-6 py-24 sm:px-12">
       <div className="max-w-measure w-full space-y-6 text-center">
         <p className="section-index">
           {company.headquarters.city} · {company.headquarters.state}
@@ -27,6 +27,6 @@ export default function Home() {
           </Link>
         </p>
       </div>
-    </main>
+    </div>
   );
 }
