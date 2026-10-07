@@ -155,3 +155,43 @@ Layout order (`src/app/layout.tsx`): fonts → `MotionProviders` →
 Route transitions stay in `template.tsx` (Prompt 02). Metadata carries
 `title.template = "%s · DharmaShree Logistics"` and a description from
 `company.tagline` when it is set.
+
+## Home page — Prompt 05
+
+Editorial home page: numbered sections, hairline separators, asymmetric
+12-column grids. Page copy lives in `src/content/home.ts`; the industry lines
+under the carousel cards are in `src/content/industries.ts`. `src/app/page.tsx`
+only orders the sections and exports the route metadata (title + the hero line
+as the description).
+
+| Piece       | Owner                 | File                                                     | Behaviour                                                                                                                                     | Reduced-motion behaviour                                |
+| ----------- | --------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Hero        | GSAP                  | `components/home/HeroSection.tsx`                        | H1 split by GSAP `SplitText` (lines, `mask: "lines"`, `GSAP_EASES.reveal`, 0.08 stagger); copy, CTAs and map follow at 0 / ×2 / ×3 / ×4 of it | Everything lands in place; the text is never hidden     |
+| Hero map    | GSAP (inside the map) | `components/home/MapCanvas.tsx`                          | Map lazy-mounted (`ssr: false`) behind a reserve box sized from `INDIA_VIEWBOX` and capped by width (52vh ⇒ never taller than 60vh)           | Entrance resolves to its final state                    |
+| Stats strip | React Bits            | `components/home/StatsStrip.tsx`                         | `<dl>` ledger with hairline dividers, `CountUp` (en-IN) on enter; hidden below two facts; `foundedYear` is a plain "Since 2016"-style value   | Final numbers, no count-up                              |
+| Services    | Bits + Motion + GSAP  | `components/home/ServicesSection.tsx`, `ServiceTile.tsx` | Asymmetric 7/5 grid (first tile tall, next two stacked, rest side by side); `SpotlightCard` surface, optional photo in `ImageCurtain`         | No spotlight, no wipe; arrow does not lift (also touch) |
+| Network     | GSAP                  | `components/home/NetworkSection.tsx`                     | Derived hub/region count line, `mode="full"` map, then the real `HubDirectory` clipped to a 24rem box at `lg` with `overscroll-contain`       | Section heading static; map entrance resolves           |
+| Process     | GSAP                  | `components/home/ProcessSection.tsx`                     | One scrub timeline (`scrub: 0.6`, `+=250%`) pins a `100svh` stage: rail nodes fill with `--accent`, step text and big numeral crossfade       | No pin — four `Reveal`ed rows on a static rail          |
+| Industries  | Lightswind            | `components/home/IndustriesSection.tsx`                  | `ScrollCarousel` pin+scrub band, one hairline card per industry (heading outside the pinned band)                                             | Vendored native horizontal strip, no pin                |
+| Commitments | GSAP (`DrawLine`)     | `components/home/CommitmentsSection.tsx`                 | Three statements set large with drawn accent hairlines between them; no icons, no cards                                                       | Lines present, undrawn                                  |
+| Quote band  | React Bits            | `components/home/QuoteBand.tsx`                          | Inverted `--ink` band with the page's second filled CTA (`--paper` on ink, `Magnet`) + WhatsApp text link                                     | `Magnet` static, no travel                              |
+
+House rules on this page:
+
+- **One filled button per viewport.** The page ships two — hero and quote band
+  — and they never share a viewport, because the hero is a full 100svh. The
+  header's CTA is chrome from Prompt 04 and behaves identically everywhere.
+- **Absent, not empty.** `services.ts` is still `[]` and every `company` number
+  is `null`, so the services section and the whole stats strip render nothing;
+  the branch chip (`company.branches`) and the WhatsApp row
+  (`navigation.whatsappLink()`) are gated the same way.
+- **`useMediaQuery()`** (`src/hooks/`) is the shared matchMedia primitive
+  (`useSyncExternalStore`, `false` on the server) behind the process section's
+  pin swap and every `useHoverCapable()` hover gate.
+- **`hasImage(key)`** (exported by `components/media/ResponsiveImage.tsx`)
+  lets a tile skip its image slot entirely instead of showing a placeholder —
+  which is what every tile does today, since the manifest is empty.
+- **No Tailwind transform utilities on tweened elements.** `scale-0`/`translate-y-*`
+  compile to the standalone v4 properties, which a GSAP tween's `transform`
+  cannot override; pre-tween states are therefore expressed with `opacity-*`
+  (inline styles written by GSAP win over classes).

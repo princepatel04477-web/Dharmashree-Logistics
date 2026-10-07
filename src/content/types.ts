@@ -58,6 +58,13 @@ export interface Service {
   bestFor: string[];
 }
 
+/** One industry on the home page's capability carousel (Prompt 05). The name
+   is a fact from `company.industries`; the note is copy in `industries.ts`. */
+export interface Industry {
+  name: string;
+  note: string;
+}
+
 export interface Hub {
   id: string;
   name: string;

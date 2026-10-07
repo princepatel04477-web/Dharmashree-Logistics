@@ -1,32 +1,41 @@
-import Link from "next/link";
-import { company } from "@/content/company";
+import type { Metadata } from "next";
+import { CommitmentsSection } from "@/components/home/CommitmentsSection";
+import { HeroSection } from "@/components/home/HeroSection";
+import { IndustriesSection } from "@/components/home/IndustriesSection";
+import { NetworkSection } from "@/components/home/NetworkSection";
+import { ProcessSection } from "@/components/home/ProcessSection";
+import { QuoteBand } from "@/components/home/QuoteBand";
+import { ServicesSection } from "@/components/home/ServicesSection";
+import { StatsStrip } from "@/components/home/StatsStrip";
+import { hero } from "@/content/home";
 
-/* Temporary scaffold landing — every string comes from src/content/company.ts.
-   Prompt 05 replaces this route with the home page. */
+/* Home page (Prompt 05). Editorial rhythm straight from Maa Sheetla: numbered
+   sections, one hairline between each, generous `--space-section` padding and
+   asymmetric 12-column grids — never a row of equal cards. The layout owns
+   `<main>`, so this route returns the sections only.
+
+   Section order: hero · stats ledger · services · network · process ·
+   industries · commitments · quote band. Two of them are data-gated and
+   therefore absent until their content exists: `services.ts` is still empty
+   and every company figure is null, so H2 and the stats strip render nothing
+   (house rule 4). */
+
+export const metadata: Metadata = {
+  title: "Freight & Transport from Surat",
+  description: hero.body,
+};
+
 export default function Home() {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-6 py-24 sm:px-12">
-      <div className="max-w-measure w-full space-y-6 text-center">
-        <p className="section-index">
-          {company.headquarters.city} · {company.headquarters.state}
-        </p>
-        <h1 className="font-display text-headline leading-headline tracking-display font-light">
-          {company.name}
-        </h1>
-        <ul className="space-y-2">
-          {company.services.map((service) => (
-            <li key={service} className="text-ink-2 text-sm font-light">
-              {service}
-            </li>
-          ))}
-        </ul>
-        <hr className="hairline" />
-        <p className="label-caps">
-          <Link href="/styleguide" className="underline underline-offset-4">
-            Styleguide
-          </Link>
-        </p>
-      </div>
-    </div>
+    <>
+      <HeroSection />
+      <StatsStrip />
+      <ServicesSection />
+      <NetworkSection />
+      <ProcessSection />
+      <IndustriesSection />
+      <CommitmentsSection />
+      <QuoteBand />
+    </>
   );
 }
