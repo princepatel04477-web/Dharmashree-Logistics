@@ -381,4 +381,25 @@
     background-clip: text;
     animation: shimmer 4.5s linear infinite;
   }
+
+  /* Network map (Prompt 03): scales to container width. Hub focus uses the
+     accent scale-in ring as its indicator, so the default outline is off. */
+  .network-map-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .network-map [data-hub]:focus {
+    outline: none;
+  }
+
+  @media (max-width: 767px) {
+    .network-map-svg {
+      touch-action: pan-y;
+    }
+    .network-map-svg .map-hit {
+      r: 22px;
+    }
+  }
 }

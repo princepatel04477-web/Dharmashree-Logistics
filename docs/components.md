@@ -76,8 +76,9 @@ One owner per element (house rule 8): Lenis drives scroll, GSAP's ticker
 drives Lenis's rAF loop, ScrollTrigger reads scroll position, and Motion
 handles the finishing layer (micro-interactions + route transitions).
 Timings live in `src/lib/motion-tokens.ts`; GSAP plugins register once in
-`src/lib/gsap.ts`. Never import `gsap` or `motion` anywhere else, except
-vendor components using their own effect as-is.
+`src/lib/gsap.ts` and GSAP is imported only through it. `motion/react` is
+imported directly by Motion-owned components (rule 8), and vendor
+components use their own effect as-is.
 
 | Piece           | Owner  | File                                   | Behaviour                                               |
 | --------------- | ------ | -------------------------------------- | ------------------------------------------------------- |
@@ -96,3 +97,21 @@ primitives render their final state, the route transition is skipped, and
 `<html data-reduced-motion="true">` mirrors the signal for CSS and E2E.
 `CorridorTrace` exposes `data-corridor-active` for the same purpose. Live
 demos: `/styleguide` section 05 (MO-1…MO-7); the wipe fires on navigation.
+
+## Network map — Prompt 03
+
+Maa Sheetla's 78-hub geometry, verbatim outline + projection, rebuilt with
+a GSAP entrance and Motion finishing. Full port inventory:
+`docs/map-port.md`. Live demos: `/styleguide` section 06 (MP-1 hero, MP-2
+full + directory).
+
+| Piece             | File                                                                           |
+| ----------------- | ------------------------------------------------------------------------------ |
+| Outline + islets  | `components/map/india-outline.ts`                                              |
+| Projection        | `components/map/projection.ts`                                                 |
+| Corridor arcs     | `components/map/corridor.ts`                                                   |
+| Map component     | `components/map/IndiaNetworkMap.tsx`                                           |
+| Directory         | `components/map/HubDirectory.tsx`                                              |
+| Shared selection  | `components/map/MapSelection.tsx`                                              |
+| Hub data (gen.)   | `src/content/hubs.ts`                                                          |
+| Generator + check | `scripts/generate-hubs.mts`, `scripts/verify-hubs.mts` (`npm run verify:hubs`) |
