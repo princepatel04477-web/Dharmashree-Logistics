@@ -22,7 +22,7 @@ function specimenFor(step: (typeof STEPS)[number]): string {
 
 export default function StyleguidePage() {
   return (
-    <main className="bg-paper w-full">
+    <div className="bg-paper w-full">
       <div className="wrap space-y-20 py-24 sm:py-32">
         <header className="space-y-3">
           <p className="section-index">00 — Styleguide</p>
@@ -110,6 +110,6 @@ export default function StyleguidePage() {
         <MotionShowcase />
         <NetworkShowcase />
       </div>
-    </main>
+    </div>
   );
 }

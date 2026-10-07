@@ -31,4 +31,5 @@ export const company: Company = {
     "Engineering & industrial",
   ],
   social: { instagram: null, linkedin: null },
+  credit: { name: "Varunya Technologies", url: null },
 };

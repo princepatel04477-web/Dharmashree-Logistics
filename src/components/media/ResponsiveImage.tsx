@@ -4,6 +4,13 @@ import type { ImageManifest } from "@/content/types";
 
 const manifest = manifestJson as unknown as ImageManifest;
 
+/** True when the build produced a real file set for this key. Sections use it
+   to skip an image slot entirely rather than render the fallback frame. */
+export function hasImage(imageKey: string): boolean {
+  const entry = manifest[imageKey];
+  return entry !== undefined && entry.width > 0 && entry.height > 0;
+}
+
 interface ResponsiveImageProps {
   /** Manifest key: "<group>/<name>", e.g. "fleet/linehaul-novabus". */
   imageKey: string;

@@ -115,3 +115,83 @@ full + directory).
 | Shared selection  | `components/map/MapSelection.tsx`                                              |
 | Hub data (gen.)   | `src/content/hubs.ts`                                                          |
 | Generator + check | `scripts/generate-hubs.mts`, `scripts/verify-hubs.mts` (`npm run verify:hubs`) |
+
+## Site chrome — Prompt 04
+
+Header, mobile sheet, footer and the WhatsApp affordances. Chrome copy and
+link data live in `src/content/navigation.ts`; every `null` fact in
+`company.ts` removes its element, so no empty rows render.
+
+| Piece         | Owner      | File                                   | Behaviour                                                                                                                                                                                    | Reduced-motion behaviour                                 |
+| ------------- | ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Header        | GSAP       | `components/chrome/Header.tsx`         | Hairline fades in past 24px (`toggleClass`); bar hides past 120px on scroll-down, reveals on scroll-up (`yPercent`, 0.35s)                                                                   | Slide resolves instantly; hairline still toggles         |
+| Nav underline | Motion     | `components/chrome/Header.tsx`         | 1px accent bar shared by `layoutId="nav-underline"`; inactive links draw on hover (origin-left, 0.3s, CSS)                                                                                   | Underline appears with no travel                         |
+| Quote CTA     | React Bits | `components/chrome/Header.tsx`         | The one filled button (`--ink` on paper, `--accent-ink` on hover), wrapped in `Magnet` (strength 10)                                                                                         | `Magnet` renders its static wrapper (also on touch)      |
+| Mobile sheet  | Motion     | `components/chrome/MobileMenu.tsx`     | Portaled full-screen `--paper` panel, clip-path circle from the trigger (0.5s), links staggered 24px / 0.06s; hamburger ⇄ ×; focus trapped, Escape closes, `lenis.stop()` + pinned body lock | Panel opens at final clip-path, links land instantly     |
+| Footer        | none       | `components/chrome/Footer.tsx`         | One display line + outline quote button, then Company / Services / Help / Reach us columns (empty columns dropped)                                                                           | Static                                                   |
+| Hub band      | React Bits | `components/chrome/Footer.tsx`         | `LogoLoop` of hub cities, `.label-caps`, `·` separator in accent, slow (60s), pauses on hover + offscreen, `aria-hidden`                                                                     | Renders the whole list statically, wrapped and unclipped |
+| WhatsApp      | Motion     | `components/chrome/WhatsAppButton.tsx` | Header chip (≥`lg`) and mobile FAB (56px, appears past 600px, absent on `/quote`); both absent when `company.whatsapp` is null                                                               | FAB fades in at scale 1 with no travel                   |
+| Skip link     | none       | `components/chrome/SkipLink.tsx`       | First focusable element, targets `<main id="main" tabIndex={-1}>`                                                                                                                            | Unchanged                                                |
+
+Two decisions worth keeping:
+
+- **The sheet is portaled to `<body>`.** GSAP leaves a `transform` on the
+  header while the bar is hidden, and a transformed ancestor becomes the
+  containing block for `position: fixed` — the panel would have collapsed into
+  the 64px bar. Portalling also keeps the dialog out of the `banner` landmark.
+- **The panel is not `aria-modal`.** The hamburger in the header is the close
+  control, so the header has to stay live for AT; the Tab ring is therefore
+  trapped by hand across `[trigger, …panel focusables]` and focus returns to
+  the trigger on close.
+
+`LogoLoop` gained `separator`, `separatorClassName`, `itemClassName` and
+`decorative` props (defaults reproduce the ported Maa Sheetla band) plus the
+static wrapped list under reduced motion — it is the only vendor component the
+chrome touched.
+
+Layout order (`src/app/layout.tsx`): fonts → `MotionProviders` →
+`MapSelectionProvider` → `SkipLink` → `Header` → `<main id="main">` →
+`Footer` → floating `WhatsAppButton` → `Toaster` (mounted once, here).
+Route transitions stay in `template.tsx` (Prompt 02). Metadata carries
+`title.template = "%s · DharmaShree Logistics"` and a description from
+`company.tagline` when it is set.
+
+## Home page — Prompt 05
+
+Editorial home page: numbered sections, hairline separators, asymmetric
+12-column grids. Page copy lives in `src/content/home.ts`; the industry lines
+under the carousel cards are in `src/content/industries.ts`. `src/app/page.tsx`
+only orders the sections and exports the route metadata (title + the hero line
+as the description).
+
+| Piece       | Owner                 | File                                                     | Behaviour                                                                                                                                     | Reduced-motion behaviour                                |
+| ----------- | --------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
+| Hero        | GSAP                  | `components/home/HeroSection.tsx`                        | H1 split by GSAP `SplitText` (lines, `mask: "lines"`, `GSAP_EASES.reveal`, 0.08 stagger); copy, CTAs and map follow at 0 / ×2 / ×3 / ×4 of it | Everything lands in place; the text is never hidden     |
+| Hero map    | GSAP (inside the map) | `components/home/MapCanvas.tsx`                          | Map lazy-mounted (`ssr: false`) behind a reserve box sized from `INDIA_VIEWBOX` and capped by width (52vh ⇒ never taller than 60vh)           | Entrance resolves to its final state                    |
+| Stats strip | React Bits            | `components/home/StatsStrip.tsx`                         | `<dl>` ledger with hairline dividers, `CountUp` (en-IN) on enter; hidden below two facts; `foundedYear` is a plain "Since 2016"-style value   | Final numbers, no count-up                              |
+| Services    | Bits + Motion + GSAP  | `components/home/ServicesSection.tsx`, `ServiceTile.tsx` | Asymmetric 7/5 grid (first tile tall, next two stacked, rest side by side); `SpotlightCard` surface, optional photo in `ImageCurtain`         | No spotlight, no wipe; arrow does not lift (also touch) |
+| Network     | GSAP                  | `components/home/NetworkSection.tsx`                     | Derived hub/region count line, `mode="full"` map, then the real `HubDirectory` clipped to a 24rem box at `lg` with `overscroll-contain`       | Section heading static; map entrance resolves           |
+| Process     | GSAP                  | `components/home/ProcessSection.tsx`                     | One scrub timeline (`scrub: 0.6`, `+=250%`) pins a `100svh` stage: rail nodes fill with `--accent`, step text and big numeral crossfade       | No pin — four `Reveal`ed rows on a static rail          |
+| Industries  | Lightswind            | `components/home/IndustriesSection.tsx`                  | `ScrollCarousel` pin+scrub band, one hairline card per industry (heading outside the pinned band)                                             | Vendored native horizontal strip, no pin                |
+| Commitments | GSAP (`DrawLine`)     | `components/home/CommitmentsSection.tsx`                 | Three statements set large with drawn accent hairlines between them; no icons, no cards                                                       | Lines present, undrawn                                  |
+| Quote band  | React Bits            | `components/home/QuoteBand.tsx`                          | Inverted `--ink` band with the page's second filled CTA (`--paper` on ink, `Magnet`) + WhatsApp text link                                     | `Magnet` static, no travel                              |
+
+House rules on this page:
+
+- **One filled button per viewport.** The page ships two — hero and quote band
+  — and they never share a viewport, because the hero is a full 100svh. The
+  header's CTA is chrome from Prompt 04 and behaves identically everywhere.
+- **Absent, not empty.** `services.ts` is still `[]` and every `company` number
+  is `null`, so the services section and the whole stats strip render nothing;
+  the branch chip (`company.branches`) and the WhatsApp row
+  (`navigation.whatsappLink()`) are gated the same way.
+- **`useMediaQuery()`** (`src/hooks/`) is the shared matchMedia primitive
+  (`useSyncExternalStore`, `false` on the server) behind the process section's
+  pin swap and every `useHoverCapable()` hover gate.
+- **`hasImage(key)`** (exported by `components/media/ResponsiveImage.tsx`)
+  lets a tile skip its image slot entirely instead of showing a placeholder —
+  which is what every tile does today, since the manifest is empty.
+- **No Tailwind transform utilities on tweened elements.** `scale-0`/`translate-y-*`
+  compile to the standalone v4 properties, which a GSAP tween's `transform`
+  cannot override; pre-tween states are therefore expressed with `opacity-*`
+  (inline styles written by GSAP win over classes).

@@ -162,19 +162,20 @@
   /* Prompt 02 owns scroll (Lenis). Lenis and CSS smooth-scroll conflict, so
      the motion layer disables one of them when both are present. */
 
-  /* Anchor offset for the fixed header (80px mobile, 96px from sm up).
-     Prompt 04 keeps these in sync with the built header. */
+  /* Anchor offset for the fixed header — Prompt 04 builds it at 64px, 72px
+     from `lg` up — plus 16px of breathing room. Keep in sync with
+     `src/components/chrome/Header.tsx`. */
   :target,
   section[id],
   div[id] {
-    scroll-margin-top: 5.5rem;
+    scroll-margin-top: 5rem;
   }
 
-  @media (min-width: 40rem) {
+  @media (min-width: 64rem) {
     :target,
     section[id],
     div[id] {
-      scroll-margin-top: 7rem;
+      scroll-margin-top: 5.5rem;
     }
   }
 
@@ -238,7 +239,10 @@
   }
 
   /* Locks page scroll behind the mobile drawer (Prompt 04). `overflow: hidden`
-     alone is unreliable on iOS Safari; pinning position is what holds. */
+     alone is unreliable on iOS Safari; pinning position is what holds. The
+     drawer sets `top: -<scrollY>px` inline so the page does not jump while
+     pinned, and restores the offset on close (see chrome/MobileMenu.tsx).
+     Fixed descendants (the header, the sheet) still anchor to the viewport. */
   body.nav-locked {
     position: fixed;
     inset: 0;

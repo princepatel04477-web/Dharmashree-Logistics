@@ -127,8 +127,11 @@ spelling renders identically; the fluid steps are additionally exposed as
 | `--shadow-card`                            | `0 4px 20px -2px rgba(28,25,23,0.06), 0 2px 6px -1px rgba(28,25,23,0.04)` | Verbatim `selvedge-card`, renamed.                                                                                                     |
 | `--shadow-card-lift`                       | `0 4px 20px -2px rgba(28,25,23,0.10), 0 2px 6px -1px rgba(28,25,23,0.06)` | Verbatim `agency-card`, renamed.                                                                                                       |
 
-Header geometry (for Prompt 04; not tokens): fixed header `h-20 sm:h-24`
-(80/96px) → anchor `scroll-margin-top: 5.5rem / 7rem` (ported to `globals.css`).
+Header geometry (not tokens): Maa Sheetla's nav is `h-20 sm:h-24` (80/96px)
+with `scroll-margin-top: 5.5rem / 7rem`. Prompt 04 built DharmaShree's header
+shorter — `h-16 lg:h-18` (64/72px) — so `globals.css` now carries
+`scroll-margin-top: 5rem / 5.5rem` (header + 16px of breathing room), switched
+at the `lg` breakpoint where the header grows.
 
 ## 4. Motion keyframes (ported to `globals.css`, not tokens)
 
