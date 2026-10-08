@@ -249,3 +249,65 @@ serve nothing else; an unknown slug falls through `notFound()` to the static
 Type scale: `globals.css` maps `--text-step-2/3/4` to the three steps below
 `--text-headline`, so a row title is set with `text-step-4` rather than a
 literal size (house rule 5).
+
+## Quote & track — Prompt 08
+
+`/quote` (three steps, a review, one POST) and `/track` (the LR number handed to
+the desk). The backend is `apps-script/Code.gs`, a Google Apps Script Web App
+with its own README — no server of ours, and nothing in the client assumes one.
+
+| Piece           | Owner     | File                                                                 | Behaviour                                                                                                                                                                                                                                                                           | Reduced-motion behaviour                           |
+| --------------- | --------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Step rail       | Origin UI | `vendor/origin/quote-stepper.tsx`                                    | Three steps, 1-based. Extended with `maxStep` (steps the visitor has not earned are `disabled`, so the rail cannot skip validation) and `label`/`titleClassName`; the titles are `sr-only` below `sm`, because an indicator alone has no accessible name                            | Static                                             |
+| Step swap       | Motion    | `components/quote/QuoteForm.tsx`                                     | `x: 24 → 0` + opacity on the entering step, container height on `layout`. Deliberately **not** `AnimatePresence`: a step that mounts after an exit cannot take focus, and focus is how the next question is announced                                                               | `initial={false}`, duration 0, no layout animation |
+| Steps 1–3       | Origin UI | `components/quote/StepLane.tsx` · `StepLoad.tsx` · `StepContact.tsx` | Service radio cards (values are the names from `company.services`), From/To with the 78 hub names as a datalist, load type, weight, vehicle (default "Let DharmaShree decide" = `""`), pickup date (`min` = the visitor's today), 500-char notes, contact fields, consent, honeypot | Fields static; nothing animates                    |
+| Review + submit | Motion    | `components/quote/ReviewPanel.tsx`                                   | Values grouped by step with an `Edit` per group, unanswered optional rows dropped, the page's one filled button (3-dot `PendingDots` while sending), failure block with the retry that keeps every value                                                                            | Dots hold still                                    |
+| Confirmation    | Motion    | `components/quote/SuccessPanel.tsx`                                  | Replaces the form via `AnimatePresence` (`mode="wait"`), focuses its own heading on mount, reference in the display face, WhatsApp link only when the number exists                                                                                                                 | Fades in at its final position                     |
+| Desk rail       | none      | `components/quote/QuoteAside.tsx`                                    | Server component; contact rows or the one line saying the numbers are not published yet                                                                                                                                                                                             | n/a                                                |
+| LR handoff      | Origin UI | `components/track/TrackPanel.tsx`                                    | Validates the LR (4–20 alphanumerics, upper case as typed) and hops with it: WhatsApp → email → phone → an honest "no way to pass an LR number on". Never claims live data                                                                                                          | Static                                             |
+| Slip line art   | GSAP      | `components/track/LrSlip.tsx`                                        | Inline SVG drawn on entry (`drawSVG`, staggered; labels fade), accent only on the number field. Blank rows, no fake number; `aria-hidden` with a real caption under it                                                                                                              | Drawn before first paint                           |
+| Copy            | none      | `src/content/quote.ts`, `src/content/track.ts`                       | Every string both routes render, including the error message for each validator code                                                                                                                                                                                                | Static                                             |
+| Pipeline check  | none      | `scripts/verify-quote.tsx` (`npm run verify:quote`)                  | Sheet columns ↔ payload fields, honeypot name, required list, the `text/plain` header, the endpoint variable in three places, every code having copy, every rule biting — then the steps the exported HTML never contains, rendered through `react-dom/server`                      | n/a                                                |
+
+House rules on these pages:
+
+- **The CORS lesson is encoded.** The POST sends `Content-Type:
+text/plain;charset=utf-8` with a JSON _string_ body: a CORS-simple request, so
+  the browser never sends the preflight Apps Script cannot answer.
+  `verify:quote` fails if that header changes, or if the JSON content type comes
+  back. `apps-script/README.md` explains the same thing for whoever edits the
+  script next.
+- **The sheet is the contract.** `QUOTE_FIELDS` in `src/lib/quote.ts` and the
+  `HEADERS`/`row` in `Code.gs` are checked one-for-one, and the honeypot is
+  spelled `website` on both sides. `clean_()` caps length and defuses a leading
+  `=`/`+`/`-`/`@` so a pasted payload can never become a formula in the sheet.
+- **Nothing is invented, and nothing points at a channel that does not exist.**
+  The failure sentence mentioning WhatsApp is chosen by asking
+  `whatsappLink()`; `quote.responseNote` is nullable; `/track` names WhatsApp
+  only when `company.whatsapp` is set. With every contact fact `null` today,
+  `/quote`'s rail and `/track`'s panel both say so in one line instead of
+  offering a dead control — the same rule as the rest of the site.
+- **One filled button per page.** The page's is the form's submit; the track
+  page's LR hop stays `outline` (the header CTA remains the site's filled
+  button), and the aside carries none.
+- **Focus is managed, not decorated.** A failed validation focuses the first
+  invalid field (in form order, not object order — `firstInvalidField`); a step
+  change focuses the step's own heading, which is focusable for exactly that
+  reason; the confirmation focuses its heading on mount. The step swap avoids
+  `AnimatePresence` so the field it wants to focus is in the DOM when it asks.
+- **Vendored pieces were extended, not forked:** `RadioCards` (`error`, `id`),
+  `QuoteStepper` (`maxStep`, `label`, `titleClassName`), `NotesField`
+  (controlled `value` — without it a restored draft could never appear in the
+  textarea), `ConsentCheckbox` (`error`), `TrackingInput` (`error`,
+  `inputClassName`). Every addition is optional and defaults to the previous
+  behaviour, so the styleguide demos are untouched.
+- **Browser-only state is a store, not an effect.** `useQuoteEntry()` (draft +
+  `?service=`/`?to=` prefill) and `useTodayISODate()` follow the
+  `useSyncExternalStore` shape of the media-query hooks: `null`/`""` on the
+  server, the real value from the render after hydration, and the wizard mounts
+  once with it as its initial state. The draft is mirrored to `sessionStorage`
+  on every keystroke (all calls wrapped — a blocked storage still has a working
+  form) and cleared once the desk has the request.
+- **Reported, not fixed:** the vendored `StepperTitle` renders an `<h3>` inside
+  the trigger `<button>`, which is not phrasing content. It is Prompt 01's
+  component and appears on every use of the stepper, so it is left as-is here.

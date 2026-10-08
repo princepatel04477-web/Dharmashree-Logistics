@@ -9,6 +9,10 @@ interface NotesFieldProps {
   label: string;
   maxLength?: number;
   defaultValue?: string;
+  /** Extension (Prompt 08): controlled value. Without it the field is
+      uncontrolled and a value restored after mount (a saved draft, a prefill
+      from the URL) could never appear in the textarea. */
+  value?: string;
   helper?: string;
   name?: string;
   placeholder?: string;
@@ -19,6 +23,7 @@ export function NotesField({
   label,
   maxLength = 500,
   defaultValue = "",
+  value,
   helper,
   name,
   placeholder,
@@ -27,10 +32,17 @@ export function NotesField({
   const fieldId = useId();
   const countId = `${fieldId}-count`;
   const helperId = `${fieldId}-helper`;
-  const { value, characterCount, handleChange } = useCharacterLimit({
+  const {
+    value: internalValue,
+    characterCount: internalCount,
+    handleChange,
+  } = useCharacterLimit({
     maxLength,
     initialValue: defaultValue,
   });
+  const isControlled = value !== undefined;
+  const shown = value ?? internalValue;
+  const count = isControlled ? shown.length : internalCount;
 
   return (
     <div className="space-y-2">
@@ -38,7 +50,7 @@ export function NotesField({
       <Textarea
         id={fieldId}
         name={name}
-        value={value}
+        value={shown}
         maxLength={maxLength}
         placeholder={placeholder}
         aria-describedby={helper !== undefined ? `${countId} ${helperId}` : countId}
@@ -56,7 +68,7 @@ export function NotesField({
           <span />
         )}
         <p id={countId} aria-live="polite" className="text-muted shrink-0 font-mono text-[11px]">
-          {characterCount} / {maxLength}
+          {count} / {maxLength}
         </p>
       </div>
     </div>
