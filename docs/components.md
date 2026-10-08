@@ -167,7 +167,7 @@ as the description).
 | Piece       | Owner                 | File                                                     | Behaviour                                                                                                                                     | Reduced-motion behaviour                                |
 | ----------- | --------------------- | -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |
 | Hero        | GSAP                  | `components/home/HeroSection.tsx`                        | H1 split by GSAP `SplitText` (lines, `mask: "lines"`, `GSAP_EASES.reveal`, 0.08 stagger); copy, CTAs and map follow at 0 / ×2 / ×3 / ×4 of it | Everything lands in place; the text is never hidden     |
-| Hero map    | GSAP (inside the map) | `components/home/MapCanvas.tsx`                          | Map lazy-mounted (`ssr: false`) behind a reserve box sized from `INDIA_VIEWBOX` and capped by width (52vh ⇒ never taller than 60vh)           | Entrance resolves to its final state                    |
+| Hero map    | GSAP (inside the map) | `components/map/MapCanvas.tsx`                           | Map lazy-mounted (`ssr: false`) behind a reserve box sized from `INDIA_VIEWBOX` and capped by width (52vh ⇒ never taller than 60vh)           | Entrance resolves to its final state                    |
 | Stats strip | React Bits            | `components/home/StatsStrip.tsx`                         | `<dl>` ledger with hairline dividers, `CountUp` (en-IN) on enter; hidden below two facts; `foundedYear` is a plain "Since 2016"-style value   | Final numbers, no count-up                              |
 | Services    | Bits + Motion + GSAP  | `components/home/ServicesSection.tsx`, `ServiceTile.tsx` | Asymmetric 7/5 grid (first tile tall, next two stacked, rest side by side); `SpotlightCard` surface, optional photo in `ImageCurtain`         | No spotlight, no wipe; arrow does not lift (also touch) |
 | Network     | GSAP                  | `components/home/NetworkSection.tsx`                     | Derived hub/region count line, `mode="full"` map, then the real `HubDirectory` clipped to a 24rem box at `lg` with `overscroll-contain`       | Section heading static; map entrance resolves           |
@@ -181,10 +181,11 @@ House rules on this page:
 - **One filled button per viewport.** The page ships two — hero and quote band
   — and they never share a viewport, because the hero is a full 100svh. The
   header's CTA is chrome from Prompt 04 and behaves identically everywhere.
-- **Absent, not empty.** `services.ts` is still `[]` and every `company` number
-  is `null`, so the services section and the whole stats strip render nothing;
-  the branch chip (`company.branches`) and the WhatsApp row
-  (`navigation.whatsappLink()`) are gated the same way.
+- **Absent, not empty.** Every `company` number is `null`, so the stats strip
+  renders nothing; the branch chip (`company.branches`) and the WhatsApp row
+  (`navigation.whatsappLink()`) are gated the same way. The services section was
+  gated the same way until Prompt 06 filled `services.ts` — it renders now with
+  no component having changed.
 - **`useMediaQuery()`** (`src/hooks/`) is the shared matchMedia primitive
   (`useSyncExternalStore`, `false` on the server) behind the process section's
   pin swap and every `useHoverCapable()` hover gate.
@@ -195,3 +196,56 @@ House rules on this page:
   compile to the standalone v4 properties, which a GSAP tween's `transform`
   cannot override; pre-tween states are therefore expressed with `opacity-*`
   (inline styles written by GSAP win over classes).
+
+## Services — Prompt 06
+
+`/services` plus five statically generated `/services/[slug]` pages. The
+catalogue _is_ the content: `src/content/services.ts` holds the five entries
+(each `name` being the fact mirrored in `company.services`) and the copy for
+both routes, while `src/content/fleet.ts` derives the fleet grid as the
+deduplicated union of every service's `vehicles` — a vehicle string appears
+there and nowhere else, and a vehicle with no note still renders as a name-only
+card.
+
+| Piece           | Owner            | File                                                      | Behaviour                                                                                                                                                                                                                                                                                                                 | Reduced-motion behaviour                                             |
+| --------------- | ---------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Index rows      | Motion           | `components/services/ServiceRow.tsx`                      | Full-width row (number, name at `--step-4`, summary, arrow) inside an `<ol>` of hairlines; one `whileHover` label drives the `--paper-2` wash and the 6px arrow travel. The whole row is one `<Link>`                                                                                                                     | `whileHover` is never attached, so the row sits at its rest state    |
+| Cursor preview  | Motion           | `components/services/ServicesIndexList.tsx`               | One pointer listener on the list, one 280px frame following the cursor through `useSpring`. Because the list clears on its own edge, moving between rows swaps the picture instead of blinking the frame off. Clamped inside the list's own box                                                                           | Not mounted at all                                                   |
+| Fleet grid      | Lightswind       | `components/services/FleetSection.tsx`                    | `InteractiveCard` grid; the vendored tilt and lift stay, the hover elevation is switched off with the new `shadow={false}` prop (defaults to on, so the styleguide demo is untouched). Heading is a plain h2                                                                                                              | Card does not tilt or lift                                           |
+| Detail blocks   | GSAP + Origin UI | `src/app/services/[slug]/page.tsx`                        | Blocks are assembled in order, then numbered by position _after_ the empty ones are dropped: warehousing has no `vehicles`, so its page runs 01–04 with no gap. "What's included" is a `DrawLine`-divided list, "Questions" the Origin accordion, "Lanes from Surat" the lazy `MapCanvas`                                 | Section headings land in place; the accordion still opens and closes |
+| Detail aside    | React Bits       | `src/app/services/[slug]/page.tsx`                        | `lg:sticky lg:top-24 lg:self-start` — `self-start` is what leaves it room to travel, and because the card lives inside the grid it can never reach past the section into the footer. Holds the page's only filled button (`Magnet` + `--ink`, to `/quote/?service=<slug>`) and contact rows that disappear with the facts | `Magnet` static                                                      |
+| Index page      | GSAP (heading)   | `src/app/services/page.tsx`                               | H1 band → the rows → the fleet band. No CTA band of its own: the rows lead to pages whose aside already holds the filled button, and a second one here would only compete with the header's                                                                                                                               | `SectionHeading` lands in place, the lede `Reveal` is instant        |
+| Catalogue copy  | none             | `src/content/services.ts`, `src/content/fleet.ts`         | The list is the truth and the note is keyed by that exact name; `servicesIndex` / `serviceDetail` carry every string the two routes render                                                                                                                                                                                | Static                                                               |
+| Catalogue check | none             | `scripts/verify-services.mts` (`npm run verify:services`) | Fails when `services.ts` and `company.services` stop being one-for-one, when a slug is not url-safe or repeats, when a bullet is shared across two services, or when a fleet note has no service listing it                                                                                                               | n/a                                                                  |
+
+Three supporting moves:
+
+- **`MapCanvas` moved** from `components/home/` to `components/map/` now that the
+  service pages mount a mini map too. The reserve box and the width cap that
+  keep the hero shift-free are exactly what a small map needs, so nothing about
+  the component changed.
+- **`ServiceTile` asks `serviceImageKey(service)`** for its manifest key, so
+  `Service.image` can point anywhere in the manifest instead of being tied to
+  `services/<slug>`. `fleet.ts` follows the same rule with `vehicleImageKey`.
+- **The preview is expensive to earn**: mounted only when `useHoverCapable()`,
+  not reduced, at `lg`, for `pointerType === "mouse"`, and only if at least one
+  service actually has a photo. With `image-manifest.json` empty that is never,
+  so the index costs nothing and the keyboard path never sees it.
+
+Filling `services.ts` also flips two things from _absent_ to _real_ without any
+component changing: the home page's "01 — What we move" section and the footer's
+Services column — both are built from that list, which is why
+`scripts/verify-services.mts` exists.
+
+`navigation.ts` gained one function, `quoteHrefForService(slug)`, which returns
+`/quote/?service=<slug>`: the trailing slash is written because
+`trailingSlash: true` means internal routes resolve that way, and the query is
+how `/quote` will know which service the visitor was reading.
+
+`/services/[slug]` is `generateStaticParams`-only, as `output: "export"` can
+serve nothing else; an unknown slug falls through `notFound()` to the static
+404 (dev logs Next's export validation for that request — closing
+`dynamicParams` only trades the 404 for a 500, so it stays open and unused).
+Type scale: `globals.css` maps `--text-step-2/3/4` to the three steps below
+`--text-headline`, so a row title is set with `text-step-4` rather than a
+literal size (house rule 5).

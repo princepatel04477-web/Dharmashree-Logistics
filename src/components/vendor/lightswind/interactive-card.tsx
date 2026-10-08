@@ -7,12 +7,15 @@ import { useHoverCapable } from "@/hooks/use-hover-capable";
 interface InteractiveCardProps {
   children: ReactNode;
   className?: string;
+  /** Hover elevation (`--shadow-card`). On by default; a dense grid of cards
+     turns it off and keeps the tilt, the lift and the border response. */
+  shadow?: boolean;
 }
 
 /* Hover-tilt card: ±3.5° follow, 4px lift, hairline-to-strong border. No
    gradients, no glows — motion stays within the 12px / 1.02 budget. Static
    on touch devices and under reduced motion. */
-export function InteractiveCard({ children, className = "" }: InteractiveCardProps) {
+export function InteractiveCard({ children, className = "", shadow = true }: InteractiveCardProps) {
   const canHover = useHoverCapable();
   const prefersReduced = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
@@ -41,6 +44,9 @@ export function InteractiveCard({ children, className = "" }: InteractiveCardPro
     pointerY.set(0.5);
   };
 
+  /* Written out in both branches: Tailwind has to see the literal utility. */
+  const elevation = shadow ? "hover:shadow-card" : "";
+
   return (
     <motion.div
       ref={ref}
@@ -49,7 +55,7 @@ export function InteractiveCard({ children, className = "" }: InteractiveCardPro
       style={enabled ? { rotateX, rotateY, transformPerspective: 900 } : undefined}
       whileHover={enabled ? { y: -4, scale: 1.005 } : undefined}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className={`border-line bg-paper-2 hover:border-line-strong hover:shadow-card rounded-xs border transition-colors duration-200 ${className}`}
+      className={`border-line bg-paper-2 hover:border-line-strong rounded-xs border transition-colors duration-200 ${elevation} ${className}`}
     >
       {children}
     </motion.div>

@@ -10,6 +10,7 @@
     "images": "tsx scripts/build-images.mts",
     "generate:hubs": "tsx scripts/generate-hubs.mts",
     "verify:hubs": "tsx scripts/verify-hubs.mts",
+    "verify:services": "tsx scripts/verify-services.mts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

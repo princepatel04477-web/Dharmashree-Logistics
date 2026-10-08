@@ -8,7 +8,11 @@ import { cn } from "@/lib/utils";
    outline geometry and a corridor path per hub. Keeping it out of the server
    HTML (and swapping the real component in only once the tree is live) is what
    makes the hero's LCP element the H1 text instead of the map, and it keeps
-   the exported document small. */
+   the exported document small.
+
+   Prompt 06 moved it from `components/home/` to `components/map/` because the
+   service detail pages mount a mini map of their own; the reserve box and the
+   width cap that keep the hero shift-free are what a small map needs too. */
 
 /* The fallback reserves exactly the box the map's viewBox will occupy, so
    replacing it cannot shift the page. */

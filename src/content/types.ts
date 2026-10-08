@@ -49,13 +49,36 @@ export interface Company {
   credit: Credit;
 }
 
+/* One service in the catalogue (Prompt 06). `name` is the fact — it mirrors an
+   entry in `company.services` and must stay one-for-one with it. Everything
+   else is copy for `/services` and `/services/[slug]`. An empty array removes
+   its block from the detail page; the block is never rendered as an empty shell
+   and the numbering closes over it (house rule 4). */
 export interface Service {
-  slug: string;
-  name: string;
-  summary: string;
-  body: string[];
-  bullets: string[];
-  bestFor: string[];
+  readonly slug: string;
+  readonly name: string;
+  /** One line, used on the index row and the home tile. */
+  readonly summary: string;
+  /** Detail-page intro paragraphs, in order. */
+  readonly body: readonly string[];
+  /** "What's included" rows. */
+  readonly bullets: readonly string[];
+  /** Loads and lanes the service suits. */
+  readonly bestFor: readonly string[];
+  /** Exact vehicle names from `fleet.ts`; `[]` drops the block entirely. */
+  readonly vehicles: readonly string[];
+  /** Per-service questions for the detail page's accordion. */
+  readonly questions: readonly Faq[];
+  /** Manifest key for the photo, or null for the `services/<slug>` default. */
+  readonly image: string | null;
+}
+
+/** One vehicle on the fleet grid. The name comes from a service's `vehicles`
+   list — never from this shape — and `note` is `""` when no note is written
+   yet, which renders a name-only card. */
+export interface FleetVehicle {
+  readonly name: string;
+  readonly note: string;
 }
 
 /** One industry on the home page's capability carousel (Prompt 05). The name

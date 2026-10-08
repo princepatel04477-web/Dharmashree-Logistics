@@ -1,3 +1,4 @@
+import { slugify } from "@/lib/utils";
 import { company } from "./company";
 import type { Industry } from "./types";
 
@@ -18,11 +19,7 @@ const notes: Readonly<Record<string, string>> = {
    <name>` convention: drop `industries/textiles-apparel.png` in and the card
    picks it up. Absent keys render a name-only card. */
 export function industryImageKey(name: string): string {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return `industries/${slug}`;
+  return `industries/${slugify(name)}`;
 }
 
 export function industries(): Industry[] {
