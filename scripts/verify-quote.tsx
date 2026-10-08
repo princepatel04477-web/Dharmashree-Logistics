@@ -23,6 +23,7 @@ import { readFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { renderToStaticMarkup } from "react-dom/server";
 import { QuoteAside } from "../src/components/quote/QuoteAside";
+import { resolveQuoteEntry } from "../src/components/quote/useQuoteEntry";
 import { ReviewPanel } from "../src/components/quote/ReviewPanel";
 import { StepContact } from "../src/components/quote/StepContact";
 import { StepLane } from "../src/components/quote/StepLane";
@@ -548,8 +549,44 @@ async function main(): Promise<void> {
     "a missing endpoint must report Unconfigured, not throw",
   );
 
+  /* ——— 13. The prefill: ?service=<slug> and ?to=<hub id> ——— */
+  const prefilled = resolveQuoteEntry(null, "?service=part-load&to=meerut");
+  check(
+    prefilled.values.service === "Part load (PTL)",
+    `?service=part-load prefilled "${prefilled.values.service}" instead of the service name`,
+  );
+  check(prefilled.values.to === "Meerut", `?to=meerut prefilled "${prefilled.values.to}"`);
+
+  const unknownPrefill = resolveQuoteEntry(null, "?service=nope&to=atlantis");
+  check(
+    unknownPrefill.values.service === "" && unknownPrefill.values.to === "",
+    "an unknown service slug or hub id was written into the form",
+  );
+
+  const noPrefill = resolveQuoteEntry(null, "");
+  check(
+    noPrefill.values.service === "" && noPrefill.values.to === "",
+    "an empty query is not an empty form",
+  );
+
+  /* The click that brought the visitor here is newer than the tab's memory. */
+  const draftFirst = resolveQuoteEntry(
+    {
+      values: { ...EMPTY_QUOTE, service: "Last mile delivery", to: "Old hub" },
+      consent: true,
+      step: 2,
+    },
+    "?service=part-load&to=meerut",
+  );
+  check(
+    draftFirst.values.service === "Part load (PTL)" && draftFirst.values.to === "Meerut",
+    "the query did not win over the draft",
+  );
+  check(draftFirst.consent && draftFirst.step === 2, "the rest of the draft was lost");
+  check(draftFirst.values.name === "", "the prefill carried a field the query did not ask for");
+
   console.log(
-    `verify:quote OK — ${String(QUOTE_FIELDS.length)} payload fields against ${String(headers.length)} sheet columns; honeypot, required list and text/plain guarded; the client posts through a stand-in for Apps Script's redirect; ${String(QUOTE_FIELD_CODES.length)} quote codes and ${String(LR_CODES.length)} LR codes have copy; valid payload passes and every rule bites; steps 1–3, review (filled/blank/failed), confirmation, aside, track panel and slip all render`,
+    `verify:quote OK — ${String(QUOTE_FIELDS.length)} payload fields against ${String(headers.length)} sheet columns; honeypot, required list and text/plain guarded; the client posts through a stand-in for Apps Script's redirect; the ?service=/?to= prefill resolves slugs and hub ids; ${String(QUOTE_FIELD_CODES.length)} quote codes and ${String(LR_CODES.length)} LR codes have copy; valid payload passes and every rule bites; steps 1–3, review (filled/blank/failed), confirmation, aside, track panel and slip all render`,
   );
 }
 

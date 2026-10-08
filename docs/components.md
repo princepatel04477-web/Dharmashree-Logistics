@@ -305,7 +305,13 @@ text/plain;charset=utf-8` with a JSON _string_ body: a CORS-simple request, so
   `?service=`/`?to=` prefill) and `useTodayISODate()` follow the
   `useSyncExternalStore` shape of the media-query hooks: `null`/`""` on the
   server, the real value from the render after hydration, and the wizard mounts
-  once with it as its initial state. The draft is mirrored to `sessionStorage`
+  once with it as its initial state. The query is applied on top of the draft
+  (the link just clicked is newer than the tab's memory) by
+  `resolveQuoteEntry()`, which is pure and covered by `npm run verify:quote`:
+  `?service=<slug>` and `?to=<hub id>` are resolved through `services.ts` and
+  `hubs.ts`, so the form shows and submits the names the desk reads, and an
+  unknown slug/id is ignored rather than written into a field. The draft is
+  mirrored to `sessionStorage`
   on every keystroke (all calls wrapped — a blocked storage still has a working
   form) and cleared once the desk has the request.
 - **Reported, not fixed:** the vendored `StepperTitle` renders an `<h3>` inside

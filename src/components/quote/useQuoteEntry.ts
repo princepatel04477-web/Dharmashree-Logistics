@@ -4,7 +4,7 @@ import { useSyncExternalStore } from "react";
 import { HUBS } from "@/content/hubs";
 import { findService } from "@/content/services";
 import { EMPTY_QUOTE, type QuotePayload } from "@/lib/quote";
-import { readQuoteDraft } from "@/lib/quote-draft";
+import { readQuoteDraft, type QuoteDraft } from "@/lib/quote-draft";
 import type { QuoteStep } from "@/lib/validate";
 
 /* What the form should already know when it mounts (Prompt 08): the draft this
@@ -32,11 +32,15 @@ function emptyEntry(): QuoteEntry {
   return { values: { ...EMPTY_QUOTE }, consent: false, step: 1 };
 }
 
-function readEntry(): QuoteEntry {
-  const draft = readQuoteDraft();
+/** The draft, with the query applied on top. Pure, and exported for
+    `scripts/verify-quote.tsx`: `?service=` takes a slug from `services.ts` and
+    resolves it to the service *name* the sheet stores, `?to=` takes a hub id and
+    resolves it to the hub's name. Anything unrecognised is ignored rather than
+    written into the form. */
+export function resolveQuoteEntry(draft: QuoteDraft | null, search: string): QuoteEntry {
   const entry: QuoteEntry = draft ?? emptyEntry();
 
-  const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(search);
   const serviceSlug = params.get("service");
   const hubId = params.get("to");
   if (serviceSlug === null && hubId === null) return entry;
@@ -51,6 +55,10 @@ function readEntry(): QuoteEntry {
     if (hub !== undefined) values.to = hub.name;
   }
   return { values, consent: entry.consent, step: entry.step };
+}
+
+function readEntry(): QuoteEntry {
+  return resolveQuoteEntry(readQuoteDraft(), window.location.search);
 }
 
 let cached: QuoteEntry | null = null;
