@@ -5,7 +5,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, settleScrollTriggers, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 
 /* A scrubbed, pinned walk through a short list of titled steps — the same
@@ -128,6 +128,8 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
           at,
         );
       });
+
+      settleScrollTriggers();
 
       /* No cleanup on purpose: the trigger and the timeline live in useGSAP's
          context, so reverting it (deps change or unmount) un-pins the section

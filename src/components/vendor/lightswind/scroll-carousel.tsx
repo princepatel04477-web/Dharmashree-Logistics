@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import { useRef, type ReactNode } from "react";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+import { settleScrollTriggers } from "@/lib/gsap";
 
 interface ScrollCarouselProps {
   children: ReactNode;
@@ -43,6 +44,7 @@ export function ScrollCarousel({ children, className = "" }: ScrollCarouselProps
           invalidateOnRefresh: true,
         },
       });
+      settleScrollTriggers();
       return () => {
         tween.scrollTrigger?.kill();
         tween.kill();

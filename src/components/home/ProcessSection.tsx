@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/motion/SectionHeading";
 import { processSteps, sectionHeadings, type ProcessStep } from "@/content/home";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, settleScrollTriggers, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
 
 /* H4 · How a consignment moves. From `lg` up the section pins and a scrubbed
@@ -115,6 +115,8 @@ export function ProcessSection() {
           at,
         );
       });
+
+      settleScrollTriggers();
 
       /* No cleanup here on purpose: the trigger and the timeline are created
          inside useGSAP's context, so reverting it (on a deps change or

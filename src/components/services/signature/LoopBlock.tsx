@@ -7,7 +7,7 @@ import { serviceDetail } from "@/content/services";
 import type { LoopSignature } from "@/content/types";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, settleScrollTriggers, useGSAP } from "@/lib/gsap";
 import { cn, numbered } from "@/lib/utils";
 
 /* Warehousing's signature (Prompt 11), two parts.
@@ -93,6 +93,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
       });
       timeline.fromTo(arc, { drawSVG: "0%" }, { drawSVG: "100%", duration: 1 }, count - 1);
       timeline.fromTo(tail, { opacity: 0 }, { opacity: 1, duration: 0.4 }, count - 0.4);
+      settleScrollTriggers();
     },
     { scope: stageRef, dependencies: [pinned, count] },
   );
