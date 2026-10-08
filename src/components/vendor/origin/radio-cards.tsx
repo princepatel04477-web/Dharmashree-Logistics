@@ -18,6 +18,12 @@ interface RadioCardsProps {
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   helper?: string;
+  /** Extension (Prompt 08): inline error, in the same dress as the field
+      components — accent mono under the group, `aria-invalid` on it. */
+  error?: string;
+  /** Extension (Prompt 08): id on the group itself, so the quote wizard can put
+      focus on the first card of an unanswered question. */
+  id?: string;
   className?: string;
 }
 
@@ -28,12 +34,16 @@ export function RadioCards({
   defaultValue,
   onValueChange,
   helper,
+  error,
+  id,
   className = "",
 }: RadioCardsProps) {
   const labelId = useId();
   const helperId = `${labelId}-helper`;
+  const errorId = `${labelId}-error`;
   const [internalValue, setInternalValue] = useState(defaultValue);
   const selected = value ?? internalValue;
+  const isInvalid = error !== undefined;
 
   return (
     <div className="space-y-2">
@@ -41,8 +51,10 @@ export function RadioCards({
         {label}
       </span>
       <RadioGroup
+        id={id}
         aria-labelledby={labelId}
-        aria-describedby={helper !== undefined ? helperId : undefined}
+        aria-invalid={isInvalid || undefined}
+        aria-describedby={isInvalid ? errorId : helper !== undefined ? helperId : undefined}
         value={value}
         defaultValue={defaultValue}
         onValueChange={(next) => {
@@ -59,7 +71,11 @@ export function RadioCards({
               key={option.value}
               className={cn(
                 "bg-paper-2 flex cursor-pointer items-start gap-3 rounded-xs border p-4 transition-colors duration-200",
-                isSelected ? "border-accent" : "border-line hover:border-line-strong",
+                isSelected
+                  ? "border-accent"
+                  : isInvalid
+                    ? "border-accent/60"
+                    : "border-line hover:border-line-strong",
                 isDisabled && "cursor-not-allowed opacity-50",
               )}
             >
@@ -76,10 +92,16 @@ export function RadioCards({
           );
         })}
       </RadioGroup>
-      {helper !== undefined && (
-        <p id={helperId} className="text-muted text-xs font-light">
-          {helper}
+      {isInvalid ? (
+        <p id={errorId} role="alert" className="text-accent font-mono text-[11px]">
+          {error}
         </p>
+      ) : (
+        helper !== undefined && (
+          <p id={helperId} className="text-muted text-xs font-light">
+            {helper}
+          </p>
+        )
       )}
     </div>
   );

@@ -4,6 +4,7 @@ import { useId, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface TrackingInputProps {
   label: string;
@@ -11,6 +12,12 @@ interface TrackingInputProps {
   placeholder?: string;
   helper?: string;
   defaultValue?: string;
+  /** Extension (Prompt 08): inline error for the LR number, in the same dress
+      as the field components. */
+  error?: string;
+  /** Extension (Prompt 08): the LR number is stored upper case, and the control
+      shows it that way as it is typed. */
+  inputClassName?: string;
   onTrack?: (trackingNumber: string) => void;
 }
 
@@ -20,10 +27,13 @@ export function TrackingInput({
   placeholder,
   helper,
   defaultValue = "",
+  error,
+  inputClassName = "",
   onTrack,
 }: TrackingInputProps) {
   const inputId = useId();
   const helperId = `${inputId}-helper`;
+  const errorId = `${inputId}-error`;
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -41,18 +51,27 @@ export function TrackingInput({
           name="tracking-number"
           defaultValue={defaultValue}
           placeholder={placeholder}
-          aria-describedby={helper !== undefined ? helperId : undefined}
-          className="flex-1"
+          aria-invalid={error !== undefined || undefined}
+          aria-describedby={
+            error !== undefined ? errorId : helper !== undefined ? helperId : undefined
+          }
+          className={cn("flex-1", inputClassName)}
           autoComplete="off"
         />
         <Button type="submit" variant="outline">
           {buttonLabel}
         </Button>
       </div>
-      {helper !== undefined && (
-        <p id={helperId} className="text-muted text-xs font-light">
-          {helper}
+      {error !== undefined ? (
+        <p id={errorId} role="alert" className="text-accent font-mono text-[11px]">
+          {error}
         </p>
+      ) : (
+        helper !== undefined && (
+          <p id={helperId} className="text-muted text-xs font-light">
+            {helper}
+          </p>
+        )
       )}
     </form>
   );
