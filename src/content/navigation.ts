@@ -55,6 +55,13 @@ export const primaryNav: readonly NavItem[] = [
   { href: "/contact", label: "Contact" },
 ];
 
+/** Pages the primary bar has no room for. The mobile menu lists them under the
+    five main links; the footer carries them in its own columns. */
+export const secondaryNav: readonly NavItem[] = [
+  { href: "/support", label: "Support & FAQ" },
+  { href: "/partners", label: "Delivery partners" },
+];
+
 /* ——— The one filled CTA on every page ——— */
 export const quoteCta = {
   href: "/quote",
@@ -140,7 +147,12 @@ function footerColumns(): FooterColumn[] {
     {
       id: "company",
       title: "Company",
-      links: [route("/about", "About"), route("/network", "Network"), route("/contact", "Contact")],
+      links: [
+        route("/about", "About"),
+        route("/network", "Network"),
+        route("/partners", "Delivery partners"),
+        route("/contact", "Contact"),
+      ],
       lines: [],
     },
     {
@@ -154,7 +166,7 @@ function footerColumns(): FooterColumn[] {
       title: "Help",
       links: [
         route("/track", "Track"),
-        route("/contact#faq", "FAQ"),
+        route("/support", "Support & FAQ"),
         route("/privacy", "Privacy"),
         route("/terms", "Terms"),
       ],

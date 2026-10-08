@@ -6,6 +6,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HUBS, REGIONS, type Hub, type RegionId } from "@/content/hubs";
+import { networkMap } from "@/content/network";
+import { formatNumberIN } from "@/lib/format";
 import { useMapSelection } from "./MapSelection";
 
 interface HubDirectoryProps {
@@ -34,9 +36,24 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
 
   const visibleCount = groups.reduce((sum, group) => sum + group.hubs.length, 0);
 
+  /* Keep the selected row visible inside the directory's own scroll box
+     (the home page clips it). Never `scrollIntoView`: that also scrolls the
+     window, which yanked the page away from the map on every selection. */
   useEffect(() => {
-    if (selectedId !== null) {
-      rowRefs.current.get(selectedId)?.scrollIntoView({ block: "nearest" });
+    if (selectedId === null) return;
+    const row = rowRefs.current.get(selectedId);
+    if (row === undefined) return;
+    let box = row.parentElement;
+    while (box !== null && box !== document.body) {
+      const overflowY = getComputedStyle(box).overflowY;
+      if ((overflowY === "auto" || overflowY === "scroll") && box.scrollHeight > box.clientHeight) {
+        const rowBox = row.getBoundingClientRect();
+        const boxRect = box.getBoundingClientRect();
+        if (rowBox.top < boxRect.top) box.scrollTop -= boxRect.top - rowBox.top;
+        else if (rowBox.bottom > boxRect.bottom) box.scrollTop += rowBox.bottom - boxRect.bottom;
+        return;
+      }
+      box = box.parentElement;
     }
   }, [selectedId]);
 
@@ -54,7 +71,7 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
     <div className={className}>
       <div className="border-line flex items-center justify-between border-b pb-2.5 font-mono text-[10px] tracking-[0.2em] uppercase">
         <span className="text-muted">Active Network ({visibleCount} hubs)</span>
-        <span className="text-muted">Corridor</span>
+        <span className="text-muted">{networkMap.panel.distanceLabel}</span>
       </div>
 
       <div
@@ -112,9 +129,9 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
                         {hub.verifiedOn !== null && (
                           <span className="text-muted block">Verified</span>
                         )}
-                        {hub.transitDays === null && hub.verifiedOn === null && (
-                          <span className="text-muted block">From Surat</span>
-                        )}
+                        <span className="text-muted block">
+                          {networkMap.panel.distanceValue(formatNumberIN(hub.distanceKm))}
+                        </span>
                       </span>
                     </button>
                   </li>

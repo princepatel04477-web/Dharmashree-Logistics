@@ -3,8 +3,9 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useReducedMotion } from "motion/react";
+
 import { useRef, type ReactNode } from "react";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface ScrollCarouselProps {
   children: ReactNode;
@@ -19,7 +20,7 @@ interface ScrollCarouselProps {
 export function ScrollCarousel({ children, className = "" }: ScrollCarouselProps) {
   const wrapRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
 
   useGSAP(
     () => {

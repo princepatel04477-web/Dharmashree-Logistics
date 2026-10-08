@@ -1,4 +1,4 @@
-/* DharmaShree Logistics — quote intake (Prompt 08).
+/* DharmaShree Logistics — quote and delivery-partner intake (Prompts 08 and 13).
 
    Bound to a Google Sheet ("DharmaShree Quotes"); each submission appends one
    row and emails the desk. Deployed as a Web App so the site can POST to it
@@ -9,18 +9,25 @@
    the preflight OPTIONS that Apps Script cannot answer. Parsing here does not
    care about the declared type — JSON.parse reads the string either way.
 
+   The same endpoint also takes delivery-partner applications from /partners:
+   a body with kind === 'partner' is appended to the 'Partners' tab instead and
+   mailed with its own subject. It shares the honeypot and clean_().
+
    Everything written to the sheet goes through clean_() (length-capped, and
    prefixed when it would otherwise start a formula), and the honeypot field
    returns ok without touching the sheet. */
 
 const SHEET_NAME = 'Quotes';
 const NOTIFY_EMAIL = PropertiesService.getScriptProperties().getProperty('NOTIFY_EMAIL');
+const PARTNER_SHEET_NAME = 'Partners';
+const PARTNER_HEADERS = ['Received at','Reference','Name','Phone','City','Vehicle','Availability','Source page'];
 const HEADERS = ['Received at','Reference','Name','Company','Phone','Email','Service','From','To','Load type','Approx weight (kg)','Vehicle','Pickup date','Notes','Source page'];
 
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
     if (body.website) return json_({ ok: true }); // honeypot
+    if (body.kind === 'partner') return savePartner_(body);
     const required = ['name','phone','service','from','to'];
     for (const k of required) { if (!body[k] || String(body[k]).trim() === '') return json_({ ok: false, error: 'Missing ' + k }); }
     const sheet = getSheet_();
@@ -44,6 +51,30 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: 'Server error' });
   }
+}
+
+function savePartner_(body) {
+  const partnerRequired = ['name','phone','city','availability'];
+  for (const k of partnerRequired) { if (!body[k] || String(body[k]).trim() === '') return json_({ ok: false, error: 'Missing ' + k }); }
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(PARTNER_SHEET_NAME);
+  if (!sheet) { sheet = ss.insertSheet(PARTNER_SHEET_NAME); sheet.appendRow(PARTNER_HEADERS); sheet.setFrozenRows(1); }
+  const ref = 'DSP-' + Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyMMdd') + '-' + Math.floor(1000 + Math.random() * 9000);
+  const row = [
+    Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyyy-MM-dd HH:mm'), ref,
+    clean_(body.name), clean_(body.phone), clean_(body.city), clean_(body.vehicle),
+    clean_(body.availability), clean_(body.sourcePage)
+  ];
+  sheet.appendRow(row);
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      subject: 'New delivery partner application ' + ref + ' — ' + clean_(body.city),
+      body: PARTNER_HEADERS.map(function (h, i) { return h + ': ' + row[i]; }).join('
+')
+    });
+  }
+  return json_({ ok: true, reference: ref });
 }
 
 function doGet() { return json_({ ok: true, service: 'dharmashree-quotes' }); }

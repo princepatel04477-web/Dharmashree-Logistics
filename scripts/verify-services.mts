@@ -2,6 +2,7 @@
    stay one-for-one, the shape of every slug, and the fleet notes that no service
    claims. Run with `npm run verify:services`. */
 
+import { about } from "../src/content/about";
 import { company } from "../src/content/company";
 import { fleetVehicles, notedVehicleNames } from "../src/content/fleet";
 import { serviceImageKey, services } from "../src/content/services";
@@ -47,6 +48,53 @@ function main(): void {
 
   const slugs = new Set(services.map((service) => service.slug));
   if (slugs.size !== services.length) fail("duplicate slug in services.ts");
+
+  /* The About page's "Which business are you?" selector links by slug. */
+  for (const kind of about.kinds.list) {
+    if (kind.services.length === 0) fail(`about.kinds: "${kind.label}" lists no services`);
+    for (const slug of kind.services) {
+      if (!slugs.has(slug)) fail(`about.kinds: "${kind.label}" links to unknown service "${slug}"`);
+    }
+  }
+
+  /* Each signature block carries the data its renderer needs. */
+  for (const service of services) {
+    const signature = service.signature;
+    if (
+      signature.kind === "journey" &&
+      (signature.stops.length < 2 || signature.segments.length < 2)
+    ) {
+      fail(`${service.slug}: journey needs at least two stops and two segments`);
+    }
+    if (signature.kind === "dedicated" && signature.flow.length < 2) {
+      fail(`${service.slug}: dedicated signature needs at least two flow legs`);
+    }
+    if (
+      signature.kind === "selector" &&
+      (signature.options.length < 2 || signature.modes.length < 2)
+    ) {
+      fail(`${service.slug}: selector needs at least two options and two modes`);
+    }
+    if (
+      signature.kind === "loop" &&
+      (signature.stages.length < 2 || signature.capabilities.length === 0)
+    ) {
+      fail(`${service.slug}: loop needs stages and capabilities`);
+    }
+    if (service.headline.trim() === "") fail(`${service.slug}: empty headline`);
+  }
+
+  /* Vehicles named by the selector options must be real fleet names or the
+     generic "A larger vehicle" the profile uses. */
+  const listedVehicles = new Set(services.flatMap((service) => [...service.vehicles]));
+  for (const service of services) {
+    if (service.signature.kind !== "selector") continue;
+    for (const option of service.signature.options) {
+      if (option.vehicle !== "A larger vehicle" && !listedVehicles.has(option.vehicle)) {
+        fail(`${service.slug}: option "${option.label}" names unknown vehicle "${option.vehicle}"`);
+      }
+    }
+  }
 
   const bullets = new Set<string>();
   for (const service of services) {

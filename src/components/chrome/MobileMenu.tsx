@@ -7,7 +7,7 @@ import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { company } from "@/content/company";
-import { contactLinks, contactLines, primaryNav } from "@/content/navigation";
+import { contactLinks, contactLines, primaryNav, secondaryNav } from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { ScrollTrigger } from "@/lib/gsap";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -311,6 +311,24 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                       })}
                     </ul>
                   </nav>
+
+                  <motion.nav
+                    variants={itemVariants}
+                    aria-label="More, mobile"
+                    className="border-line flex flex-wrap gap-x-8 gap-y-1 border-t pt-4"
+                  >
+                    {secondaryNav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={close}
+                        aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                        className="text-ink-2 hover:text-accent-ink inline-flex min-h-11 items-center font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </motion.nav>
                 </div>
 
                 {(links.length > 0 || lines.length > 0) && (

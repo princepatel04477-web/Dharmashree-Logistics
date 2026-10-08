@@ -28,6 +28,15 @@
   --map-land: #29232a;
   --map-land-stroke: #665154;
 
+  /* Network map, light ground (Maa Sheetla's nation stroke is rgba(28,25,23,.35)) */
+  --map-border: rgba(28, 25, 23, 0.35);
+  --map-state-line: rgba(28, 25, 23, 0.1);
+  --map-land-quiet: var(--paper-2);
+  --map-land-served: var(--paper-3);
+  --map-land-focus: #efe7da;
+  --map-corridor: rgba(28, 25, 23, 0.13);
+  --map-halo: var(--paper);
+
   /* ——— Typography ———
      --font-display-face / --font-body / --font-mono-face /
      --font-display-accent are set by next/font/local (see src/app/fonts.ts).

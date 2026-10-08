@@ -1,8 +1,8 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
 import { useEffect, useRef, type HTMLAttributes, type MouseEvent, type ReactNode } from "react";
 import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 const DEFAULT_SPOTLIGHT = "color-mix(in srgb, var(--accent) 8%, transparent)";
 
@@ -21,7 +21,7 @@ export function SpotlightCard({
   ...props
 }: SpotlightCardProps) {
   const canHover = useHoverCapable();
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
   const divRef = useRef<HTMLDivElement>(null);
   const spotlightRef = useRef<HTMLDivElement>(null);
   const rafId = useRef<number | null>(null);

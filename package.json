@@ -5,13 +5,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "tsx scripts/fix-export-segments.mts",
     "start": "next start",
     "lint": "eslint",
     "images": "tsx scripts/build-images.mts",
     "generate:hubs": "tsx scripts/generate-hubs.mts",
+    "generate:states": "tsx scripts/generate-states.mts",
     "verify:hubs": "tsx scripts/verify-hubs.mts",
     "verify:services": "tsx scripts/verify-services.mts",
     "verify:quote": "tsx scripts/verify-quote.tsx",
+    "verify:partners": "tsx scripts/verify-partners.tsx",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

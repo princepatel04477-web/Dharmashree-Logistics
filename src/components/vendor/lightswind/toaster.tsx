@@ -1,10 +1,11 @@
 "use client";
 
 import { cva } from "class-variance-authority";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, XIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 export type ToastType = "default" | "success" | "destructive";
 
@@ -73,8 +74,12 @@ function getSnapshot(): ToastItem[] {
   return items;
 }
 
+/* One shared empty list: React compares snapshots by identity, and a fresh
+   `[]` per call reads as "changed" on every hydration pass. */
+const SERVER_SNAPSHOT: ToastItem[] = [];
+
 function getServerSnapshot(): ToastItem[] {
-  return [];
+  return SERVER_SNAPSHOT;
 }
 
 const toastVariants = cva(
@@ -105,7 +110,7 @@ function ToastIcon({ type }: { type: ToastType }) {
 
 export function Toaster({ className = "" }: { className?: string }) {
   const toasts = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
 
   return (
     <div

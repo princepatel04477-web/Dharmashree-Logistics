@@ -1,8 +1,9 @@
 "use client";
 
-import { useReducedMotion, useScroll, useVelocity } from "motion/react";
+import { useScroll, useVelocity } from "motion/react";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { cn } from "@/lib/utils";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface LogoLoopProps {
   items: string[];
@@ -34,7 +35,7 @@ export function LogoLoop({
   decorative = false,
 }: LogoLoopProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
   const [isInView, setIsInView] = useState(true);
   const [currentDuration, setCurrentDuration] = useState(duration);
 

@@ -143,10 +143,10 @@ export function ProcessSection() {
                   <span
                     key={`number-${index}`}
                     ref={refAt(numberRefs, index)}
-                    className={cn(
-                      "font-display text-display text-ink leading-display tracking-display absolute inset-0 block font-light",
-                      index > 0 && "opacity-0",
-                    )}
+                    /* A template string, not `cn`: tailwind-merge reads `text-display` as
+                       a colour and drops it in favour of `text-ink`, which left the
+                       numeral at body size. */
+                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block font-light ${index > 0 ? "opacity-0" : ""}`}
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>

@@ -16,9 +16,7 @@ import "./globals.css";
    viewport mounted once for the whole site. `template.tsx` layers the route
    transition over this. */
 
-const description =
-  company.tagline ??
-  `${company.name} — freight and transport from ${company.headquarters.city}, ${company.headquarters.state}.`;
+const description = `${company.name} — ${company.services.join(", ").toLowerCase()} from ${company.headquarters.city}, ${company.headquarters.state}.${company.tagline === null ? "" : ` ${company.tagline}`}`;
 
 export const metadata: Metadata = {
   title: {

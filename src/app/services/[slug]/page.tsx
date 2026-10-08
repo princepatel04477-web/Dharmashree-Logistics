@@ -10,6 +10,7 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import ResponsiveImage, { hasImage } from "@/components/media/ResponsiveImage";
 import { FleetSection } from "@/components/services/FleetSection";
+import { ServiceSignature } from "@/components/services/ServiceSignature";
 import { Button } from "@/components/ui/button";
 import { FaqAccordion } from "@/components/vendor/origin";
 import { Magnet } from "@/components/vendor/reactbits";
@@ -116,6 +117,32 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     });
   }
 
+  if (service.sections.length > 0) {
+    blocks.push({
+      id: "detail",
+      title: serviceDetail.detailTitle,
+      body: (
+        <div className="flex flex-col gap-10">
+          {service.sections.map((section) => (
+            <div key={section.title} className="flex flex-col gap-4">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+                {section.title}
+              </h3>
+              {section.body.map((paragraph) => (
+                <p
+                  key={paragraph}
+                  className="text-ink-2 max-w-measure leading-body text-sm font-light"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          ))}
+        </div>
+      ),
+    });
+  }
+
   if (service.bestFor.length > 0) {
     blocks.push({
       id: "best-for",
@@ -141,18 +168,22 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     });
   }
 
-  blocks.push({
-    id: "lanes",
-    title: serviceDetail.lanesTitle,
-    body: (
-      <div className="flex flex-col gap-6">
-        <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
-          {serviceDetail.lanesLine(HUBS.length, ORIGIN.name)} {serviceDetail.lanesNote}
-        </p>
-        <MapCanvas mode="hero" className="mx-auto w-full max-w-[26rem]" />
-      </div>
-    ),
-  });
+  /* Intra-city and storage services have no corridor to draw, so the map is
+     a per-service choice (`showLanes`), not a given. */
+  if (service.showLanes) {
+    blocks.push({
+      id: "lanes",
+      title: serviceDetail.lanesTitle,
+      body: (
+        <div className="flex flex-col gap-6">
+          <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
+            {serviceDetail.lanesLine(HUBS.length, ORIGIN.name)} {serviceDetail.lanesNote}
+          </p>
+          <MapCanvas mode="hero" className="mx-auto w-full max-w-[26rem]" />
+        </div>
+      ),
+    });
+  }
 
   if (service.questions.length > 0) {
     blocks.push({
@@ -174,6 +205,9 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               title={service.name}
               titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
             />
+            <p className="font-display text-ink-2 leading-headline tracking-display text-step-3 font-light">
+              {service.headline}
+            </p>
             <div className="flex flex-col gap-4">
               {service.body.map((paragraph) => (
                 <Reveal
@@ -203,6 +237,9 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           )}
         </div>
       </section>
+
+      {/* ——— The service's own interactive block (Prompt 11) ——— */}
+      <ServiceSignature service={service} />
 
       {/* ——— Blocks, numbered by position — with the aside alongside ——— */}
       <div className="wrap grid grid-cols-1 items-start gap-x-10 gap-y-10 lg:grid-cols-12">

@@ -15,7 +15,7 @@ export function formatINR(value: number): string {
 /** "+919876543210" → "+91 98765 43210". Returns input unchanged if unparseable. */
 export function formatPhoneIN(e164: string): string {
   const digits = e164.replace(/\D/g, "");
-  const national = digits.startsWith("91") ? digits.slice(2) : digits;
+  const national = digits.length === 12 && digits.startsWith("91") ? digits.slice(2) : digits;
   if (national.length !== 10) return e164;
   return `+91 ${national.slice(0, 5)} ${national.slice(5)}`;
 }

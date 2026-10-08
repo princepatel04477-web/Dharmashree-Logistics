@@ -1,7 +1,7 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
 import type { CSSProperties } from "react";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface ShinyTextProps {
   text: string;
@@ -14,7 +14,7 @@ interface ShinyTextProps {
    announcement label (rendered only when company.branches is non-empty).
    Static solid text when disabled or under reduced motion. */
 export function ShinyText({ text, disabled = false, speed = 4, className = "" }: ShinyTextProps) {
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
   const static_ = disabled || prefersReduced === true;
 
   if (static_) {

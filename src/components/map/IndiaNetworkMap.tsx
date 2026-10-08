@@ -1,17 +1,26 @@
 "use client";
 
-/* DharmaShree network map: Maa Sheetla's India geometry + 78 hubs, rebuilt
-   with a GSAP entrance, DrawSVG corridors and Motion finishing.
-   - mode="hero": no filters, no panel. Hover/focus lights a hub's corridor
-     (drawn once); an idle auto-cycle rotates 6 cross-region hubs every 4s.
-   - mode="full": region chips, click/Enter/Space selection with a looping
-     corridor, AnimatePresence side panel / bottom sheet, arrow-key travel.
-   The active corridor is drawn with GSAP DrawSVG directly: P02's
-   CorridorTrace is scroll-linked (wrong semantics for transient hover), so
-   the map reuses its technique + `data-corridor-active` mirror instead. */
+/* DharmaShree network map: Maa Sheetla's India geometry (nation outline
+   verbatim, state layer simplified) with every hub laid out from Surat.
+
+   Two layers share one coordinate system. The SVG carries the geography and
+   the corridors; an HTML overlay carries the hub pins, labels and callout,
+   positioned from the same viewBox through CSS custom properties on the
+   stage. That split is what lets a region zoom bring the dense UP / Bihar
+   cluster apart while pins stay finger-sized and labels stay 10px.
+
+   - mode="hero": no filters, no panel. Hover / focus / tap lights a hub's
+     corridor; an idle auto-cycle sweeps six principal hubs every few seconds.
+   - mode="full": region chips that zoom the map, click / Enter selection with
+     a looping shuttle, the side panel (search + regions, or the corridor
+     card), arrow-key travel between hubs (one tab stop for the whole map).
+
+   Animation ownership: GSAP draws the outline, ghost corridors and active
+   corridor, runs the shuttle, the origin breath and the zoom tween. Motion
+   owns the pin rings, the callout, the region pill and the panel. CSS only
+   transitions dimming and label visibility. */
 
 import { AnimatePresence, motion } from "motion/react";
-import Link from "next/link";
 import {
   memo,
   useCallback,
@@ -20,18 +29,34 @@ import {
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type KeyboardEvent as ReactKeyboardEvent,
   type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
 } from "react";
-import { Button } from "@/components/ui/button";
-import { company } from "@/content/company";
 import { HUBS, ORIGIN, REGIONS, type Hub, type RegionId } from "@/content/hubs";
+import { networkMap } from "@/content/network";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+import { formatNumberIN } from "@/lib/format";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { GSAP_EASES, MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
+import { MapPanel } from "./MapPanel";
 import { useMapSelection } from "./MapSelection";
 import { getCorridorPath } from "./corridor";
 import { INDIA_PATHS, INDIA_VIEWBOX, ISLET_MARKERS } from "./india-outline";
+import { INDIA_STATES } from "./india-states";
+import {
+  FULL_VIEW,
+  TROPIC_Y,
+  labelWidth,
+  nearestInDirection,
+  originLabelRect,
+  placeLabels,
+  viewBoxString,
+  zoomBoxFor,
+  type LabelPlacement,
+  type ViewBox,
+} from "./map-layout";
 
 export interface IndiaNetworkMapProps {
   mode: "hero" | "full";
@@ -42,143 +67,117 @@ export interface IndiaNetworkMapProps {
 }
 
 type RegionFilter = RegionId | "all";
+type MapVars = CSSProperties & Record<`--${string}`, string | number>;
 
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-] as const;
+const CYCLE_SIZE = 6;
+const CYCLE_MS = 4200;
+const IDLE_AFTER_INTERACTION_MS = 10_000;
+const SHUTTLE_R = 3.2;
+/* Stage width (px) from which the map has room for its secondary labels. */
+const WIDE_STAGE_PX = 480;
 
-function formatVerifiedOn(iso: string): string {
-  const [y, m, d] = iso.split("-").map(Number);
-  if (y === undefined || m === undefined || d === undefined || Number.isNaN(y + m + d)) return iso;
-  return `${String(d)} ${MONTHS[m - 1] ?? ""} ${String(y)}`.trim();
+function regionLabel(id: RegionId): string {
+  return REGIONS.find((entry) => entry.id === id)?.label ?? "";
 }
 
-function distanceFromOrigin(hub: Hub): number {
-  return Math.hypot(hub.x - ORIGIN.x, hub.y - ORIGIN.y);
+function at(x: number, y: number): MapVars {
+  return { "--x": x, "--y": y };
 }
 
-const ARROW_VECTORS: Record<string, readonly [number, number]> = {
-  ArrowRight: [1, 0],
-  ArrowLeft: [-1, 0],
-  ArrowDown: [0, 1],
-  ArrowUp: [0, -1],
-};
-
-/* Nearest hub in an arrow direction: angle within ±45° (cos ≥ √½), then
-   nearest by distance. SVG y grows downward, so ArrowDown is +y. */
-function nearestInDirection(from: Hub, key: string, hubs: readonly Hub[]): Hub | null {
-  const vec = ARROW_VECTORS[key];
-  if (vec === undefined) return null;
-  let best: Hub | null = null;
-  let bestDist = Number.POSITIVE_INFINITY;
-  for (const hub of hubs) {
-    if (hub.id === from.id) continue;
-    const dx = hub.x - from.x;
-    const dy = hub.y - from.y;
-    const dist = Math.hypot(dx, dy);
-    if (dist === 0) continue;
-    const cos = (dx * vec[0] + dy * vec[1]) / dist;
-    if (cos >= Math.SQRT1_2 && dist < bestDist) {
-      best = hub;
-      bestDist = dist;
-    }
+/* Hero auto-cycle: the farthest principal hub of each region, topped up with
+   the next-farthest, then ordered by bearing from Surat so the cycle sweeps
+   across the country instead of jumping back and forth. */
+function buildCyclePool(hubs: readonly Hub[]): Hub[] {
+  const source = hubs.filter((hub) => hub.primary);
+  const byFar = [...(source.length >= CYCLE_SIZE ? source : hubs)].sort(
+    (a, b) => b.distanceKm - a.distanceKm,
+  );
+  const pool: Hub[] = [];
+  for (const entry of REGIONS) {
+    if (entry.id === "all") continue;
+    const far = byFar.find((hub) => hub.region === entry.id);
+    if (far !== undefined) pool.push(far);
   }
-  return best;
+  for (const hub of byFar) {
+    if (pool.length >= CYCLE_SIZE) break;
+    if (!pool.includes(hub)) pool.push(hub);
+  }
+  const bearing = (hub: Hub): number => Math.atan2(hub.y - ORIGIN.y, hub.x - ORIGIN.x);
+  return pool.sort((a, b) => bearing(a) - bearing(b));
 }
 
-interface HubNodeProps {
+/* ——— Pin ——— */
+
+interface HubPinProps {
   hub: Hub;
   lit: boolean;
-  selected: boolean;
-  register: (el: SVGGElement | null) => void;
-  onEnter: (id: string) => void;
-  onLeave: () => void;
+  pressed: boolean | undefined;
+  dim: boolean;
+  tabbable: boolean;
+  register: (el: HTMLButtonElement | null) => void;
+  onPreview: (id: string | null) => void;
+  onFocusHub: (id: string) => void;
   onActivate: (id: string) => void;
   onArrow: (id: string, key: string) => void;
 }
 
-/* Memoised: only the lit/selected hubs re-render on hover or selection. */
-const HubNode = memo(function HubNode({
+/* Memoised: a hover or selection re-renders only the pins whose props move. */
+const HubPin = memo(function HubPin({
   hub,
   lit,
-  selected,
+  pressed,
+  dim,
+  tabbable,
   register,
-  onEnter,
-  onLeave,
+  onPreview,
+  onFocusHub,
   onActivate,
   onArrow,
-}: HubNodeProps) {
-  const handleKeyDown = (event: ReactKeyboardEvent<SVGGElement>): void => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      onActivate(hub.id);
-      return;
-    }
+}: HubPinProps) {
+  const handleKeyDown = (event: ReactKeyboardEvent<HTMLButtonElement>): void => {
     if (event.key.startsWith("Arrow")) {
       event.preventDefault();
       onArrow(hub.id, event.key);
     }
   };
-  const labelAnchor = hub.x > 600 ? "end" : "start";
-  const labelX = hub.x + (labelAnchor === "end" ? -10 : 10);
+  const mouseOnly =
+    (id: string | null) =>
+    (event: ReactPointerEvent<HTMLButtonElement>): void => {
+      if (event.pointerType === "mouse") onPreview(id);
+    };
+
   return (
-    <g
+    <button
       ref={register}
-      role="button"
-      tabIndex={0}
+      type="button"
       data-hub={hub.id}
       data-region={hub.region}
-      aria-label={`${hub.name}, ${hub.state}`}
-      className="cursor-pointer outline-none"
-      onMouseEnter={() => onEnter(hub.id)}
-      onMouseLeave={onLeave}
-      onFocus={() => onEnter(hub.id)}
-      onBlur={onLeave}
+      data-dim={dim ? "true" : "false"}
+      inert={dim}
+      tabIndex={tabbable ? 0 : -1}
+      aria-label={hub.state === hub.name ? hub.name : `${hub.name}, ${hub.state}`}
+      aria-pressed={pressed}
+      className="map-at map-pin"
+      style={at(hub.x, hub.y)}
+      onPointerEnter={mouseOnly(hub.id)}
+      onPointerLeave={mouseOnly(null)}
+      onFocus={() => onFocusHub(hub.id)}
+      onBlur={() => onPreview(null)}
       onClick={() => onActivate(hub.id)}
       onKeyDown={handleKeyDown}
     >
-      <circle className="map-hit" cx={hub.x} cy={hub.y} r={14} fill="transparent" />
-      <g data-hub-scale>
-        <circle cx={hub.x} cy={hub.y} r={3} fill="var(--ink)" />
-        <motion.circle
-          cx={hub.x}
-          cy={hub.y}
-          r={7}
-          fill="none"
-          stroke="var(--accent)"
-          strokeWidth={1}
-          style={{ transformBox: "fill-box", transformOrigin: "center", pointerEvents: "none" }}
-          initial={false}
-          animate={lit ? { scale: 1, opacity: 1 } : { scale: 0.4, opacity: 0 }}
-          transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
-        />
-      </g>
-      {selected && (
-        <text
-          x={labelX}
-          y={hub.y + 4}
-          textAnchor={labelAnchor}
-          fill="var(--muted)"
-          className="label-caps"
-          style={{ pointerEvents: "none" }}
-        >
-          {hub.name}
-        </text>
-      )}
-    </g>
+      <span data-hub-dot className="map-dot" data-primary={hub.primary ? "true" : "false"} />
+      <motion.span
+        className="map-ring"
+        initial={false}
+        animate={lit ? { scale: 1, opacity: 1 } : { scale: 0.3, opacity: 0 }}
+        transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
+      />
+    </button>
   );
 });
+
+/* ——— Map ——— */
 
 export function IndiaNetworkMap({
   mode,
@@ -187,189 +186,300 @@ export function IndiaNetworkMap({
   onHubSelect,
   className = "",
 }: IndiaNetworkMapProps) {
+  const isFull = mode === "full";
   const reduced = useReducedMotionSafe();
   const [selectedId, select] = useMapSelection();
   const [region, setRegion] = useState<RegionFilter>(initialRegion);
-  const [userActiveId, setUserActiveId] = useState<string | null>(null);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const [focusId, setFocusId] = useState<string | null>(null);
   const [cycleIdx, setCycleIdx] = useState(0);
+  const [stagePx, setStagePx] = useState(0);
 
   const hubsList = hubs ?? HUBS;
+  const byId = useMemo(() => new Map(hubsList.map((hub) => [hub.id, hub])), [hubsList]);
+  /* DOM order = distance from Surat, so every entrance stagger radiates out. */
   const ordered = useMemo(
-    () => [...hubsList].sort((a, b) => distanceFromOrigin(a) - distanceFromOrigin(b)),
+    () => [...hubsList].sort((a, b) => a.distanceKm - b.distanceKm),
     [hubsList],
   );
-  const byId = useMemo(() => new Map(hubsList.map((hub) => [hub.id, hub])), [hubsList]);
   const paths = useMemo(() => {
     const map = new Map<string, string>();
     for (const hub of hubsList) map.set(hub.id, getCorridorPath(ORIGIN, hub));
     return map;
   }, [hubsList]);
+  const cyclePool = useMemo(() => buildCyclePool(hubsList), [hubsList]);
 
-  /* Six auto-cycle hubs across regions: nearest of each region, then the
-     next-nearest overall. Deterministic, no per-frame React state. */
-  const cyclePool = useMemo(() => {
-    const pool: Hub[] = [];
-    for (const entry of REGIONS) {
-      if (entry.id === "all") continue;
-      const first = ordered.find((hub) => hub.region === entry.id);
-      if (first !== undefined) pool.push(first);
-    }
-    for (const hub of ordered) {
-      if (pool.length >= 6) break;
-      if (!pool.includes(hub)) pool.push(hub);
-    }
-    return pool;
-  }, [ordered]);
+  const selected = isFull && selectedId !== null ? (byId.get(selectedId) ?? null) : null;
+  /* A selection made elsewhere (the directory) that sits outside the current
+     region shows the whole country rather than a dimmed, unreachable pin. */
+  const activeRegion: RegionFilter =
+    isFull && (selected === null || region === "all" || selected.region === region)
+      ? region
+      : "all";
+  const regionHubs = useMemo(
+    () => (activeRegion === "all" ? hubsList : hubsList.filter((h) => h.region === activeRegion)),
+    [hubsList, activeRegion],
+  );
+  const targetView: ViewBox = useMemo(
+    () => (activeRegion === "all" ? FULL_VIEW : zoomBoxFor(regionHubs)),
+    [activeRegion, regionHubs],
+  );
 
-  const isFull = mode === "full";
-  const cycleId =
-    !isFull && cyclePool.length > 0 ? (cyclePool[cycleIdx % cyclePool.length]?.id ?? null) : null;
-  const activeId = isFull ? (selectedId ?? userActiveId) : (userActiveId ?? cycleId);
-  const selected = isFull ? (selectedId === null ? null : (byId.get(selectedId) ?? null)) : null;
+  const cycleHub = !isFull ? (cyclePool[cycleIdx % Math.max(cyclePool.length, 1)] ?? null) : null;
+  const activeId = isFull
+    ? (previewId ?? selected?.id ?? null)
+    : (previewId ?? cycleHub?.id ?? null);
+  const active = activeId === null ? null : (byId.get(activeId) ?? null);
+  const pinnedSelection = isFull && selected !== null && activeId === selected.id;
+
+  const visibleIds = useMemo(() => new Set(regionHubs.map((hub) => hub.id)), [regionHubs]);
+  const tabStopId = useMemo(() => {
+    for (const id of [focusId, selected?.id ?? null]) {
+      if (id !== null && visibleIds.has(id)) return id;
+    }
+    return ordered.find((hub) => visibleIds.has(hub.id))?.id ?? null;
+  }, [focusId, selected, visibleIds, ordered]);
+
+  /* States: tinted where a hub sits, deeper inside the focused region. */
+  const servedStates = useMemo(
+    () => new Set([ORIGIN.stateId, ...hubsList.map((hub) => hub.stateId)]),
+    [hubsList],
+  );
+  const focusStates = useMemo(
+    () => new Set(activeRegion === "all" ? [] : regionHubs.map((hub) => hub.stateId)),
+    [activeRegion, regionHubs],
+  );
+
+  /* Surat's label sits left of its pin unless the stage is too narrow for
+     it there (small phones), then it drops below. The "dispatch desk" tag
+     and the tropic label only appear where there is room for them. */
+  const roomy = stagePx >= WIDE_STAGE_PX;
+  const originPlacement = useMemo(() => {
+    const roomLeft = ((ORIGIN.x - targetView.x) / targetView.w) * stagePx;
+    return { below: roomLeft < labelWidth(networkMap.originLabel) + 22 };
+  }, [targetView, stagePx]);
+
+  /* Labels: principal hubs first (source order is market weight), then —
+     zoomed into a region — every other hub that still has room. */
+  const labels = useMemo(() => {
+    const pool = activeRegion === "all" ? hubsList.filter((hub) => hub.primary) : regionHubs;
+    const priority = [...pool].sort((a, b) => Number(b.primary) - Number(a.primary));
+    const reserved = [
+      originLabelRect(ORIGIN, networkMap.originLabel, targetView, stagePx, originPlacement.below),
+    ];
+    const placed = placeLabels(priority, targetView, stagePx, reserved, regionHubs);
+    return new Map<string, LabelPlacement["side"]>(placed.map((p) => [p.id, p.side]));
+  }, [activeRegion, hubsList, regionHubs, targetView, stagePx, originPlacement]);
 
   const wrapRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const activePathRef = useRef<SVGPathElement>(null);
-  const breathRef = useRef<SVGCircleElement>(null);
-  const hubEls = useRef(new Map<string, SVGGElement>());
-  const panelHeadingRef = useRef<HTMLHeadingElement>(null);
-  const loopTween = useRef<{ kill: () => void } | null>(null);
+  const shuttleRef = useRef<SVGCircleElement>(null);
+  const breathRef = useRef<HTMLSpanElement>(null);
+  const pinEls = useRef(new Map<string, HTMLButtonElement>());
+  const corridorTl = useRef<{ kill: () => void } | null>(null);
+  const viewRef = useRef<ViewBox>({ ...FULL_VIEW });
   const inViewRef = useRef(false);
   const lastInteractRef = useRef(0);
   const focusPanelRef = useRef(false);
   const noteId = useId();
+  const clipId = `india-clip-${useId().replace(/[^a-zA-Z0-9_-]/g, "")}`;
 
   const markInteracted = useCallback((): void => {
     lastInteractRef.current = Date.now();
   }, []);
 
-  /* Entrance: outline draws, fill fades, hubs pop in distance order, ghost
-     corridors draw, origin breathing starts. Reduced: final state, no
-     breathing, no ScrollTrigger. */
+  /* Writes one viewBox to both layers: the SVG attribute and the stage's
+     custom properties. The shuttle radius follows the zoom by hand (an SVG
+     `r` is in user units and has no CSS-var route that every engine takes). */
+  const applyView = useCallback((vb: ViewBox): void => {
+    const svg = svgRef.current;
+    const stage = stageRef.current;
+    if (svg === null || stage === null) return;
+    const k = FULL_VIEW.w / vb.w;
+    svg.setAttribute("viewBox", viewBoxString(vb));
+    stage.style.setProperty("--vb-x", vb.x.toFixed(3));
+    stage.style.setProperty("--vb-y", vb.y.toFixed(3));
+    stage.style.setProperty("--vb-w", vb.w.toFixed(3));
+    stage.style.setProperty("--vb-h", vb.h.toFixed(3));
+    stage.style.setProperty("--k", k.toFixed(4));
+    shuttleRef.current?.setAttribute("r", (SHUTTLE_R / k).toFixed(3));
+  }, []);
+
+  /* Stage width drives label placement. */
+  useEffect(() => {
+    const stage = stageRef.current;
+    if (stage === null) return;
+    const ro = new ResizeObserver(([entry]) => {
+      if (entry !== undefined) setStagePx(Math.round(entry.contentRect.width));
+    });
+    ro.observe(stage);
+    return () => ro.disconnect();
+  }, []);
+
+  /* Entrance: the border inks in, the state wash follows, corridors draw out
+     from Surat, pins pop in distance order, labels settle, Surat breathes.
+     ~2.2s in all. Reduced motion: the final frame, no breath. */
   useGSAP(
     () => {
-      const svg = svgRef.current;
-      if (svg === null) return;
-      const outlines = svg.querySelectorAll<SVGPathElement>("[data-outline-path]");
-      const hubScales = svg.querySelectorAll<SVGGElement>("[data-hub-scale]");
-      const ghosts = svg.querySelectorAll<SVGPathElement>("[data-ghost]");
-      for (const el of hubScales) gsap.set(el, { transformOrigin: "50% 50%" });
+      const stage = stageRef.current;
+      if (stage === null) return;
+      const nation = stage.querySelectorAll<SVGPathElement>("[data-nation]");
+      const states = stage.querySelector<SVGGElement>("[data-states]");
+      const ghosts = stage.querySelectorAll<SVGPathElement>("[data-ghost]");
+      const dots = stage.querySelectorAll<HTMLSpanElement>("[data-hub-dot]");
+      const fades = stage.querySelectorAll<HTMLElement>("[data-fade-in]");
+      const washes: Element[] = [...fades];
+      if (states !== null) washes.push(states);
+      const breath = breathRef.current;
       if (reduced) {
-        gsap.set(outlines, { drawSVG: "100%", fillOpacity: 1 });
-        gsap.set(hubScales, { scale: 1, opacity: 1 });
-        gsap.set(ghosts, { drawSVG: "100%" });
+        gsap.set(washes, { opacity: 1 });
+        gsap.set(dots, { scale: 1, opacity: 1 });
         return;
       }
-      const breath = breathRef.current;
+      /* Once drawn, drop DrawSVG's dash props so nothing can clip a stroke. */
+      const clearDash = (): void => {
+        gsap.set([...nation, ...ghosts], { clearProps: "strokeDasharray,strokeDashoffset" });
+      };
+      gsap.set(nation, { drawSVG: "0%" });
+      gsap.set(ghosts, { drawSVG: "0%" });
+      gsap.set(washes, { opacity: 0 });
+      gsap.set(dots, { scale: 0, opacity: 0 });
       const timeline = gsap.timeline({
-        scrollTrigger: { trigger: svg, start: "top 75%", once: true },
+        scrollTrigger: { trigger: stage, start: "top 85%", once: true },
       });
       timeline
-        .fromTo(
-          outlines,
-          { drawSVG: "0%" },
-          { drawSVG: "100%", duration: 1.6, ease: GSAP_EASES.draw },
+        .to(nation, { drawSVG: "100%", duration: 1.2, ease: GSAP_EASES.draw }, 0)
+        .to(washes, { opacity: 1, duration: 0.6, ease: "none", stagger: 0.1 }, 0.55)
+        .to(
+          ghosts,
+          { drawSVG: "100%", duration: 0.7, ease: GSAP_EASES.draw, stagger: { amount: 0.5 } },
+          0.8,
         )
-        .fromTo(outlines, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.6 }, ">")
-        .fromTo(
-          hubScales,
-          { scale: 0, opacity: 0 },
+        .to(
+          dots,
           {
             scale: 1,
             opacity: 1,
             duration: MOTION_DURATIONS.sm,
             ease: GSAP_EASES.reveal,
-            stagger: 0.012,
+            stagger: { amount: 0.6 },
           },
-          ">",
+          0.95,
         )
-        .fromTo(
-          ghosts,
-          { drawSVG: "0%" },
-          { drawSVG: "100%", duration: 0.8, ease: GSAP_EASES.draw, stagger: 0.01 },
-          ">",
-        );
+        .add(clearDash, 2.1);
+      /* Nested (not fired from a callback) so the context reverts it. */
       if (breath !== null) {
-        gsap.set(breath, { transformOrigin: "50% 50%" });
-        timeline.add(() => {
-          gsap.fromTo(
-            breath,
-            { scale: 1, opacity: 0.5 },
-            { scale: 2.4, opacity: 0, duration: 3, repeat: -1, ease: "none" },
-          );
-        }, ">");
+        timeline.fromTo(
+          breath,
+          { scale: 1, opacity: 0.55 },
+          { scale: 2.6, opacity: 0, duration: 2.8, repeat: -1, ease: "sine.out" },
+          1.2,
+        );
       }
     },
-    { scope: svgRef, dependencies: [reduced, hubsList] },
+    { scope: stageRef, dependencies: [reduced, hubsList] },
   );
 
-  /* Active corridor: selection > hover > auto-cycle. Full-mode selection
-     loops its draw; everything else draws once. Reduced: instant. */
+  /* Region zoom: tween the live viewBox; both layers follow. */
+  useEffect(() => {
+    const from = viewRef.current;
+    if (
+      from.x === targetView.x &&
+      from.y === targetView.y &&
+      from.w === targetView.w &&
+      from.h === targetView.h
+    ) {
+      return;
+    }
+    if (reduced) {
+      viewRef.current = { ...targetView };
+      applyView(targetView);
+      return;
+    }
+    const tween = gsap.to(viewRef.current, {
+      ...targetView,
+      duration: MOTION_DURATIONS.lg,
+      ease: "power3.inOut",
+      overwrite: true,
+      onUpdate: () => applyView(viewRef.current),
+    });
+    return () => {
+      tween.kill();
+    };
+  }, [targetView, reduced, applyView]);
+
+  /* Active corridor: draws from Surat with a shuttle riding it. A pinned
+     full-mode selection keeps the shuttle running; everything else runs
+     once. Reduced: the drawn line, no shuttle. */
   useEffect(() => {
     const path = activePathRef.current;
+    const shuttle = shuttleRef.current;
     const svg = svgRef.current;
-    if (path === null || svg === null) return;
-    loopTween.current?.kill();
-    loopTween.current = null;
-    if (activeId === null) {
-      gsap.set(path, { opacity: 0 });
+    if (path === null || shuttle === null || svg === null) return;
+    corridorTl.current?.kill();
+    corridorTl.current = null;
+    const d = activeId === null ? undefined : paths.get(activeId);
+    if (d === undefined) {
+      gsap.to(path, { opacity: 0, duration: 0.25, overwrite: true });
+      gsap.set(shuttle, { opacity: 0 });
       svg.setAttribute("data-corridor-active", "false");
       return;
     }
-    const d = paths.get(activeId);
-    if (d === undefined) return;
     path.setAttribute("d", d);
     svg.setAttribute("data-corridor-active", "true");
     if (reduced) {
       gsap.set(path, { drawSVG: "100%", opacity: 1 });
+      gsap.set(shuttle, { opacity: 0 });
       return;
     }
-    if (isFull && selectedId === activeId) {
-      loopTween.current = gsap
-        .timeline({ repeat: -1 })
-        .fromTo(
-          path,
-          { drawSVG: "0%", opacity: 1 },
-          { drawSVG: "100%", duration: 0.9, ease: GSAP_EASES.draw },
-        )
-        .to(path, { opacity: 0.2, duration: 0.6 }, "+=0.4");
-    } else {
-      gsap.fromTo(
+    const ride = {
+      motionPath: {
+        path,
+        align: path,
+        alignOrigin: [0.5, 0.5] as [number, number],
+        start: 0,
+        end: 1,
+      },
+    };
+    const timeline = gsap.timeline();
+    timeline
+      .fromTo(
         path,
         { drawSVG: "0%", opacity: 1 },
-        { drawSVG: "100%", duration: 0.9, ease: GSAP_EASES.draw, overwrite: "auto" },
-      );
+        { drawSVG: "100%", duration: 0.9, ease: GSAP_EASES.draw, overwrite: true },
+        0,
+      )
+      .fromTo(shuttle, { opacity: 0 }, { opacity: 1, duration: 0.15 }, 0)
+      .to(shuttle, { ...ride, duration: 0.9, ease: GSAP_EASES.draw }, 0)
+      .to(shuttle, { opacity: 0, duration: 0.3 }, 0.95);
+    if (pinnedSelection) {
+      const loop = gsap.timeline({ repeat: -1, repeatDelay: 0.9, delay: 0.6 });
+      loop
+        .fromTo(shuttle, { opacity: 0 }, { opacity: 1, duration: 0.2 }, 0)
+        .to(shuttle, { ...ride, duration: 1.7, ease: "power1.inOut" }, 0)
+        .to(shuttle, { opacity: 0, duration: 0.3 }, 1.5);
+      timeline.add(loop, ">");
     }
-  }, [activeId, isFull, selectedId, paths, reduced]);
+    corridorTl.current = timeline;
+  }, [activeId, pinnedSelection, paths, reduced]);
 
-  /* Region dimming (full mode): non-matching hubs + ghosts to 0.15,
-     matching to 1. Targets the outer hub <g>; the entrance owns the inner
-     scale group, so the two never fight over one property. */
-  useEffect(() => {
-    if (!isFull) return;
-    const svg = svgRef.current;
-    if (svg === null) return;
-    const show = (selector: string): void => {
-      const els = svg.querySelectorAll<SVGElement>(selector);
-      for (const el of els) {
-        const match = region === "all" || el.getAttribute("data-region") === region;
-        if (reduced) gsap.set(el, { opacity: match ? 1 : 0.15 });
-        else gsap.to(el, { opacity: match ? 1 : 0.15, duration: 0.4, overwrite: "auto" });
-      }
-    };
-    show("[data-hub]");
-    show("[data-ghost]");
-  }, [isFull, region, reduced, ordered]);
+  useEffect(
+    () => () => {
+      corridorTl.current?.kill();
+    },
+    [],
+  );
 
-  /* Hero auto-cycle: 4s ticks, paused offscreen (IO) and for 10s after any
-     interaction. Disabled under reduced motion. */
+  /* Hero auto-cycle: paused offscreen and for 10s after any interaction. */
   useEffect(() => {
     if (isFull || reduced || cyclePool.length === 0) return;
     const tick = window.setInterval(() => {
       if (!inViewRef.current) return;
-      if (Date.now() - lastInteractRef.current < 10_000) return;
+      if (Date.now() - lastInteractRef.current < IDLE_AFTER_INTERACTION_MS) return;
       setCycleIdx((i) => (i + 1) % cyclePool.length);
-    }, 4000);
+    }, CYCLE_MS);
     return () => window.clearInterval(tick);
   }, [isFull, reduced, cyclePool]);
 
@@ -386,61 +496,75 @@ export function IndiaNetworkMap({
     return () => io.disconnect();
   }, [isFull, reduced]);
 
-  /* Focus the panel heading when a selection originates from this map
-     (never when it comes from the directory). */
-  useEffect(() => {
-    if (selectedId !== null && focusPanelRef.current) {
+  /* Focus the corridor card when the selection came from this map. A
+     callback ref, not an effect: the card mounts only after the panel's
+     exit animation, well after the selection render has committed. On
+     phones the card sits under the map, so it is nudged into view. */
+  const panelHeadingRef = useCallback(
+    (heading: HTMLHeadingElement | null): void => {
+      if (heading === null || !focusPanelRef.current) return;
       focusPanelRef.current = false;
-      panelHeadingRef.current?.focus({ preventScroll: true });
-    }
-  }, [selectedId]);
-
-  useEffect(
-    () => () => {
-      loopTween.current?.kill();
+      heading.focus({ preventScroll: true });
+      const box = heading.getBoundingClientRect();
+      if (box.top < 0 || box.bottom > window.innerHeight) {
+        heading.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" });
+      }
     },
-    [],
+    [reduced],
   );
 
-  const registerHub = useCallback((el: SVGGElement | null): void => {
+  const registerPin = useCallback((el: HTMLButtonElement | null): void => {
     if (el === null) return;
     const id = el.getAttribute("data-hub");
-    if (id !== null) hubEls.current.set(id, el);
+    if (id !== null) pinEls.current.set(id, el);
   }, []);
 
-  const handleEnter = useCallback(
-    (id: string): void => {
-      markInteracted();
-      setUserActiveId(id);
+  const handlePreview = useCallback(
+    (id: string | null): void => {
+      if (id !== null) markInteracted();
+      setPreviewId(id);
     },
     [markInteracted],
   );
 
-  const handleLeave = useCallback((): void => {
-    setUserActiveId(null);
-  }, []);
+  const handleFocusHub = useCallback(
+    (id: string): void => {
+      markInteracted();
+      setFocusId(id);
+      setPreviewId(id);
+    },
+    [markInteracted],
+  );
 
   const clearSelection = useCallback((): void => {
     select(null);
     onHubSelect?.(null);
   }, [select, onHubSelect]);
 
+  const selectHub = useCallback(
+    (id: string): void => {
+      select(id);
+      setFocusId(id);
+      onHubSelect?.(byId.get(id) ?? null);
+    },
+    [select, onHubSelect, byId],
+  );
+
   const handleActivate = useCallback(
     (id: string): void => {
       markInteracted();
       if (!isFull) {
-        setUserActiveId(id);
+        setPreviewId(id);
         return;
       }
-      focusPanelRef.current = true;
       if (selectedId === id) {
         clearSelection();
         return;
       }
-      select(id);
-      onHubSelect?.(byId.get(id) ?? null);
+      focusPanelRef.current = true;
+      selectHub(id);
     },
-    [isFull, markInteracted, selectedId, select, onHubSelect, byId, clearSelection],
+    [isFull, markInteracted, selectedId, clearSelection, selectHub],
   );
 
   const handleArrow = useCallback(
@@ -448,13 +572,23 @@ export function IndiaNetworkMap({
       markInteracted();
       const from = byId.get(id);
       if (from === undefined) return;
-      const next = nearestInDirection(from, key, ordered);
-      if (next !== null) hubEls.current.get(next.id)?.focus();
+      const next = nearestInDirection(from, key, regionHubs);
+      if (next !== null) pinEls.current.get(next.id)?.focus();
     },
-    [markInteracted, byId, ordered],
+    [markInteracted, byId, regionHubs],
   );
 
-  const handleBackgroundClick = (event: ReactMouseEvent<SVGSVGElement>): void => {
+  const handleRegion = useCallback(
+    (next: RegionFilter): void => {
+      markInteracted();
+      setPreviewId(null);
+      if (selected !== null && next !== "all" && selected.region !== next) clearSelection();
+      setRegion(next);
+    },
+    [markInteracted, selected, clearSelection],
+  );
+
+  const handleStageClick = (event: ReactMouseEvent<HTMLDivElement>): void => {
     if (!isFull || selectedId === null) return;
     const target = event.target as Element | null;
     if (target !== null && target.closest("[data-hub]") === null) clearSelection();
@@ -463,239 +597,351 @@ export function IndiaNetworkMap({
   const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>): void => {
     if (event.key === "Escape" && isFull && selectedId !== null) {
       event.stopPropagation();
+      const id = selectedId;
       clearSelection();
-      hubEls.current.get(selectedId)?.focus();
+      pinEls.current.get(id)?.focus();
     }
   };
 
-  const selectedRegionLabel =
-    selected === null ? "" : (REGIONS.find((entry) => entry.id === selected.region)?.label ?? "");
+  const handleClosePanel = useCallback((): void => {
+    const id = selectedId;
+    clearSelection();
+    if (id !== null) pinEls.current.get(id)?.focus();
+  }, [selectedId, clearSelection]);
+
+  const handlePanelSelect = useCallback(
+    (id: string): void => {
+      markInteracted();
+      setPreviewId(null);
+      focusPanelRef.current = true;
+      selectHub(id);
+    },
+    [markInteracted, selectHub],
+  );
+
+  const handlePanelPreview = useCallback((id: string | null): void => {
+    setPreviewId(id);
+  }, []);
+
+  const regionCounts = useMemo(() => {
+    const counts = new Map<RegionFilter, number>([["all", hubsList.length]]);
+    for (const hub of hubsList) counts.set(hub.region, (counts.get(hub.region) ?? 0) + 1);
+    return counts;
+  }, [hubsList]);
+
+  /* Callout placement against the target view: flip left on the east side,
+     drop below the pin near the top edge. */
+  const calloutSide = useMemo(() => {
+    if (active === null) return { flipX: false, below: false };
+    const rx = (active.x - targetView.x) / targetView.w;
+    const ry = (active.y - targetView.y) / targetView.h;
+    return { flipX: rx > 0.55, below: ry < 0.2 };
+  }, [active, targetView]);
+
+  const stage = (
+    <div
+      ref={stageRef}
+      className="map-stage"
+      data-zoomed={activeRegion === "all" ? "false" : "true"}
+      onClick={handleStageClick}
+      onPointerDown={markInteracted}
+    >
+      <svg
+        ref={svgRef}
+        viewBox={INDIA_VIEWBOX}
+        aria-hidden="true"
+        focusable="false"
+        data-corridor-active="false"
+        className="map-svg"
+      >
+        <defs>
+          <clipPath id={clipId}>
+            {INDIA_PATHS.map((d) => (
+              <path key={d.length} d={d} />
+            ))}
+          </clipPath>
+        </defs>
+
+        <g data-states>
+          {INDIA_STATES.map((state) => (
+            <path
+              key={state.id}
+              d={state.d}
+              className="map-state"
+              fill={
+                focusStates.has(state.id)
+                  ? "var(--map-land-focus)"
+                  : servedStates.has(state.id)
+                    ? "var(--map-land-served)"
+                    : "var(--map-land-quiet)"
+              }
+              stroke="var(--map-state-line)"
+              strokeLinejoin="round"
+            />
+          ))}
+          {isFull && (
+            <line
+              x1={0}
+              x2={FULL_VIEW.w}
+              y1={TROPIC_Y}
+              y2={TROPIC_Y}
+              className="map-tropic"
+              stroke="var(--map-border)"
+              clipPath={`url(#${clipId})`}
+            />
+          )}
+        </g>
+
+        {INDIA_PATHS.map((d) => (
+          <path
+            key={d.length}
+            d={d}
+            data-nation
+            className="map-nation"
+            fill="none"
+            stroke="var(--map-border)"
+            strokeLinejoin="round"
+          />
+        ))}
+        {ISLET_MARKERS.map(([x, y]) => (
+          <circle key={`${x},${y}`} cx={x} cy={y} r={1.6} fill="var(--map-border)" />
+        ))}
+
+        <g>
+          {ordered.map((hub) => (
+            <path
+              key={hub.id}
+              d={paths.get(hub.id)}
+              data-ghost
+              data-dim={visibleIds.has(hub.id) ? "false" : "true"}
+              className="map-ghost"
+              fill="none"
+              stroke="var(--map-corridor)"
+              strokeLinecap="round"
+            />
+          ))}
+          <path
+            ref={activePathRef}
+            data-active-corridor
+            className="map-active"
+            fill="none"
+            stroke="var(--accent)"
+            strokeLinecap="round"
+            opacity={0}
+          />
+          <circle ref={shuttleRef} cx={0} cy={0} r={SHUTTLE_R} fill="var(--accent)" opacity={0} />
+        </g>
+      </svg>
+
+      {/* Labels sit under the pins so a label never steals a tap. */}
+      <div data-fade-in aria-hidden="true" className="pointer-events-none absolute inset-0">
+        {isFull && roomy && activeRegion === "all" && (
+          <span
+            className="map-label right-2 text-[9px]"
+            style={{
+              top: `calc((${String(TROPIC_Y)} - var(--vb-y)) / var(--vb-h) * 100%)`,
+              transform: "translateY(-115%)",
+              color: "var(--muted)",
+            }}
+          >
+            {networkMap.tropicLabel}
+          </span>
+        )}
+        {ordered.map((hub) => {
+          const side = labels.get(hub.id);
+          const show = side !== undefined && hub.id !== activeId;
+          return (
+            <span
+              key={hub.id}
+              className="map-at map-label"
+              data-show={show ? "true" : "false"}
+              style={{
+                ...at(hub.x, hub.y),
+                transform:
+                  side === "left" ? "translate(calc(-100% - 9px), -50%)" : "translate(9px, -50%)",
+              }}
+            >
+              {hub.name}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Surat: the origin is information, not a control. */}
+      <div
+        data-fade-in
+        aria-hidden="true"
+        className="map-at pointer-events-none"
+        style={at(ORIGIN.x, ORIGIN.y)}
+      >
+        <span
+          ref={breathRef}
+          className="border-accent absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border opacity-0"
+        />
+        <span className="border-accent bg-paper absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border" />
+        <span className="bg-ink absolute -top-[3px] -left-[3px] block size-[6px] rounded-full" />
+        <span
+          className={
+            originPlacement.below
+              ? "absolute top-[13px] -left-[4px] flex flex-col items-start"
+              : "absolute top-0 right-[15px] flex -translate-y-1/2 flex-col items-end text-right"
+          }
+        >
+          <span className="map-label text-ink relative font-medium">{networkMap.originLabel}</span>
+          {isFull && roomy && (
+            <span className="map-label relative mt-[3px] text-[9px] tracking-[0.18em]">
+              {networkMap.originTag}
+            </span>
+          )}
+        </span>
+      </div>
+
+      <div role="group" aria-label={networkMap.ariaLabel} aria-describedby={noteId}>
+        {ordered.map((hub) => (
+          <HubPin
+            key={hub.id}
+            hub={hub}
+            lit={activeId === hub.id}
+            pressed={isFull ? selected?.id === hub.id : undefined}
+            dim={!visibleIds.has(hub.id)}
+            tabbable={tabStopId === hub.id}
+            register={registerPin}
+            onPreview={handlePreview}
+            onFocusHub={handleFocusHub}
+            onActivate={handleActivate}
+            onArrow={handleArrow}
+          />
+        ))}
+      </div>
+
+      <AnimatePresence>
+        {active !== null && (
+          <motion.div
+            key={active.id}
+            aria-hidden="true"
+            className="map-at pointer-events-none z-10"
+            style={at(active.x, active.y)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
+          >
+            <motion.div
+              className="border-line-strong bg-paper-2 absolute min-w-max rounded-xs border px-3 py-2 shadow-[var(--shadow-card)]"
+              style={{
+                left: calloutSide.flipX ? undefined : 14,
+                right: calloutSide.flipX ? 14 : undefined,
+                top: calloutSide.below ? 12 : undefined,
+                bottom: calloutSide.below ? undefined : 12,
+              }}
+              initial={{ y: calloutSide.below ? -4 : 4 }}
+              animate={{ y: 0 }}
+              transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
+            >
+              <span className="font-display text-ink block text-base leading-tight">
+                {active.name}
+              </span>
+              <span className="text-muted mt-0.5 block font-mono text-[10px] tracking-[0.12em] uppercase">
+                {active.state === active.name ? regionLabel(active.region) : active.state}
+              </span>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 
   return (
     <div
       ref={wrapRef}
       className={`network-map ${className}`}
       onPointerMove={isFull ? undefined : markInteracted}
-      onPointerDown={markInteracted}
-      onWheel={isFull ? undefined : markInteracted}
       onKeyDown={handleKeyDown}
     >
       {isFull && (
         <div className="space-y-3">
           <div
             role="group"
-            aria-label="Filter hubs by region"
-            className="flex flex-wrap gap-x-6 gap-y-2"
+            aria-label={networkMap.filterLabel}
+            className="flex flex-wrap gap-x-6 gap-y-1"
           >
             {REGIONS.map((entry) => {
-              const active = region === entry.id;
+              const on = activeRegion === entry.id;
               return (
                 <button
                   key={entry.id}
                   type="button"
-                  aria-pressed={active}
-                  onClick={() => setRegion(entry.id)}
-                  className={`relative min-h-[44px] py-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors ${
-                    active ? "text-accent font-medium" : "text-muted hover:text-ink"
+                  aria-pressed={on}
+                  onClick={() => handleRegion(entry.id)}
+                  className={`relative inline-flex min-h-11 items-baseline gap-2 py-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors ${
+                    on ? "text-accent-ink font-medium" : "text-muted hover:text-ink"
                   }`}
                 >
-                  {active && (
+                  {on && (
                     <motion.span
                       layoutId="region-pill"
-                      className="bg-accent absolute inset-x-0 -bottom-px h-px"
+                      className="bg-accent absolute inset-x-0 bottom-1 h-px"
                       transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
                     />
                   )}
                   <span className="relative">{entry.label}</span>
+                  <span className="relative text-[10px] tracking-normal opacity-70">
+                    {regionCounts.get(entry.id) ?? 0}
+                  </span>
                 </button>
               );
             })}
           </div>
-          <p className="text-ink-2 text-sm font-light">
-            Tap any hub to see its corridor from Surat.
-          </p>
+          <p className="text-ink-2 text-sm font-light">{networkMap.instruction}</p>
         </div>
       )}
 
-      <div className={isFull ? "mt-6 grid grid-cols-1 gap-6 lg:grid-cols-12" : ""}>
+      <div
+        className={
+          isFull ? "mt-8 grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-12" : ""
+        }
+      >
         <div className={isFull ? "lg:col-span-7" : ""}>
-          <svg
-            ref={svgRef}
-            viewBox={INDIA_VIEWBOX}
-            role="group"
-            aria-label="DharmaShree Logistics network map from Surat"
-            aria-describedby={noteId}
-            data-corridor-active="false"
-            className="network-map-svg"
-            onClick={handleBackgroundClick}
-          >
-            <g className="outline">
-              {INDIA_PATHS.map((d) => (
-                <path
-                  key={d.length}
-                  d={d}
-                  data-outline-path
-                  fill="var(--paper-2)"
-                  stroke="var(--line-strong)"
-                  strokeWidth={1}
-                  vectorEffect="non-scaling-stroke"
-                  strokeLinejoin="round"
-                />
-              ))}
-              {ISLET_MARKERS.map(([x, y]) => (
-                <circle key={`${x},${y}`} cx={x} cy={y} r={1.6} fill="var(--ink)" opacity={0.25} />
-              ))}
-            </g>
-            <g className="corridors">
-              {ordered.map((hub) => (
-                <path
-                  key={hub.id}
-                  d={paths.get(hub.id)}
-                  data-ghost
-                  data-region={hub.region}
-                  fill="none"
-                  stroke="var(--line)"
-                  strokeWidth={1}
-                  opacity={0.5}
-                />
-              ))}
-              <path
-                ref={activePathRef}
-                data-active-corridor
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth={2}
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-                opacity={0}
-                style={{ pointerEvents: "none" }}
-              />
-            </g>
-            <g className="hubs">
-              {ordered.map((hub) => (
-                <HubNode
-                  key={hub.id}
-                  hub={hub}
-                  lit={activeId === hub.id}
-                  selected={selectedId === hub.id && isFull}
-                  register={registerHub}
-                  onEnter={handleEnter}
-                  onLeave={handleLeave}
-                  onActivate={handleActivate}
-                  onArrow={handleArrow}
-                />
-              ))}
-            </g>
-            <g className="origin">
-              <circle
-                ref={breathRef}
-                cx={ORIGIN.x}
-                cy={ORIGIN.y}
-                r={6}
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth={1}
-                opacity={0}
-                style={{ pointerEvents: "none" }}
-              />
-              <circle
-                cx={ORIGIN.x}
-                cy={ORIGIN.y}
-                r={6}
-                fill="none"
-                stroke="var(--accent)"
-                strokeWidth={1}
-              />
-              <circle cx={ORIGIN.x} cy={ORIGIN.y} r={2} fill="var(--ink)" />
-              <text
-                x={ORIGIN.x - 10}
-                y={ORIGIN.y + 3}
-                textAnchor="end"
-                fill="var(--muted)"
-                className="label-caps"
-                style={{ pointerEvents: "none" }}
-              >
-                SURAT
-              </text>
-            </g>
-          </svg>
+          {stage}
+          {!isFull && (
+            <p
+              aria-hidden="true"
+              className="border-line text-muted mt-3 flex items-baseline justify-between gap-4 border-t pt-3 font-mono text-[10px] tracking-[0.14em] uppercase"
+            >
+              <span className="truncate">
+                {active === null ? (
+                  networkMap.readoutIdle
+                ) : (
+                  <>
+                    {networkMap.originLabel} <span className="text-accent">→</span>{" "}
+                    <span className="text-ink">{active.name}</span>
+                  </>
+                )}
+              </span>
+              {active !== null && (
+                <span className="shrink-0">
+                  {networkMap.readoutDistance(formatNumberIN(active.distanceKm))}
+                </span>
+              )}
+            </p>
+          )}
           <p id={noteId} className="sr-only">
-            A list of all hubs is available below the map.
+            {networkMap.srNote}
           </p>
         </div>
 
         {isFull && (
-          <div className="lg:col-span-5">
-            <AnimatePresence mode="wait">
-              {selected !== null && (
-                <motion.aside
-                  key={selected.id}
-                  role="dialog"
-                  aria-label={`Corridor to ${selected.name}`}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 16 }}
-                  transition={{ duration: MOTION_DURATIONS.sm, ease: MOTION_EASES.out }}
-                  className="border-line bg-paper-2 border p-6 max-lg:fixed max-lg:inset-x-4 max-lg:bottom-4 max-lg:z-50 max-lg:shadow-[var(--shadow-card-lift)] sm:p-8"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                      <p className="section-index">Corridor</p>
-                      <h3
-                        ref={panelHeadingRef}
-                        tabIndex={-1}
-                        className="font-display text-3xl font-light tracking-tight outline-none"
-                      >
-                        {selected.name}
-                      </h3>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        clearSelection();
-                        hubEls.current.get(selected.id)?.focus();
-                      }}
-                      aria-label="Close corridor panel"
-                      className="text-muted hover:text-ink flex min-h-[44px] min-w-[44px] items-center justify-center font-mono text-xs tracking-[0.14em] uppercase"
-                    >
-                      Close
-                    </button>
-                  </div>
-                  <p className="text-ink-2 mt-3 text-sm font-light">
-                    {selected.state} · {selectedRegionLabel}
-                  </p>
-                  <p className="label-caps mt-4">From Surat</p>
-                  {selected.transitDays !== null && (
-                    <p className="mt-2 text-sm font-light">
-                      Transit {selected.transitDays.min}–{selected.transitDays.max} days
-                    </p>
-                  )}
-                  {selected.verifiedOn !== null && (
-                    <p className="text-muted mt-2 font-mono text-xs">
-                      Verified {formatVerifiedOn(selected.verifiedOn)}
-                    </p>
-                  )}
-                  <div className="mt-6 flex flex-col gap-3">
-                    <Button asChild>
-                      <Link href={`/quote?to=${selected.id}`}>
-                        Request a quote to {selected.name}
-                      </Link>
-                    </Button>
-                    {company.whatsapp !== null && (
-                      <Button asChild variant="outline">
-                        <a
-                          href={`https://wa.me/${company.whatsapp.replace(/^\+/, "")}?text=${encodeURIComponent(
-                            `Hello DharmaShree Logistics, I'd like a rate from Surat to ${selected.name}.`,
-                          )}`}
-                        >
-                          Ask on WhatsApp
-                        </a>
-                      </Button>
-                    )}
-                  </div>
-                </motion.aside>
-              )}
-            </AnimatePresence>
+          <div className="border-line lg:col-span-5 lg:border-l lg:pl-12">
+            <MapPanel
+              hubs={hubsList}
+              selected={selected}
+              region={activeRegion}
+              headingRef={panelHeadingRef}
+              onRegion={handleRegion}
+              onSelect={handlePanelSelect}
+              onPreview={handlePanelPreview}
+              onClose={handleClosePanel}
+            />
           </div>
         )}
       </div>

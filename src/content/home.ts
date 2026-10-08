@@ -1,3 +1,4 @@
+import { about } from "./about";
 import { company } from "./company";
 import { quoteCta, whatsapp } from "./navigation";
 
@@ -8,11 +9,14 @@ import { quoteCta, whatsapp } from "./navigation";
 
 /* ——— H0 · Hero ——— */
 export const hero = {
-  eyebrow: `Freight & transport · ${company.headquarters.city}, ${company.headquarters.state}`,
+  /** The company's own line when it has one; the place otherwise. */
+  eyebrow:
+    company.tagline ??
+    `Freight & transport · ${company.headquarters.city}, ${company.headquarters.state}`,
   title: "Freight that moves the way Surat trades.",
-  body: "Full loads, part loads and textile dispatch from Surat to the markets that matter — booked by people who answer the phone.",
+  body: "Express parcels, full truckloads, local delivery and warehousing from Surat to the markets that matter — booked by people who answer the phone.",
   cta: quoteCta,
-  trackLabel: "Track a consignment",
+  trackLabel: "Track your shipment",
   trackHref: "/track",
   /** Rendered only when `company.branches` has an entry (ShinyText label). */
   branchPrefix: "Now also dispatching from",
@@ -110,11 +114,11 @@ export const processSteps: readonly ProcessStep[] = [
 ];
 
 /* ——— H6 · Commitments ——— */
-export const commitments: readonly string[] = [
-  "One desk, one number. You speak to the same people from booking to delivery.",
-  "Rates confirmed before pickup. No revisions after the truck leaves.",
-  "Every consignment has an LR number from day one.",
-];
+/* The four commitments from the company profile, by title; the full text lives
+   on `/about`, which owns it, so the two pages cannot say different things. */
+export const commitments: readonly string[] = about.drives.commitments.map(
+  (commitment) => `${commitment.title}.`,
+);
 
 /* ——— H7 · Quote band ——— */
 export const quoteBand = {

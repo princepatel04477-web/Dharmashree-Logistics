@@ -392,24 +392,138 @@
     animation: shimmer 4.5s linear infinite;
   }
 
-  /* Network map (Prompt 03): scales to container width. Hub focus uses the
-     accent scale-in ring as its indicator, so the default outline is off. */
-  .network-map-svg {
+  /* Network map. The stage owns the live viewBox as four custom properties
+     (--vb-x/y/w/h) plus the zoom factor --k; GSAP writes them on the region
+     zoom, so the SVG geography and the HTML pins/labels laid over it stay in
+     lockstep. SVG strokes divide by --k to keep a constant hairline weight
+     (no vector-effect: DrawSVG measures dashes in user units). Pins and labels
+     are HTML, so they hold their pixel size at any zoom. */
+  .map-stage {
+    --vb-x: 0;
+    --vb-y: 0;
+    --vb-w: 760;
+    --vb-h: 860;
+    --k: 1;
+    position: relative;
+    aspect-ratio: 760 / 860;
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  /* Zoomed in, the crop is a window onto a larger map: feather its edges
+     rather than cutting the country off with a hard rectangle. */
+  .map-stage[data-zoomed="true"] {
+    mask-image:
+      linear-gradient(to right, transparent, black 7%, black 93%, transparent),
+      linear-gradient(to bottom, transparent, black 6%, black 94%, transparent);
+    mask-composite: intersect;
+  }
+
+  .map-svg {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
   }
 
-  .network-map [data-hub]:focus {
-    outline: none;
+  .map-svg .map-nation {
+    stroke-width: calc(1.1px / var(--k));
+  }
+  .map-svg .map-state {
+    stroke-width: calc(0.7px / var(--k));
+    transition: fill 0.5s ease;
+  }
+  .map-svg .map-ghost {
+    stroke-width: calc(0.8px / var(--k));
+    transition: opacity 0.4s ease;
+  }
+  .map-svg .map-ghost[data-dim="true"] {
+    opacity: 0.12;
+  }
+  .map-svg .map-active {
+    stroke-width: calc(2px / var(--k));
+  }
+  .map-svg .map-tropic {
+    stroke-width: calc(0.8px / var(--k));
+    stroke-dasharray: calc(3px / var(--k)) calc(4px / var(--k));
   }
 
-  @media (max-width: 767px) {
-    .network-map-svg {
-      touch-action: pan-y;
+  /* Anything placed at a map coordinate: set --x/--y in viewBox units. */
+  .map-at {
+    position: absolute;
+    left: calc((var(--x) - var(--vb-x)) / var(--vb-w) * 100%);
+    top: calc((var(--y) - var(--vb-y)) / var(--vb-h) * 100%);
+  }
+
+  .map-pin {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .map-pin[data-dim="true"] {
+    opacity: 0.14;
+  }
+  .map-pin:focus-visible {
+    outline-offset: 1px;
+  }
+  @media (pointer: coarse) {
+    .map-pin {
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
     }
-    .network-map-svg .map-hit {
-      r: 22px;
-    }
+  }
+
+  .map-dot {
+    grid-area: 1 / 1;
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--ink);
+    box-shadow: 0 0 0 1.5px var(--map-halo);
+  }
+  .map-dot[data-primary="true"] {
+    width: 7px;
+    height: 7px;
+  }
+
+  .map-ring {
+    grid-area: 1 / 1;
+    display: block;
+    width: 17px;
+    height: 17px;
+    border-radius: 9999px;
+    border: 1px solid var(--accent);
+    pointer-events: none;
+  }
+
+  .map-label {
+    position: absolute;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    pointer-events: none;
+    text-shadow:
+      0 0 2px var(--map-halo),
+      0 0 4px var(--map-halo),
+      0 0 6px var(--map-halo);
+    transition: opacity 0.25s ease;
+  }
+  .map-label[data-show="false"] {
+    opacity: 0;
   }
 }

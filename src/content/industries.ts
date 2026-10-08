@@ -10,7 +10,7 @@ const notes: Readonly<Record<string, string>> = {
   "Textiles & apparel":
     "Bales, rolls and parcels to wholesale markets, scheduled around market days.",
   "Diamonds & jewellery (secure)": "Insured, sealed and handled by a named desk contact.",
-  "FMCG & retail": "Part loads consolidated to distributor points.",
+  "FMCG & retail": "Stock moved to distributor points and retail stores.",
   "Pharma (non-cold-chain)": "Documented handling with batch-wise paperwork.",
   "Engineering & industrial": "Machinery and parts on open-body or container vehicles.",
 };

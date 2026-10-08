@@ -2,7 +2,13 @@ import localFont from "next/font/local";
 
 /* Self-hosted Google binaries (see docs/token-map.md §5). Variable files cover
    weights 100–900; `display: 'swap'` matches the source. Preload is limited to
-   the display face and the body face, per the build brief. */
+   the display face and the body face, per the build brief.
+
+   The display and body faces declare their upright files only. next/font
+   preloads every file in a preloaded family, and no text on the site is set
+   in Fraunces or DM Sans italic, so their italic files (~157 KB) were fetched
+   on every first visit and never used. They stay in src/fonts: add the entry
+   back here if a design ever sets those faces in italic. */
 
 export const fontDisplayFace = localFont({
   src: [
@@ -10,11 +16,6 @@ export const fontDisplayFace = localFont({
       path: "../fonts/fraunces-var-latin-normal.woff2",
       weight: "100 900",
       style: "normal",
-    },
-    {
-      path: "../fonts/fraunces-var-latin-italic.woff2",
-      weight: "100 900",
-      style: "italic",
     },
   ],
   display: "swap",
@@ -46,11 +47,6 @@ export const fontBody = localFont({
       path: "../fonts/dm-sans-var-latin-normal.woff2",
       weight: "100 900",
       style: "normal",
-    },
-    {
-      path: "../fonts/dm-sans-var-latin-italic.woff2",
-      weight: "100 900",
-      style: "italic",
     },
   ],
   display: "swap",

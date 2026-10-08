@@ -36,6 +36,8 @@ deployment** creates a *new* URL. To keep the one already in the site's
 environment: **Deploy › Manage deployments › Edit (pencil) › Version: New
 version › Deploy**. The URL stays, the code updates.
 
+Delivery-partner applications from `/partners` arrive at the same URL with `kind: "partner"`; they are appended to a `Partners` tab (created on the first application, with its own header row) and mailed to `NOTIFY_EMAIL` with a `DSP-` reference.
+
 The first submission after a fresh sheet creates the `Quotes` tab with its
 header row and freezes it. Re-running with an existing sheet appends only.
 

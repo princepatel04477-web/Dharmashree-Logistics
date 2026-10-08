@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { HUBS } from "@/content/hubs";
+import { quote } from "@/content/quote";
 import { findService } from "@/content/services";
 import { EMPTY_QUOTE, type QuotePayload } from "@/lib/quote";
 import { readQuoteDraft, type QuoteDraft } from "@/lib/quote-draft";
@@ -35,7 +36,7 @@ function emptyEntry(): QuoteEntry {
 /** The draft, with the query applied on top. Pure, and exported for
     `scripts/verify-quote.tsx`: `?service=` takes a slug from `services.ts` and
     resolves it to the service *name* the sheet stores, `?to=` takes a hub id and
-    resolves it to the hub's name. Anything unrecognised is ignored rather than
+    resolves it to the hub's name; `?intent=pickup` seeds the notes. Anything unrecognised is ignored rather than
     written into the form. */
 export function resolveQuoteEntry(draft: QuoteDraft | null, search: string): QuoteEntry {
   const entry: QuoteEntry = draft ?? emptyEntry();
@@ -43,7 +44,8 @@ export function resolveQuoteEntry(draft: QuoteDraft | null, search: string): Quo
   const params = new URLSearchParams(search);
   const serviceSlug = params.get("service");
   const hubId = params.get("to");
-  if (serviceSlug === null && hubId === null) return entry;
+  const intent = params.get("intent");
+  if (serviceSlug === null && hubId === null && intent === null) return entry;
 
   const values: QuotePayload = { ...entry.values };
   if (serviceSlug !== null) {
@@ -53,6 +55,11 @@ export function resolveQuoteEntry(draft: QuoteDraft | null, search: string): Quo
   if (hubId !== null) {
     const hub = HUBS.find((candidate) => candidate.id === hubId);
     if (hub !== undefined) values.to = hub.name;
+  }
+  /* `?intent=pickup` seeds the notes with what a pickup needs — only into an
+     empty field, so a draft the visitor already typed is never overwritten. */
+  if (intent === "pickup" && values.notes.trim() === "") {
+    values.notes = quote.intents.pickup.notes;
   }
   return { values, consent: entry.consent, step: entry.step };
 }

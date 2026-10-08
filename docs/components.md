@@ -317,3 +317,33 @@ text/plain;charset=utf-8` with a JSON _string_ body: a CORS-simple request, so
 - **Reported, not fixed:** the vendored `StepperTitle` renders an `<h3>` inside
   the trigger `<button>`, which is not phrasing content. It is Prompt 01's
   component and appears on every use of the stepper, so it is left as-is here.
+
+## Company profile pages — Prompts 09–14
+
+Source copy: `Company_Profile/` (eight files). Plan and decisions:
+`docs/company-profile-plan.md`. The catalogue is the profile's four services;
+`/support` and `/partners` are new routes; `/about` and `/track` are extended.
+
+| Piece | Owner | File | Behaviour |
+| ----- | ----- | ---- | --------- |
+| Commitments pin | GSAP | `components/motion/PinnedSteps.tsx` | The home "process" scrub made reusable: pinned `lg`+, big numeral and step crossfade, accent rail fills; stacked list below 1024px and under reduced motion. Used by `/about` for the four commitments |
+| Business selector | Origin UI + Motion | `components/about/BusinessSelector.tsx` | `RadioCards` choose Online seller / Manufacturer / Retailer / Distributor; the answer panel swaps under `AnimatePresence`; services linked by slug (`verify:services` checks the slugs) |
+| Segmented switch | Motion | `components/services/signature/SegmentedSwitch.tsx` | Mono-caps choices with one 1px accent bar sliding by `layoutId`; `aria-pressed` buttons. Used by the signature blocks and the support filter |
+| Journey block | GSAP + Motion | `components/services/signature/JourneyBlock.tsx` | Express parcel: scrubbed line + nodes + captions (GSAP, ≥640px), then a B2B / B2C / Bulk switch (Motion) |
+| Dedicated block | GSAP + Motion + Lightswind | `components/services/signature/DedicatedBlock.tsx` | Full truckload: truck outline drawn on entry (GSAP); cargo outlines grow/fade between Shared and Dedicated (Motion); supply-chain legs on `ScrollCarousel` |
+| Selector block | Origin UI + Motion | `components/services/signature/SelectorBlock.tsx` | Local on-demand: `RadioCards` pick the load → vehicle line swaps; Scheduled / Urgent switch |
+| Loop block | GSAP + Lightswind | `components/services/signature/LoopBlock.tsx` | Warehousing: pinned scrub draws the pipeline and the returns arc; four capabilities as `InteractiveCard`s in a 7/5 · 5/7 layout |
+| Status ladder | GSAP + Origin UI | `components/track/StatusLadder.tsx` | `/track`: accent rail draws beside a `FaqAccordion` of the seven statuses — an explainer, never a result |
+| No-number panel | Motion + Origin UI | `components/track/NoNumberPanel.tsx` | Disclosure (height + fade) onto a local, unsaved tick-list |
+| Support filter | Motion + Origin UI | `components/support/SupportFaq.tsx` | Topic chips filter the FAQ; `layout` follows the list height; accordion remounts per topic |
+| Partner map | static SVG + shared selection | `components/map/PartnerMap.tsx` | The network map's geometry cropped to the partner cities, numbered outline pins as real buttons |
+| Partner directory | Motion | `components/partners/PartnersNetwork.tsx` | List and map share `MapSelection`; a row expands to address and `tel:` links |
+| Partner band | React Bits | `app/partners/page.tsx` | `LogoLoop` of partner names, decorative (`aria-hidden`) |
+| Partner form | Origin UI + Lightswind | `components/partners/PartnerForm.tsx`, `lib/partner.ts` | Posts through `postToDesk` (same Apps Script, `kind: "partner"` → `Partners` tab); toasts for the outcome; outline submit |
+| Pickup intent | none | `components/quote/useQuoteEntry.ts` | `/quote/?intent=pickup` seeds the notes — only an empty field |
+| Copy | none | `content/about.ts`, `services.ts`, `track.ts`, `support.ts`, `partners.ts` | Profile text; counts derived from `hubs.ts` |
+| Checks | none | `scripts/verify-partners.tsx` (`npm run verify:partners`) | Partner phones/hubs/pin projection, partner form ↔ `Code.gs`, `text/plain` post, support topics |
+
+Deviations from the plan: the partner map is its own small component (not a
+`focus` prop on the 950-line `IndiaNetworkMap`), and old service slugs are not
+redirected because `output: "export"` has no server to redirect from.
