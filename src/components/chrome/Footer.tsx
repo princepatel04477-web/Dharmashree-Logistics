@@ -1,8 +1,9 @@
+import Image from "next/image";
 import Link from "next/link";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import { credit, footer, quoteCta, type FooterLink } from "@/content/navigation";
+import { credit, footer, logo, quoteCta, type FooterLink } from "@/content/navigation";
 
 /* Site footer (Prompt 04). Top band = one display line plus the outline quote
    button; then the link columns; then the decorative hub band; then the legal
@@ -39,9 +40,18 @@ export function Footer() {
     <footer className="border-line bg-paper mt-24 border-t">
       {/* ——— Top band ——— */}
       <div className="wrap flex flex-col items-start gap-8 py-14 sm:py-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:py-20">
-        <p className="font-display text-headline leading-headline tracking-display font-light">
-          {footer.slogan}
-        </p>
+        <div className="flex flex-col items-start gap-6">
+          <Image
+            src={logo.src}
+            alt={company.name}
+            width={logo.width}
+            height={logo.height}
+            className="h-8 w-auto"
+          />
+          <p className="font-display text-headline leading-headline tracking-display font-light">
+            {footer.slogan}
+          </p>
+        </div>
         <Button asChild variant="outline" size="lg" className="shrink-0">
           <Link href={quoteCta.href}>{footer.ctaLabel}</Link>
         </Button>

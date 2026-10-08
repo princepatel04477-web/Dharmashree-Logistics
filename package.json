@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "images": "tsx scripts/build-images.mts",
+    "brand": "tsx scripts/build-brand.mts",
     "generate:hubs": "tsx scripts/generate-hubs.mts",
     "generate:states": "tsx scripts/generate-states.mts",
     "verify:hubs": "tsx scripts/verify-hubs.mts",

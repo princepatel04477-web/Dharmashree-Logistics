@@ -35,15 +35,14 @@ export interface FooterColumn {
   readonly lines: readonly FooterLine[];
 }
 
-/* ——— Wordmark ———
-   Split from company.name so the header never carries a second spelling of the
-   firm: the face renders as display text, the remainder as the small-caps
-   lockup (Maa Sheetla's `.logo` + `.logo small`). */
-const nameParts = company.name.split(" ");
-
-export const wordmark = {
-  primary: nameParts[0] ?? company.name,
-  secondary: nameParts.slice(1).join(" "),
+/* ——— Logo ———
+   The supplied logo (`assets/brand/`, built into `public/brand/` by
+   `npm run brand`). The dimensions are the trimmed file's own, so the header can
+   reserve its box before the image loads. */
+export const logo = {
+  src: "/brand/dharmashree-logo.png",
+  width: 420,
+  height: 98,
 };
 
 /* ——— Primary navigation (desktop centre cluster, ≥1024px) ——— */

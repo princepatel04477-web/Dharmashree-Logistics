@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
@@ -7,7 +8,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Magnet } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
-import { primaryNav, quoteCta, wordmark } from "@/content/navigation";
+import { logo, primaryNav, quoteCta } from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { GSAP_EASES, MOTION_EASES } from "@/lib/motion-tokens";
@@ -118,12 +119,15 @@ export function Header() {
           aria-label={`${company.name} — home`}
           className="flex shrink-0 flex-col justify-center transition-opacity duration-200 hover:opacity-70"
         >
-          <span className="font-display text-ink tracking-display text-xl leading-none font-light">
-            {wordmark.primary}
-          </span>
-          {wordmark.secondary !== "" && (
-            <span className="label-caps mt-1 leading-none">{wordmark.secondary}</span>
-          )}
+          {/* The Link's aria-label names it, so the image itself is decorative. */}
+          <Image
+            src={logo.src}
+            alt=""
+            width={logo.width}
+            height={logo.height}
+            priority
+            className="h-8 w-auto lg:h-10"
+          />
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
