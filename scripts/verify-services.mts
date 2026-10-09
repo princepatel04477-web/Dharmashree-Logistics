@@ -5,7 +5,8 @@
 import { about } from "../src/content/about";
 import { company } from "../src/content/company";
 import { fleetVehicles, notedVehicleNames } from "../src/content/fleet";
-import { serviceImageKey, services } from "../src/content/services";
+import { serviceImage } from "../src/content/images";
+import { services } from "../src/content/services";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -38,11 +39,6 @@ function main(): void {
       if (question.question.trim() === "" || question.answer.trim() === "") {
         fail(`${service.slug}: question with an empty side`);
       }
-    }
-    /* An override may point anywhere in the manifest, but it still has to look
-       like a manifest key: `<group>/<name>`. */
-    if (service.image !== null && !/^[a-z0-9-]+\/[a-z0-9-]+$/.test(service.image)) {
-      fail(`${service.slug}: image "${service.image}" is not a <group>/<name> manifest key`);
     }
   });
 
@@ -125,9 +121,11 @@ function main(): void {
   }
 
   for (const service of services) {
-    const key = serviceImageKey(service);
-    if (service.image === null && key !== `services/${service.slug}`) {
-      fail(`${service.slug}: default image key "${key}" does not follow services/<slug>`);
+    const slot = serviceImage(service.slug);
+    if (slot === null) {
+      fail(`${service.slug}: no photo slot in images.ts (services.<slug>)`);
+    } else if (!slot.key.startsWith("services/") || slot.alt.trim() === "") {
+      fail(`${service.slug}: photo slot "${slot.key}" is not a services/* key with alt text`);
     }
   }
 

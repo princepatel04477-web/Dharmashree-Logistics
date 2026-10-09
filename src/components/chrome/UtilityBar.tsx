@@ -7,7 +7,11 @@ import { hasUtilityBar, utilityBar, type UtilityLink } from "@/content/navigatio
    they open in a new tab. Items whose value is null never reach this list. */
 
 const LINK_CLASS =
-  "text-on-deep inline-flex h-8 items-center font-mono text-[11px] tracking-[0.14em] uppercase underline-offset-4 transition-colors duration-200 hover:underline focus-visible:-outline-offset-2 focus-visible:outline-on-deep";
+  "text-on-deep inline-flex h-8 items-center font-mono text-[11px] underline-offset-4 transition-colors duration-200 hover:underline focus-visible:-outline-offset-2 focus-visible:outline-on-deep";
+/* The portal links keep the mono small-caps voice. Contact details are shown as
+   written: an email address or a phone number in capitals reads wrongly. */
+const PORTAL_CLASS = "tracking-[0.14em] uppercase";
+const CONTACT_CLASS = "tracking-[0.04em] normal-case";
 
 function UtilityAnchor({ link }: { link: UtilityLink }) {
   const external = link.kind === "portal";
@@ -16,7 +20,7 @@ function UtilityAnchor({ link }: { link: UtilityLink }) {
       href={link.href}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className={LINK_CLASS}
+      className={`${LINK_CLASS} ${external ? PORTAL_CLASS : CONTACT_CLASS}`}
     >
       {link.label}
       {external && <span className="sr-only"> {utilityBar.newTabHint}</span>}

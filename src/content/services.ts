@@ -72,7 +72,6 @@ export const services: Service[] = [
           "Use the Track page with your AWB, LR or tracking number. Tracking support shows the latest available status of the shipment.",
       },
     ],
-    image: null,
     signature: {
       kind: "journey",
       title: "From your door to theirs",
@@ -177,7 +176,6 @@ export const services: Service[] = [
           "Yes. Road freight is supported across cities, regions and major business routes, with the vehicle, route and schedule planned around your requirements.",
       },
     ],
-    image: null,
     signature: {
       kind: "dedicated",
       title: "One truck, one plan",
@@ -277,7 +275,6 @@ export const services: Service[] = [
           "Yes. Local delivery can be arranged every day, several times a week or at specific intervals, with a movement plan suited to your business.",
       },
     ],
-    image: null,
     signature: {
       kind: "selector",
       title: "What are you sending?",
@@ -390,7 +387,6 @@ export const services: Service[] = [
           "Support is flexible and can adapt to changing stock levels, order volumes and delivery requirements as your business grows.",
       },
     ],
-    image: null,
     signature: {
       kind: "loop",
       title: "The fulfilment loop",
@@ -475,12 +471,4 @@ export const serviceDetail = {
 
 export function findService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
-}
-
-/** Manifest key for a service photo. `Service.image` points anywhere in the
-   manifest; the default follows the `assets/originals/<group>/<name>` rule, so
-   dropping `services/full-truckload.png` in lights up the tile and the index
-   preview without a code change. */
-export function serviceImageKey(service: Service): string {
-  return service.image ?? `services/${service.slug}`;
 }

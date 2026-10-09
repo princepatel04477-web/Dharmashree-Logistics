@@ -82,8 +82,6 @@ export interface Service {
   readonly vehicles: readonly string[];
   /** Per-service questions for the detail page's accordion. */
   readonly questions: readonly Faq[];
-  /** Manifest key for the photo, or null for the `services/<slug>` default. */
-  readonly image: string | null;
   /** The display line under the H1 — the service's own promise, verbatim from
      the company profile. */
   readonly headline: string;
