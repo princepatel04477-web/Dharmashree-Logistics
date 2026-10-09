@@ -94,6 +94,20 @@
       2400
     ]
   },
+  "pages/about-surat": {
+    "group": "pages",
+    "file": "about-surat",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAwAPzmMu1SvKaYjMAgB4CcJQBadAxVDBv/ZimQ6iAD+y+W3/45P+h60ps4zGGcULBhUpz1b2TWmLFGJNAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
   "pages/network-night": {
     "group": "pages",
     "file": "network-night",
