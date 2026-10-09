@@ -28,8 +28,12 @@ import { cn } from "@/lib/utils";
    on mount (`resolveQuoteEntry`), and it works as a full page load with no
    client state to go stale.
 
-   Motion owns the active-tab underline (`layoutId`); under reduced motion it
-   moves instantly. */
+   On phones the tabs are a row above the panel. From `lg` the card is a wide bar
+   that overlaps the foot of the hero: the tabs stack in a left column, the
+   panel runs horizontally, and both panels share one grid cell so the bar keeps
+   the same height on either tab. Motion owns the active-tab marker (`layoutId`):
+   an underline on phones, a bar on the column's inner edge from `lg`; under
+   reduced motion it moves instantly. */
 
 type TabId = "track" | "quote";
 
@@ -43,8 +47,12 @@ function QuoteLaneForm() {
   const hubNames = HUBS.map((hub) => hub.name);
 
   return (
-    <form action="/quote/" method="get" className="flex flex-col gap-5">
-      <p className="text-ink/75 max-w-measure leading-body text-sm font-light">
+    <form
+      action="/quote/"
+      method="get"
+      className="flex flex-col gap-5 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:gap-x-5"
+    >
+      <p className="text-ink/75 max-w-measure leading-body text-sm font-light lg:col-span-2">
         {heroTabs.quote.intro}
       </p>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -68,7 +76,7 @@ function QuoteLaneForm() {
           <option key={name} value={name} />
         ))}
       </datalist>
-      <Button type="submit" variant="outline" className="w-full sm:w-auto sm:self-start">
+      <Button type="submit" variant="outline" className="w-full sm:w-auto sm:self-start lg:self-end">
         {heroTabs.quote.submitLabel}
         <ArrowRightIcon aria-hidden="true" />
       </Button>
@@ -105,11 +113,11 @@ export function HeroTabs(): ReactElement {
   const panelId = (id: TabId): string => `${baseId}-panel-${id}`;
 
   return (
-    <div className="bg-paper shadow-card overflow-hidden rounded-md">
+    <div className="bg-paper shadow-card-lift overflow-hidden rounded-md lg:grid lg:grid-cols-[13rem_minmax(0,1fr)]">
       <div
         role="tablist"
         aria-label={heroTabs.ariaLabel}
-        className="border-line grid grid-cols-2 border-b"
+        className="border-line lg:bg-paper-2 grid grid-cols-2 border-b lg:grid-cols-1 lg:content-start lg:border-r lg:border-b-0"
       >
         {TABS.map((tab, index) => {
           const selected = active === tab.id;
@@ -132,7 +140,7 @@ export function HeroTabs(): ReactElement {
                 handleKeyDown(event, index);
               }}
               className={cn(
-                "relative h-14 cursor-pointer font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200 focus-visible:-outline-offset-4",
+                "relative h-14 cursor-pointer font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200 focus-visible:-outline-offset-4 lg:px-6 lg:text-left",
                 selected ? "text-brand" : "text-ink/70 hover:text-ink",
               )}
             >
@@ -141,7 +149,7 @@ export function HeroTabs(): ReactElement {
                 <motion.span
                   layoutId={`${baseId}-underline`}
                   aria-hidden="true"
-                  className="bg-brand absolute inset-x-0 -bottom-px h-0.5"
+                  className="bg-brand absolute inset-x-0 -bottom-px h-0.5 lg:inset-x-auto lg:inset-y-0 lg:-right-px lg:h-auto lg:w-0.5"
                   transition={
                     reduced
                       ? { duration: 0 }
@@ -154,25 +162,38 @@ export function HeroTabs(): ReactElement {
         })}
       </div>
 
-      <div
-        role="tabpanel"
-        id={panelId("track")}
-        aria-labelledby={tabId("track")}
-        hidden={active !== "track"}
-        /* The card is narrower than the panel's two-column login row needs, so
-           the two portal buttons stack here (TrackPanel itself is unchanged). */
-        className="p-5 sm:p-6 [&_ul]:grid-cols-1"
-      >
-        <TrackPanel />
-      </div>
-      <div
-        role="tabpanel"
-        id={panelId("quote")}
-        aria-labelledby={tabId("quote")}
-        hidden={active !== "quote"}
-        className="p-5 sm:p-6"
-      >
-        <QuoteLaneForm />
+      <div className="lg:grid">
+        <div
+          role="tabpanel"
+          id={panelId("track")}
+          aria-labelledby={tabId("track")}
+          hidden={active !== "track"}
+          /* On phones the card is narrow, so the two portal buttons stack and
+             the track field sits above them. From `lg` TrackPanel's root becomes
+             two columns (the field, then the sign-in links under a vertical
+             hairline). TrackPanel itself is unchanged; the layout is applied
+             from here. */
+          className={cn(
+            "p-5 sm:p-6 [&_ul]:grid-cols-1 lg:block lg:p-7 lg:[grid-area:1/1]",
+            "lg:[&>div]:grid lg:[&>div]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:[&>div]:gap-x-8 lg:[&>div]:gap-y-4",
+            "lg:[&>div>div:last-child]:col-start-2 lg:[&>div>div:last-child]:row-span-3 lg:[&>div>div:last-child]:row-start-1 lg:[&>div>div:last-child]:mt-0 lg:[&>div>div:last-child]:border-t-0 lg:[&>div>div:last-child]:border-l lg:[&>div>div:last-child]:pt-0 lg:[&>div>div:last-child]:pl-8",
+            active !== "track" && "lg:invisible",
+          )}
+        >
+          <TrackPanel />
+        </div>
+        <div
+          role="tabpanel"
+          id={panelId("quote")}
+          aria-labelledby={tabId("quote")}
+          hidden={active !== "quote"}
+          className={cn(
+            "p-5 sm:p-6 lg:block lg:p-7 lg:[grid-area:1/1]",
+            active !== "quote" && "lg:invisible",
+          )}
+        >
+          <QuoteLaneForm />
+        </div>
       </div>
     </div>
   );

@@ -16,9 +16,13 @@ import { HeroTabs } from "./HeroTabs";
 
 /* H0 · Hero. A full-bleed photograph under a single-hue `--brand-deep` overlay
    (85% at the left edge, 10% at the right), the headline and the one filled
-   "Request a quote" button on the left, and the track / quote card on the
-   right (below the text on phones). Entrance is GSAP's: the eyebrow, lede and
-   actions rise on a 0.08 stagger while the H1 runs its own line-mask reveal.
+   "Request a quote" button on the left, and the track / quote card below the
+   text. From `lg` the card is a wide bar that straddles the foot of the hero
+   (about 80px of it hangs below the edge), so the photo's truck on the right
+   stays clear; the photo is anchored to the bottom there so the truck sits
+   above the bar. On phones the card is simply stacked under the text.
+   Entrance is GSAP's: the eyebrow, lede and actions rise on a 0.08 stagger
+   while the H1 runs its own line-mask reveal.
 
    The photo is art-directed: the 16:9 frame from 768 px up, the 4:5 portrait
    below. A slot with no file yet leaves the section on plain `--brand-deep`,
@@ -85,25 +89,25 @@ function HeroPhoto() {
       priority
       art={art}
       className="absolute inset-0"
-      imgClassName="object-[70%_center] md:object-center"
+      imgClassName="object-[70%_center] md:object-[70%_bottom]"
     />
   );
 }
 
 export function HeroSection() {
   return (
-    <section className="bg-brand-deep relative isolate overflow-hidden">
-      <div className="absolute inset-0 -z-20">
+    <section className="bg-brand-deep relative isolate lg:mb-28">
+      <div className="absolute inset-0 -z-20 overflow-hidden">
         <HeroPhoto />
       </div>
       {/* One hue only: --brand-deep, fading from the text side to the card side. */}
       <div
         aria-hidden="true"
-        className="from-brand-deep/85 to-brand-deep/70 md:from-brand-deep/85 md:via-brand-deep/60 md:to-brand-deep/10 absolute inset-0 -z-10 bg-linear-to-b md:bg-linear-to-r"
+        className="from-brand-deep/85 to-brand-deep/70 md:from-brand-deep/85 md:to-brand-deep/10 absolute inset-0 -z-10 bg-linear-to-b md:bg-linear-to-r"
       />
 
-      <div className="wrap grid w-full grid-cols-1 items-center gap-10 py-12 sm:py-16 lg:min-h-[34rem] lg:grid-cols-12 lg:gap-12 lg:py-20">
-        <div className="flex flex-col items-start gap-6 lg:col-span-7">
+      <div className="wrap flex w-full flex-col gap-10 py-12 sm:py-16 lg:gap-12 lg:pt-16 lg:pb-0">
+        <div className="flex max-w-3xl flex-col items-start gap-6 lg:max-w-[44rem]">
           <Reveal as="p" delay={0} className="flex items-center gap-3">
             <span aria-hidden="true" className="bg-highway block h-0.5 w-10" />
             <span className="label-caps text-on-deep-text">{hero.eyebrow}</span>
@@ -142,9 +146,13 @@ export function HeroSection() {
           )}
         </div>
 
-        <Reveal delay={HERO_LINE_STAGGER * 2} className="lg:col-span-5">
-          <HeroTabs />
-        </Reveal>
+        {/* The static offset lives on this wrapper; the Reveal inside owns the
+            entrance transform (one animation owner per element, house rule 8). */}
+        <div className="relative z-10 lg:translate-y-20">
+          <Reveal delay={HERO_LINE_STAGGER * 2}>
+            <HeroTabs />
+          </Reveal>
+        </div>
       </div>
 
       {/* A highway centre line along the foot of the hero: amber dashes, a highlight. */}
