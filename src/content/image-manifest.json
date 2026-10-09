@@ -1,1 +1,65 @@
-{}
+{
+  "hero/highway-golden-hour": {
+    "group": "hero",
+    "file": "highway-golden-hour",
+    "width": 1376,
+    "height": 768,
+    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAACwAwCdASoUAAsAPzmIu1QvKSYjMAgB4CcJQBOgA8EXfiBcoN74AAD8XaW6X+lIny80nvT1Z+UH+exSaTtofp1Zbhcvw7wA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1376
+    ]
+  },
+  "hero/highway-portrait": {
+    "group": "hero",
+    "file": "highway-portrait",
+    "width": 896,
+    "height": 1120,
+    "blurDataURL": "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAACQBACdASoUABkAPzmKt1OvKiUisBgMAeAnCWQAxNgQ8MCDdLRIrnnXMzjRGgAA/c6dVcbwm1+55N358gBf1PKNYyyFaOrnz+UpKFIobjS340cnJ66Oh/FEsAxqZUAA",
+    "widths": [
+      480,
+      768,
+      896
+    ]
+  },
+  "services/express-parcel": {
+    "group": "services",
+    "file": "express-parcel",
+    "width": 1264,
+    "height": 848,
+    "blurDataURL": "data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAABQAwCdASoUAA0ALvmczmclLy8vDwD4SgDE2DcqZNYiUGpKAAD+dIb6u6LOr6in7cBwVH4CdjBxgHbOssY8RKYcAAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1264
+    ]
+  },
+  "services/full-truckload": {
+    "group": "services",
+    "file": "full-truckload",
+    "width": 1264,
+    "height": 848,
+    "blurDataURL": "data:image/webp;base64,UklGRloAAABXRUJQVlA4IE4AAACwAwCdASoUAA0APzmGu1OvKSYisAgB4CcJQBWAAo2NTQ7qCWmZAAD+pWIF08ILLLAN6P8nso2VyRPahM6E2RzVs0QLo0igUmIziRYAAAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1264
+    ]
+  },
+  "social/og-default": {
+    "group": "social",
+    "file": "og-default",
+    "width": 1200,
+    "height": 630,
+    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADQAwCdASoUAAsAPzmIuVOvKSWisAgB4CcJQBOgA8TbTC9e76W5rgAA/dJgcnRqte4aOP/Q61Vw1fYMskdtD9MTQiK8ksQA",
+    "widths": [
+      480,
+      768,
+      1200
+    ]
+  }
+}
