@@ -270,11 +270,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               an inline-flex span, so the button would otherwise shrink-wrap to
               its own label instead of filling the aside. */}
           <Magnet strength={10} className="w-full">
-            <Button
-              asChild
-              variant="default"
-              className="bg-ink text-paper hover:bg-accent-ink w-full"
-            >
+            <Button asChild variant="default" className="w-full">
               <Link href={quoteHrefForService(service.slug)}>{quoteCta.label}</Link>
             </Button>
           </Magnet>

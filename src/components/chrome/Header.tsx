@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Magnet } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
 import { logo, primaryNav, quoteCta } from "@/content/navigation";
+import { UtilityBar } from "./UtilityBar";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { GSAP_EASES, MOTION_EASES } from "@/lib/motion-tokens";
@@ -17,7 +18,8 @@ import { MobileMenu } from "./MobileMenu";
 import { WhatsAppButton } from "./WhatsAppButton";
 
 /* Site header (Prompt 04) — 64px on mobile, 72px from `lg` up, paper ground,
-   fixed so the page scrolls beneath it.
+   fixed so the page scrolls beneath it. From `lg` a 32px utility bar sits above
+   it inside the same fixed element, so the two hide and reveal together.
 
    Scroll behaviour is GSAP's (house rule 8): a ScrollTrigger toggles the
    `is-scrolled` class past 24px, which fades the bottom hairline in, and a
@@ -107,13 +109,14 @@ export function Header() {
   }, [pathname, setShown]);
 
   return (
-    <header ref={headerRef} className="bg-paper group fixed inset-x-0 top-0 z-50 h-16 lg:h-18">
+    <header ref={headerRef} className="bg-paper group fixed inset-x-0 top-0 z-50">
+      <UtilityBar />
       <span
         aria-hidden="true"
         className="bg-line pointer-events-none absolute inset-x-0 bottom-0 h-px opacity-0 transition-opacity duration-300 group-[.is-scrolled]:opacity-100"
       />
 
-      <div className="wrap flex h-full items-center justify-between gap-3 lg:gap-8">
+      <div className="wrap flex h-16 items-center justify-between gap-3 lg:h-18 lg:gap-8">
         <Link
           href="/"
           aria-label={`${company.name} — home`}
@@ -141,7 +144,7 @@ export function Header() {
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "group/nav relative inline-flex py-1 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
-                      active ? "text-ink" : "text-ink-2 hover:text-ink",
+                      active ? "text-brand" : "text-ink-2 hover:text-ink",
                     )}
                   >
                     {item.label}
@@ -149,14 +152,14 @@ export function Header() {
                       <motion.span
                         layoutId={NAV_UNDERLINE_ID}
                         aria-hidden="true"
-                        className="bg-accent pointer-events-none absolute inset-x-0 -bottom-0.5 h-px"
+                        className="bg-brand pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5"
                         transition={{ duration: UNDERLINE_SECONDS, ease: MOTION_EASES.out }}
                       />
                     ) : (
                       /* Hover draws the same hairline left → right. */
                       <span
                         aria-hidden="true"
-                        className="bg-accent pointer-events-none absolute inset-x-0 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover/nav:scale-x-100"
+                        className="bg-brand pointer-events-none absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 transition-transform duration-300 group-hover/nav:scale-x-100"
                       />
                     )}
                   </Link>
@@ -173,7 +176,7 @@ export function Header() {
           <WhatsAppButton className="hidden lg:inline-flex" />
 
           <Magnet strength={10}>
-            <Button asChild variant="default" className="bg-ink text-paper hover:bg-accent-ink">
+            <Button asChild variant="default">
               <Link href={quoteCta.href}>
                 <span className="sm:hidden">{quoteCta.compactLabel}</span>
                 <span className="hidden sm:inline">{quoteCta.label}</span>

@@ -8,6 +8,13 @@ import { mkdir, writeFile } from "node:fs/promises";
 import sharp from "sharp";
 
 const SOURCE = "assets/brand/dharmashree-logo-source.png";
+/* The footer wordmark ("DHARMASHREE", red serif capitals). The file at this path
+   is a REPRODUCTION, typeset in Times New Roman Bold at 2400 px wide on a
+   transparent ground, because the client's original was only shared as a chat
+   image. If they supply the real file, drop it at this path (a transparent PNG
+   at least 1000 px wide) and run `npm run brand`: it is trimmed and rebuilt
+   as-is, with no code change. */
+const FOOTER_SOURCE = "assets/brand/dharmashree-footer-logo-source.png";
 const OUT = "public/brand";
 /** Dark ink: the श्री strokes. The "dharma" lettering is blue (blue channel high). */
 const isDark = (r: number, g: number, b: number, a: number): boolean =>
@@ -75,3 +82,34 @@ async function icon(size: number, path: string): Promise<void> {
 await icon(192, "src/app/icon.png");
 await icon(180, "src/app/apple-icon.png");
 console.log("icons written");
+
+/* Footer logo: trimmed to its ink, plus a white twin for the --brand-deep ground
+   (every opaque pixel white, alpha kept, so anti-aliased edges stay smooth). */
+const footer = await sharp(FOOTER_SOURCE)
+  .trim({ threshold: 10 })
+  .png()
+  .toBuffer({ resolveWithObject: true });
+await writeFile(`${OUT}/dharmashree-footer-logo.png`, footer.data);
+console.log(`footer logo ${String(footer.info.width)}×${String(footer.info.height)}`);
+
+const footerRaw = await sharp(footer.data)
+  .ensureAlpha()
+  .raw()
+  .toBuffer({ resolveWithObject: true });
+const whitened = Buffer.from(footerRaw.data);
+for (let i = 0; i < whitened.length; i += footerRaw.info.channels) {
+  whitened[i] = 255;
+  whitened[i + 1] = 255;
+  whitened[i + 2] = 255;
+}
+const light = await sharp(whitened, {
+  raw: {
+    width: footerRaw.info.width,
+    height: footerRaw.info.height,
+    channels: footerRaw.info.channels,
+  },
+})
+  .png()
+  .toBuffer({ resolveWithObject: true });
+await writeFile(`${OUT}/dharmashree-footer-logo-light.png`, light.data);
+console.log(`footer logo light ${String(light.info.width)}×${String(light.info.height)}`);

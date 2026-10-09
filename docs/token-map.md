@@ -52,6 +52,11 @@ original port; where a token appears in both tables, this table wins.
 | `--map-land-focus`  | `color-mix(--brand 16%, --paper)`     | Network map focused region (was `#EFE7DA`).                                                           |
 | `--map-corridor`    | `color-mix(--brand 35%, transparent)` | Network map corridor trace.                                                                           |
 
+| `--on-deep` | `var(--paper)` | Headings and full-strength text on `--brand-deep` (footer, utility bar). 11.18:1. |
+| `--on-deep-text` | `color-mix(--paper 85%, transparent)` | Footer links and small text on `--brand-deep`. 8.53:1. |
+| `--on-deep-line` | `color-mix(--paper 12%, transparent)` | Hairlines on `--brand-deep`. |
+| `--on-deep-band` | `color-mix(--paper 6%, transparent)` | The footer hub marquee band on `--brand-deep`. |
+
 Shadows and the map border / state-line colours were re-based on the new ink
 (`rgb(20,23,31)`); the glows use `--brand` and `--highway`.
 

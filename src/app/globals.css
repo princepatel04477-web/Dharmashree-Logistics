@@ -19,6 +19,10 @@
   --color-brand-tint: var(--brand-tint);
   --color-signal-red: var(--signal-red);
   --color-highway: var(--highway);
+  --color-on-deep: var(--on-deep);
+  --color-on-deep-text: var(--on-deep-text);
+  --color-on-deep-line: var(--on-deep-line);
+  --color-on-deep-band: var(--on-deep-band);
   --color-gold-deep: var(--gold-deep);
   --color-map-ground: var(--map-ground);
   --color-map-land: var(--map-land);
@@ -173,9 +177,9 @@
   /* Prompt 02 owns scroll (Lenis). Lenis and CSS smooth-scroll conflict, so
      the motion layer disables one of them when both are present. */
 
-  /* Anchor offset for the fixed header — Prompt 04 builds it at 64px, 72px
-     from `lg` up — plus 16px of breathing room. Keep in sync with
-     `src/components/chrome/Header.tsx`. */
+  /* Anchor offset for the fixed header — 64px, and from `lg` up the 32px
+     utility bar plus the 72px bar (104px) — plus 16px of breathing room. Keep
+     in sync with `src/components/chrome/Header.tsx` and `layout.tsx`. */
   :target,
   section[id],
   div[id] {
@@ -186,7 +190,7 @@
     :target,
     section[id],
     div[id] {
-      scroll-margin-top: 5.5rem;
+      scroll-margin-top: 7.5rem;
     }
   }
 

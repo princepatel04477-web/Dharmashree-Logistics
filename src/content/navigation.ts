@@ -2,6 +2,7 @@ import { formatPhoneIN } from "@/lib/format";
 import { company } from "./company";
 import { HUBS, ORIGIN } from "./hubs";
 import { services } from "./services";
+import { track } from "./track";
 
 /* Site chrome copy and link data (Prompt 04). Every string here is either a
    label for a route or derived from a fact in `company.ts` — no invented
@@ -43,6 +44,16 @@ export const logo = {
   src: "/brand/dharmashree-logo.png",
   width: 420,
   height: 98,
+};
+
+/* The footer wordmark (`assets/brand/dharmashree-footer-logo-source.png`, built
+   by `npm run brand`). Only the footer uses it, and always the white `light`
+   file, because the footer sits on `--brand-deep`. */
+export const footerLogo = {
+  src: "/brand/dharmashree-footer-logo.png",
+  lightSrc: "/brand/dharmashree-footer-logo-light.png",
+  width: 2400,
+  height: 210,
 };
 
 /* ——— Primary navigation (desktop centre cluster, ≥1024px) ——— */
@@ -182,6 +193,72 @@ function footerColumns(): FooterColumn[] {
   /* A column with nothing to say is dropped, not rendered as an empty shell. */
   return columns.filter((column) => column.links.length > 0 || column.lines.length > 0);
 }
+
+/* ——— Utility bar (lg+, above the header) ———
+   Contact facts on the left, billing-portal sign-ins on the right. Every item
+   is dropped when its fact is `null` (house rule 4); the portal labels are the
+   ones /track already uses, so the same portal has one name everywhere. */
+export interface UtilityLink {
+  readonly id: string;
+  readonly label: string;
+  readonly href: string;
+  readonly kind: "email" | "phone" | "portal";
+}
+
+export interface UtilityBar {
+  readonly contact: readonly UtilityLink[];
+  readonly portals: readonly UtilityLink[];
+  /** Read after each portal label by screen readers: the link leaves this site. */
+  readonly newTabHint: string;
+  readonly ariaLabel: string;
+}
+
+function buildUtilityBar(): UtilityBar {
+  const contact: UtilityLink[] = [];
+  if (company.email !== null) {
+    contact.push({
+      id: "email",
+      label: company.email,
+      href: `mailto:${company.email}`,
+      kind: "email",
+    });
+  }
+  if (company.phone !== null) {
+    contact.push({
+      id: "phone",
+      label: formatPhoneIN(company.phone),
+      href: `tel:${company.phone}`,
+      kind: "phone",
+    });
+  }
+  const portals: UtilityLink[] = [];
+  if (company.portals.customer !== null) {
+    portals.push({
+      id: "customer",
+      label: track.portals.customerLabel,
+      href: company.portals.customer,
+      kind: "portal",
+    });
+  }
+  if (company.portals.consignee !== null) {
+    portals.push({
+      id: "consignee",
+      label: track.portals.consigneeLabel,
+      href: company.portals.consignee,
+      kind: "portal",
+    });
+  }
+  return {
+    contact,
+    portals,
+    newTabHint: track.portals.newTabHint,
+    ariaLabel: "Contact and portal sign-in",
+  };
+}
+
+export const utilityBar: UtilityBar = buildUtilityBar();
+export const hasUtilityBar: boolean =
+  utilityBar.contact.length > 0 || utilityBar.portals.length > 0;
 
 export const credit = {
   prefix: "Site by",

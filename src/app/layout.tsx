@@ -7,6 +7,7 @@ import { WhatsAppButton } from "@/components/chrome/WhatsAppButton";
 import { MapSelectionProvider } from "@/components/map/MapSelection";
 import { Toaster } from "@/components/vendor/lightswind";
 import { company } from "@/content/company";
+import { hasUtilityBar } from "@/content/navigation";
 import { MotionProviders } from "@/providers/MotionProviders";
 import { fontBody, fontDisplayFace, fontMono } from "./fonts";
 import "./globals.css";
@@ -55,9 +56,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <MapSelectionProvider>
             <SkipLink />
             <Header />
-            {/* Clear of the fixed header: 64px mobile, 72px from `lg` up.
-                tabIndex={-1} is the skip link's landing target. */}
-            <main id="main" tabIndex={-1} className="flex flex-1 flex-col pt-16 lg:pt-18">
+            {/* Clear of the fixed header: 64px mobile; from `lg` up 72px plus the
+                32px utility bar when it shows. tabIndex={-1} is the skip
+                link's landing target. */}
+            <main
+              id="main"
+              tabIndex={-1}
+              className={`flex flex-1 flex-col pt-16 ${hasUtilityBar ? "lg:pt-26" : "lg:pt-18"}`}
+            >
               {children}
             </main>
             <Footer />

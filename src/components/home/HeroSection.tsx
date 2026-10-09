@@ -60,7 +60,7 @@ function HeroTitle() {
 
 export function HeroSection() {
   return (
-    <section className="flex min-h-[calc(100svh-4rem)] items-center lg:min-h-[calc(100svh-4.5rem)]">
+    <section className="flex min-h-[calc(100svh-4rem)] items-center lg:min-h-[calc(100svh-6.5rem)]">
       <div className="wrap grid w-full grid-cols-1 items-center gap-14 py-16 lg:grid-cols-12 lg:gap-10 lg:py-20">
         <div className="flex flex-col items-start gap-6 lg:col-span-5">
           <Reveal as="p" delay={0} className="label-caps">
@@ -82,7 +82,7 @@ export function HeroSection() {
             className="flex flex-wrap items-center gap-x-7 gap-y-3 pt-1"
           >
             <Magnet strength={10}>
-              <Button asChild variant="default" className="bg-ink text-paper hover:bg-accent-ink">
+              <Button asChild variant="default">
                 <Link href={hero.cta.href}>{hero.cta.label}</Link>
               </Button>
             </Magnet>
