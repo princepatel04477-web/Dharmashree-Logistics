@@ -3,7 +3,8 @@
 import type { LenisOptions } from "lenis";
 import { ReactLenis, useLenis } from "lenis/react";
 import { MotionConfig } from "motion/react";
-import { useEffect, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useRef, type ReactNode } from "react";
 import "lenis/dist/lenis.css";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { gsap, ScrollTrigger, settleScrollTriggers } from "@/lib/gsap";
@@ -39,6 +40,37 @@ function LenisBridge() {
       gsap.ticker.remove(tick);
     };
   }, [lenis]);
+
+  return null;
+}
+
+/* Every navigation opens the new page at its top. Next's own scroll-to-top
+   measures the page's first box, and the route template wraps each page in a
+   `display: contents` element that has none, so Next decides the page is
+   already in view and leaves the old offset in place (and Lenis keeps it).
+   The first run is the initial load, which keeps the browser's restored
+   position; a hash link keeps its anchor. The instance is read through a ref
+   so its arrival after hydration does not count as a navigation. */
+function RouteScrollReset() {
+  const pathname = usePathname();
+  const lenis = useLenis();
+  const lenisRef = useRef(lenis);
+  const firstRun = useRef(true);
+
+  useEffect(() => {
+    lenisRef.current = lenis;
+  }, [lenis]);
+
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false;
+      return;
+    }
+    if (window.location.hash !== "") return;
+    lenisRef.current?.scrollTo(0, { immediate: true, force: true });
+    window.scrollTo(0, 0);
+    ScrollTrigger.refresh();
+  }, [pathname]);
 
   return null;
 }
@@ -91,10 +123,14 @@ export function MotionProviders({ children }: { children: ReactNode }) {
       transition={{ duration: MOTION_DURATIONS.sm, ease: MOTION_EASES.out }}
     >
       {reduced ? (
-        children
+        <>
+          <RouteScrollReset />
+          {children}
+        </>
       ) : (
         <ReactLenis root options={LENIS_OPTIONS}>
           <LenisBridge />
+          <RouteScrollReset />
           {children}
         </ReactLenis>
       )}

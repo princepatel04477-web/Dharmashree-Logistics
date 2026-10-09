@@ -16,7 +16,7 @@ import { HeroTabs } from "./HeroTabs";
 
 /* H0 · Hero. A full-bleed photograph under a single-hue `--brand-deep` overlay
    (85% at the left edge, 10% at the right), the headline and the one filled
-   "Request a quote" button on the left, and the track / quote card below the
+   "Enquire now" button on the left, and the track / quote card below the
    text. From `lg` the card is a wide bar that straddles the foot of the hero
    (about 80px of it hangs below the edge), so the photo's truck on the right
    stays clear; the photo is anchored to the bottom there so the truck sits

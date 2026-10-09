@@ -55,6 +55,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const savedScrollY = useRef(0);
+  const pathnameRef = useRef("");
   const reduced = useReducedMotionSafe();
   const pathname = usePathname();
   const lenis = useLenis();
@@ -90,12 +91,18 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
     onOpenChange(true);
   }, [measure, onOpenChange, open]);
 
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
   /* Scroll lock: lenis.stop() plus the pinned-body rule ported into
-     globals.css. The offset is restored on close; the sheet covers the
-     viewport the whole time, so neither the pin nor the restore is visible. */
+     globals.css. Closing the sheet on the same page restores the offset;
+     closing it because a link navigated opens the new page at its top. The
+     sheet covers the viewport the whole time, so neither is visible. */
   useEffect(() => {
     if (!open) return;
     const body = document.body;
+    const openedOn = pathnameRef.current;
     savedScrollY.current = window.scrollY;
     body.classList.add("nav-locked");
     body.style.top = `-${savedScrollY.current}px`;
@@ -104,10 +111,15 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
       body.classList.remove("nav-locked");
       body.style.top = "";
       lenis?.start();
+      const target = pathnameRef.current === openedOn ? savedScrollY.current : 0;
       if (lenis !== undefined && lenis !== null) {
-        lenis.scrollTo(savedScrollY.current, { immediate: true });
+        /* Lenis measured the page while the body was pinned (one viewport
+           tall), so its scroll limit is 0 and any target would clamp to the
+           top. Re-measure before restoring. */
+        lenis.resize();
+        lenis.scrollTo(target, { immediate: true, force: true });
       } else {
-        window.scrollTo(0, savedScrollY.current);
+        window.scrollTo(0, target);
       }
       ScrollTrigger.refresh();
     };

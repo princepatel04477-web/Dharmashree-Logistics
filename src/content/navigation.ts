@@ -75,9 +75,9 @@ export const secondaryNav: readonly NavItem[] = [
 /* ——— The one filled CTA on every page ——— */
 export const quoteCta = {
   href: "/quote",
-  label: "Request a quote",
+  label: "Enquire now",
   /** Narrow-viewport label — same intent, fits 360px next to the hamburger. */
-  compactLabel: "Quote",
+  compactLabel: "Enquire",
 };
 
 export const skipLink = {

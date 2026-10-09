@@ -36,7 +36,7 @@ import { normalizePhone } from "@/lib/validate";
    confirmation on success and stays put, with the answers kept, on failure.
 
    The submit is an outline button: the page's one filled button is the header's
-   "Request a quote" (house rule 6). The honeypot is off-screen and out of the tab
+   "Enquire now" (house rule 6). The honeypot is off-screen and out of the tab
    order, like the quote form's. */
 
 const FIELD_IDS: Record<PartnerFieldName, string> = {

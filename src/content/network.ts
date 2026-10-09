@@ -42,7 +42,7 @@ export const networkMap = {
     transit: (min: number, max: number): string => `${String(min)}–${String(max)} days`,
     transitLabel: "Transit",
     verified: (date: string): string => `Verified ${date}`,
-    quote: (name: string): string => `Request a quote to ${name}`,
+    quote: (name: string): string => `Enquire about ${name}`,
     whatsapp: "Ask on WhatsApp",
     whatsappMessage: (name: string): string =>
       `Hello ${company.name}, I'd like a rate from ${ORIGIN.name} to ${name}.`,
