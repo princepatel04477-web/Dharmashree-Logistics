@@ -301,7 +301,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                               className={cn(
                                 "font-display relative flex items-baseline justify-between gap-4 py-3",
                                 "leading-headline tracking-display text-4xl",
-                                active ? "text-brand" : "text-ink-2 hover:text-ink",
+                                active ? "text-brand" : "text-brand-deep hover:text-brand",
                                 "transition-colors duration-200",
                               )}
                             >

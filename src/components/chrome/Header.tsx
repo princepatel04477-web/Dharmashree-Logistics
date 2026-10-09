@@ -143,8 +143,8 @@ export function Header() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group/nav relative inline-flex py-1 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
-                      active ? "text-brand" : "text-ink-2 hover:text-ink",
+                      "group/nav nav-link relative inline-flex py-1 transition-colors duration-200",
+                      active ? "text-brand" : "text-brand-deep hover:text-brand",
                     )}
                   >
                     {item.label}

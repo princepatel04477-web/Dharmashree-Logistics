@@ -277,6 +277,18 @@
     font-stretch: 88%;
   }
 
+  /* Primary navigation: the display face (Archivo) at a semibold, slightly
+     condensed cut, so the menu belongs to the headings rather than to the
+     mono labels. Colour comes from the link (--brand-deep, --brand when
+     hovered or current). */
+  .nav-link {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-stretch: 94%;
+    letter-spacing: 0.005em;
+  }
+
   /* Small-caps mono label in muted ink. */
   .label-caps {
     font-family: var(--font-mono);
