@@ -3,7 +3,7 @@ import Link from "next/link";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import { credit, footer, footerLogo, quoteCta, type FooterLink } from "@/content/navigation";
+import { footer, footerLogo, quoteCta, type FooterLink } from "@/content/navigation";
 
 /* Site footer (Prompt 04), on the --brand-deep ground: headings full white,
    links and small text white at 0.85, hairlines white at 0.12. The focus ring
@@ -112,7 +112,7 @@ export function Footer() {
       {/* ——— Hub band ——— decoration only: /network holds the real directory */}
       <LogoLoop
         items={footer.hubBand}
-        duration={60}
+        speed={40}
         separator="·"
         className="bg-on-deep-band border-on-deep-line text-on-deep-text"
         separatorClassName="text-highway"
@@ -125,23 +125,6 @@ export function Footer() {
         <p className="label-caps text-on-deep-text">
           © {year} {holder}
         </p>
-        {credit.url === null ? (
-          <p className="label-caps text-on-deep-text">
-            {credit.prefix} {credit.name}
-          </p>
-        ) : (
-          <p className="label-caps text-on-deep-text">
-            {credit.prefix}{" "}
-            <a
-              href={credit.url}
-              target="_blank"
-              rel="noopener"
-              className="hover:text-on-deep underline-offset-4 transition-colors duration-200 hover:underline"
-            >
-              {credit.name}
-            </a>
-          </p>
-        )}
       </div>
     </footer>
   );

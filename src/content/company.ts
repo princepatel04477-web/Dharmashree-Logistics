@@ -35,5 +35,4 @@ export const company: Company = {
     customer: "https://dharmashreegroup.in/Customer/BillOnUserLogin.aspx",
     consignee: "https://dharmashreegroup.in/Consignee/BillOnConsigneeLogin.aspx",
   },
-  credit: { name: "Varunya Technologies", url: null },
 };

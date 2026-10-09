@@ -1,6 +1,5 @@
 "use client";
 
-import { useScroll, useVelocity } from "motion/react";
 import { useEffect, useRef, useState, type ReactElement } from "react";
 import { cn } from "@/lib/utils";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
@@ -8,8 +7,8 @@ import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 interface LogoLoopProps {
   items: string[];
   reverse?: boolean;
-  /** Base loop duration at rest, in seconds. */
-  duration?: number;
+  /** Travel speed in pixels per second, whatever the length of the list. */
+  speed?: number;
   className?: string;
   /** Glyph between items. Kept as the ported diamond by default. */
   separator?: string;
@@ -21,13 +20,21 @@ interface LogoLoopProps {
   decorative?: boolean;
 }
 
-/* Infinite text marquee. Speeds up with page scroll velocity, pauses on hover
-   and while offscreen, and — under reduced motion — renders a static wrapped
-   list instead of a clipped track, so nothing is hidden by the loop. */
+/* Infinite text marquee at a constant, readable speed. Two identical tracks
+   slide by one track width per cycle, so the loop has no seam. The cycle
+   length is the measured track width divided by `speed`, re-measured when
+   the width changes (web fonts swapping in), so long and short lists move at
+   the same pace. It pauses on hover and while offscreen. Under reduced
+   motion it renders a static wrapped list instead, so nothing is hidden.
+
+   Changed from the vendored original: that one sped up with scroll velocity
+   by rewriting `animation-duration` every frame, and a running CSS animation
+   re-derives its position from a new duration, so the band jumped back and
+   forth by thousands of pixels whenever the page moved. */
 export function LogoLoop({
   items,
   reverse = false,
-  duration = 35,
+  speed = 40,
   className = "",
   separator = "◆",
   itemClassName = "",
@@ -35,55 +42,50 @@ export function LogoLoop({
   decorative = false,
 }: LogoLoopProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotionSafe();
-  const [isInView, setIsInView] = useState(true);
-  const [currentDuration, setCurrentDuration] = useState(duration);
-
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
+  const [isInView, setIsInView] = useState(false);
+  const [cycleSeconds, setCycleSeconds] = useState<number | null>(null);
+  /* How many times the list repeats inside one track. A track narrower than
+     the band would open a gap before the second track arrives, so short
+     lists repeat until one track spans the band. */
+  const [copies, setCopies] = useState(1);
+  const copiesRef = useRef(1);
 
   useEffect(() => {
     const node = containerRef.current;
     if (node === null || typeof IntersectionObserver === "undefined") return;
     const observer = new IntersectionObserver(
       ([entry]) => setIsInView(entry?.isIntersecting === true),
-      {
-        threshold: 0.05,
-        rootMargin: "100px 0px 100px 0px",
-      },
+      { rootMargin: "100px 0px 100px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
   }, []);
 
   useEffect(() => {
-    if (prefersReduced === true || !isInView) return;
-
-    let targetDuration = duration;
-    let easedDuration = duration;
-    let frameId = 0;
-
-    const unsubscribe = scrollVelocity.on("change", (latestVelocity) => {
-      const speedMultiplier = Math.min(2.5, Math.max(1.0, 1 + Math.abs(latestVelocity) / 800));
-      targetDuration = duration / speedMultiplier;
-    });
-
-    const smoothStep = (): void => {
-      easedDuration += (targetDuration - easedDuration) * 0.12;
-      targetDuration += (duration - targetDuration) * 0.08;
-      setCurrentDuration(Math.round(easedDuration * 10) / 10);
-      frameId = requestAnimationFrame(smoothStep);
+    const track = trackRef.current;
+    const container = containerRef.current;
+    if (track === null || container === null || prefersReduced === true) return;
+    const measure = (): void => {
+      const single = track.getBoundingClientRect().width / copiesRef.current;
+      if (single <= 0) return;
+      const needed = Math.max(1, Math.ceil(container.getBoundingClientRect().width / single));
+      copiesRef.current = needed;
+      setCopies(needed);
+      setCycleSeconds(Math.round(((single * needed) / speed) * 10) / 10);
     };
-    frameId = requestAnimationFrame(smoothStep);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(track);
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [prefersReduced, speed, items]);
 
-    return () => {
-      unsubscribe();
-      cancelAnimationFrame(frameId);
-    };
-  }, [scrollVelocity, prefersReduced, isInView, duration]);
-
+  /* Spacing sits on the right of every item (not as a flex gap), so the
+     join between the two tracks is spaced exactly like every other join. */
   const renderItem = (item: string, key: string): ReactElement => (
-    <span key={key} className="flex items-center gap-8">
+    <span key={key} className="flex shrink-0 items-center gap-8 pr-8">
       <span className={cn("hover:text-brand transition-colors", itemClassName)}>{item}</span>
       <span aria-hidden="true" className={cn("text-brand/50 text-xs", separatorClassName)}>
         {separator}
@@ -98,7 +100,7 @@ export function LogoLoop({
         ref={containerRef}
         aria-hidden={decorative || undefined}
         className={cn(
-          "border-line bg-paper-2/30 text-ink-2 flex w-full flex-wrap items-center gap-x-8 gap-y-1 border-y py-3 font-mono text-[11px] tracking-[0.22em] whitespace-normal uppercase",
+          "border-line bg-paper-2/30 text-ink-2 flex w-full flex-wrap items-center gap-y-1 border-y py-3 font-mono text-[11px] tracking-[0.22em] whitespace-normal uppercase",
           className,
         )}
       >
@@ -107,26 +109,27 @@ export function LogoLoop({
     );
   }
 
-  /* Reduced motion already returned above with the static list, so the only
-     remaining reason to rest is being offscreen. */
-  const isPaused = !isInView;
-  const looped = items.concat(items);
+  /* Rest until the cycle is measured and while the band is offscreen. */
+  const isRunning = isInView && cycleSeconds !== null;
 
   const renderTrack = (hidden: boolean) => (
     <div
+      ref={hidden ? undefined : trackRef}
       aria-hidden={hidden || undefined}
       className={cn(
-        "marquee-track items-center gap-8",
+        "marquee-track items-center",
         reverse ? "animate-marquee-reverse" : "animate-marquee",
         "group-hover:[animation-play-state:paused]",
       )}
       style={{
-        animationDuration: `${currentDuration}s`,
-        animationPlayState: isPaused ? "paused" : undefined,
-        willChange: isInView && !isPaused ? "transform" : "auto",
+        animationDuration: cycleSeconds === null ? undefined : `${cycleSeconds}s`,
+        animationPlayState: isRunning ? undefined : "paused",
+        willChange: isRunning ? "transform" : "auto",
       }}
     >
-      {looped.map((item, index) => renderItem(item, hidden ? `dup-${index}` : `${index}`))}
+      {Array.from({ length: copies }, (_, copy) =>
+        items.map((item, index) => renderItem(item, `${hidden ? "dup" : "main"}-${copy}-${index}`)),
+      )}
     </div>
   );
 

@@ -20,13 +20,6 @@ export interface SocialLinks {
   linkedin: string | null;
 }
 
-/** Builder credit in the footer bottom row. With no `url` set the credit
-   renders as plain text — never as a dead link. */
-export interface Credit {
-  name: string;
-  url: string | null;
-}
-
 /** Sign-in pages of the company's billing portal. A `null` URL hides that
    button on `/track`. */
 export interface Portals {
@@ -59,7 +52,6 @@ export interface Company {
   industries: string[];
   social: SocialLinks;
   portals: Portals;
-  credit: Credit;
 }
 
 /* One service in the catalogue (Prompt 06). `name` is the fact — it mirrors an

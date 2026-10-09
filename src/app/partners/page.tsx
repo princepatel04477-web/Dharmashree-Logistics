@@ -141,7 +141,7 @@ export default function PartnersPage() {
         <div aria-hidden="true" className="border-line mt-14 border-y py-4">
           <LogoLoop
             items={bandItems}
-            duration={60}
+            speed={40}
             decorative
             itemClassName="label-caps"
             separatorClassName="text-brand"

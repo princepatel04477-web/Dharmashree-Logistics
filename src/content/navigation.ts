@@ -260,12 +260,6 @@ export const utilityBar: UtilityBar = buildUtilityBar();
 export const hasUtilityBar: boolean =
   utilityBar.contact.length > 0 || utilityBar.portals.length > 0;
 
-export const credit = {
-  prefix: "Site by",
-  name: company.credit.name,
-  url: company.credit.url,
-};
-
 export const footer = {
   /** The single display line in the top band — a fact, not a slogan. */
   slogan: `Move it from ${company.headquarters.city}.`,
