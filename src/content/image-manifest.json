@@ -24,6 +24,202 @@
       896
     ]
   },
+  "industries/diamonds-jewellery": {
+    "group": "industries",
+    "file": "diamonds-jewellery",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAACwAwCdASoUAAwAPzmIulOvKSWisAgB4CcJZQAAWlN3wHb0Uan9AAD+6NAHyyIHqy4flPi2wgzgoOafAAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "industries/engineering": {
+    "group": "industries",
+    "file": "engineering",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAAAQBACdASoUAAwAPzmMu1SvKaYjMAgB4CcJYwAAXKc3b6E5Q1pH3+0GAAD94dooAiRecwXPzWidQHh/POH3Uf7LKa2lAAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "industries/fmcg-retail": {
+    "group": "industries",
+    "file": "fmcg-retail",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAABwAwCdASoUAAwAPzmKulQvKaWjMAgB4CcJZQAAS9rVQJKeWwAAzI+wIJB2eGhyXUy7sc0DyzDOm1Yk4icAAA==",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "industries/pharma": {
+    "group": "industries",
+    "file": "pharma",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAQBACdASoUAAwAPzmGuVOvKSWisAgB4CcJQBOgBCuRqXUfPp6um3tAAAD2HnYpc0zxEads+yU3QCuXXWO9uh3a02AraobgAAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "industries/textiles": {
+    "group": "industries",
+    "file": "textiles",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAwBACdASoUAAwAPzmGulQvKSWjMAgB4CcJYgCdMoMzGE5D8wCd1U4E9gAA/U9pCjjg66crdZBKCR7xHE+VQvE1v+lYbdWF3o8M268rTmYRCx9iHxFNViMjCiAAAA==",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "pages/network-night": {
+    "group": "pages",
+    "file": "network-night",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAAAQBACdASoUAAwAPzmGuVOvKSWisAgB4CcJQBOgBC2CyiTWfTG3nTdzAAD+oFljrzHQ1EVNrLNEh25Rk6DAZpcZDCvrW2wCYrSeQAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "pages/partners-fleet": {
+    "group": "pages",
+    "file": "partners-fleet",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlAAAABXRUJQVlA4IEQAAACwAwCdASoUAAwAPzmGuVOvKSWisAgB4CcJQBbZBDNh5hcDexANgADykXdmTo+haOCz8D56blP/O0UWPBLS1khbi5mAAA==",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "pages/quote-yard": {
+    "group": "pages",
+    "file": "quote-yard",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAABwAwCdASoUAAwAPzmIvlSvKSajMAgB4CcJZwAAUgoh9S5wQsAAyccC0IYpzktWAQhAALEHNDOpcH9vQAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "pages/support-desk": {
+    "group": "pages",
+    "file": "support-desk",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAABwAwCdASoUAAwAPzmIulQvKSWjMAgB4CcJYwCsAAqpJ+FOqEAA/rIJGwhwQpmpFHCVVyHmmscJTfmD7EmVwKv3xGkOPf0sbB3ZcwAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "pages/track-scan": {
+    "group": "pages",
+    "file": "track-scan",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADQAwCdASoUAAwAPzmIuVQvKSWjMAgB4CcJQBOmUAA7/llBaaBLvIAA+mJ5ZBlSP/qcUbHwA11bTyTVVZXIwsyVeetXV1oagAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "process/delivered": {
+    "group": "process",
+    "file": "delivered",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlgAAABXRUJQVlA4IEwAAABwAwCdASoUAAwAPzmGuVOvKSWisAgB4CcJYgCdMoAATEIdAQAA3/uL68tpND4vhhWaUM0dD5aeh/YrJ9I2TSOnZzmatzTv2BnkDAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "process/enquiry": {
+    "group": "process",
+    "file": "enquiry",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlYAAABXRUJQVlA4IEoAAADwAwCdASoUAAwAPzmGu1OvKSYisAgB4CcJQBhmg3EUHshCN5J7UVUAAPzWP8bD7XBNLidVzLtW8cJPqcnfGpNyDHQ1uK0+KwMAAA==",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "process/in-transit": {
+    "group": "process",
+    "file": "in-transit",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAADQAwCdASoUAAwAPzmIulQvKSWjMAgB4CcJZADCgCHaANxJQ1p5iBAA913nGRevrlAZn6/pSX2AqCiKWO3kyAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
+  "process/pickup": {
+    "group": "process",
+    "file": "pickup",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAACwAwCdASoUAAwAPzmGulQvKSWjMAgB4CcJYwCdABG/5btwqg/MgAD+g0Y3Kb/yqWOZ/mHzIgZ1hLA1NqHgq18HuQRF2Rm4AAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
+    ]
+  },
   "services/express-parcel": {
     "group": "services",
     "file": "express-parcel",
@@ -48,6 +244,34 @@
       768,
       1200,
       1264
+    ]
+  },
+  "services/local-on-demand": {
+    "group": "services",
+    "file": "local-on-demand",
+    "width": 1792,
+    "height": 1195,
+    "blurDataURL": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAAAwAwCdASoUAA0APzmGuVOvKSWisAgB4CcJQBOgAGK/gtUAAP6BHULd+y9THkGqNNlZ8mlzaHaC+E1blz31TQJIqtHl+9Y5oAA=",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      1792
+    ]
+  },
+  "services/warehousing": {
+    "group": "services",
+    "file": "warehousing",
+    "width": 2559,
+    "height": 1536,
+    "blurDataURL": "data:image/webp;base64,UklGRkwAAABXRUJQVlA4IEAAAABQAwCdASoUAAwAPzmGuVOvKSWisAgB4CcJYwC7AAMleprBQAD51rSWoNZBV7/Kbyy8INpvl8WArZtEfRYRAAAA",
+    "widths": [
+      480,
+      768,
+      1200,
+      1600,
+      2400
     ]
   },
   "social/og-default": {
