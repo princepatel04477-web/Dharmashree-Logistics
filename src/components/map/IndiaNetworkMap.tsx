@@ -725,11 +725,11 @@ export function IndiaNetworkMap({
             data-active-corridor
             className="map-active"
             fill="none"
-            stroke="var(--accent)"
+            stroke="var(--brand)"
             strokeLinecap="round"
             opacity={0}
           />
-          <circle ref={shuttleRef} cx={0} cy={0} r={SHUTTLE_R} fill="var(--accent)" opacity={0} />
+          <circle ref={shuttleRef} cx={0} cy={0} r={SHUTTLE_R} fill="var(--brand)" opacity={0} />
         </g>
       </svg>
 
@@ -776,10 +776,10 @@ export function IndiaNetworkMap({
       >
         <span
           ref={breathRef}
-          className="border-accent absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border opacity-0"
+          className="border-signal-red absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border opacity-0"
         />
-        <span className="border-accent bg-paper absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border" />
-        <span className="bg-ink absolute -top-[3px] -left-[3px] block size-[6px] rounded-full" />
+        <span className="border-signal-red bg-paper absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border" />
+        <span className="bg-signal-red absolute -top-[3px] -left-[3px] block size-[6px] rounded-full" />
         <span
           className={
             originPlacement.below

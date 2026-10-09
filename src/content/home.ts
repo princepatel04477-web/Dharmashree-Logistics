@@ -1,5 +1,6 @@
 import { about } from "./about";
 import { company } from "./company";
+import type { ProcessImageStep } from "./images";
 import { quoteCta, whatsapp } from "./navigation";
 
 /* Home page copy (Prompt 05). The wording is final, except where a line
@@ -16,10 +17,27 @@ export const hero = {
   title: "Freight that moves the way Surat trades.",
   body: "Express parcels, full truckloads, local delivery and warehousing from Surat to the markets that matter — booked by people who answer the phone.",
   cta: quoteCta,
-  trackLabel: "Track your shipment",
-  trackHref: "/track",
-  /** Rendered only when `company.branches` has an entry (ShinyText label). */
+  /** Rendered only when `company.branches` has an entry. */
   branchPrefix: "Now also dispatching from",
+};
+
+/* The track / quote card beside the hero text. The Track tab renders the
+   shared `TrackPanel` (its own copy lives in `track.ts`); the Quote tab is a
+   two-field lane form that hands its values to `/quote/` as `?from=` and `?to=`. */
+export const heroTabs = {
+  ariaLabel: "Track a shipment or start a quote",
+  track: { id: "track", label: "Track shipment" },
+  quote: {
+    id: "quote",
+    label: "Get a quote",
+    intro: "Tell us the lane. You add the load and your contact details on the next page.",
+    fromLabel: "From",
+    fromPlaceholder: "Pickup city",
+    toLabel: "To",
+    toPlaceholder: "Destination city or hub",
+    submitLabel: "Continue to the quote form",
+    hubListLabel: "Hubs on the map",
+  },
 };
 
 /* ——— Section headings (fed to `SectionHeading`) ——— */
@@ -36,7 +54,21 @@ export const sectionHeadings = {
   commitments: { index: "05", title: "How we work" },
 } satisfies Record<string, SectionHeadingContent>;
 
+/* ——— Section links and small labels ——— */
+export const sectionLinks = {
+  services: { label: "All services", href: "/services" },
+  tileCta: "Explore",
+  network: { label: "See every hub", href: "/network", directoryLabel: "Directory" },
+  commitments: { label: "Read how we work", href: "/about" },
+};
+
 /* ——— H1 · Stats strip ——— */
+/* The strip shows the company facts that exist. With fewer than two of them it
+   shows the four services as icon chips instead: never a placeholder number. */
+export const servicesStrip = {
+  ariaLabel: "Our services",
+};
+
 export interface StatCell {
   readonly id: string;
   /** Small-caps row under the figure; `""` means the cell carries no label. */
@@ -90,34 +122,40 @@ export function homeStats(): StatCell[] {
 
 /* ——— H4 · Pinned process ——— */
 export interface ProcessStep {
+  /** Which `images.process` slot illustrates the step. */
+  readonly id: ProcessImageStep;
   readonly title: string;
   readonly body: string;
 }
 
 export const processSteps: readonly ProcessStep[] = [
   {
+    id: "enquiry",
     title: "Enquiry",
     body: "Tell us the load, the lane and the date. WhatsApp, phone or the quote form.",
   },
   {
+    id: "pickup",
     title: "Rate & pickup",
     body: "We confirm the rate and vehicle, then pick up from your godown or shop.",
   },
   {
+    id: "in-transit",
     title: "In transit",
     body: "Your LR number is your reference. Our desk shares status on request.",
   },
   {
+    id: "delivered",
     title: "Delivered",
     body: "Proof of delivery is shared once the consignee signs.",
   },
 ];
 
 /* ——— H6 · Commitments ——— */
-/* The four commitments from the company profile, by title; the full text lives
-   on `/about`, which owns it, so the two pages cannot say different things. */
+/* The commitments from the company profile, by title; the full text lives on
+   `/about`, which owns it, so the two pages cannot say different things. */
 export const commitments: readonly string[] = about.drives.commitments.map(
-  (commitment) => `${commitment.title}.`,
+  (commitment) => commitment.title,
 );
 
 /* ——— H7 · Quote band ——— */

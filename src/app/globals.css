@@ -505,7 +505,7 @@
     width: 5px;
     height: 5px;
     border-radius: 9999px;
-    background: var(--ink);
+    background: var(--brand);
     box-shadow: 0 0 0 1.5px var(--map-halo);
   }
   .map-dot[data-primary="true"] {
@@ -519,7 +519,7 @@
     width: 17px;
     height: 17px;
     border-radius: 9999px;
-    border: 1px solid var(--accent);
+    border: 1px solid var(--brand);
     pointer-events: none;
   }
 

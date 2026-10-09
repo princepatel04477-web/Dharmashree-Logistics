@@ -577,7 +577,7 @@ async function main(): Promise<void> {
     "a missing endpoint must report Unconfigured, not throw",
   );
 
-  /* ——— 13. The prefill: ?service=<slug> and ?to=<hub id> ——— */
+  /* ——— 13. The prefill: ?service=<slug>, ?to=<hub id or name>, ?from= ——— */
   const prefilled = resolveQuoteEntry(null, "?service=express-parcel&to=meerut");
   check(
     prefilled.values.service === "Express parcel",
@@ -585,10 +585,30 @@ async function main(): Promise<void> {
   );
   check(prefilled.values.to === "Meerut", `?to=meerut prefilled "${prefilled.values.to}"`);
 
-  const unknownPrefill = resolveQuoteEntry(null, "?service=nope&to=atlantis");
+  const unknownPrefill = resolveQuoteEntry(null, "?service=nope&to=");
   check(
     unknownPrefill.values.service === "" && unknownPrefill.values.to === "",
-    "an unknown service slug or hub id was written into the form",
+    "an unknown service slug or an empty destination was written into the form",
+  );
+
+  /* The home page's quote tab sends the lane as typed: a hub name resolves to
+     the hub, a city that is not on the map stays as text, and From is free text. */
+  const homeLane = resolveQuoteEntry(null, "?from=Surat&to=delhi%20ncr");
+  check(
+    homeLane.values.from === "Surat" && homeLane.values.to === "Delhi NCR",
+    `?from=/?to= from the home tab prefilled "${homeLane.values.from}" -> "${homeLane.values.to}"`,
+  );
+  check(
+    resolveQuoteEntry(null, "?to=Nagpur").values.to === "Nagpur",
+    "a destination that is not a hub was dropped instead of kept as text",
+  );
+  check(
+    resolveQuoteEntry(null, "?from=%20%20&to=").values.from === "",
+    "a blank From or To overwrote the form",
+  );
+  check(
+    resolveQuoteEntry(null, `?to=${"x".repeat(200)}`).values.to.length <= 60,
+    "an over-long destination was written into the form unclipped",
   );
 
   const noPrefill = resolveQuoteEntry(null, "");

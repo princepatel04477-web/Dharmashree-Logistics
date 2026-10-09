@@ -10,9 +10,9 @@
    owner of the vehicle, the premises or the people shown: the photographs are
    illustrative, not records of the company's own fleet or sites (house rule 7).
 
-   A slot whose original has not been produced yet renders the labelled
-   fallback frame from `ResponsiveImage`; `hasImage(key)` lets a section skip
-   the slot instead. */
+   A slot whose original has not been produced yet renders a quiet branded
+   ground from `ResponsiveImage` (never a label); `hasImage(key)` lets a section
+   choose its own ground, for example `--brand-deep` under white text. */
 
 export interface ImageSlot {
   /** Manifest key: "<group>/<name>". */
