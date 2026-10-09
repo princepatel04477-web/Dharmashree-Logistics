@@ -43,6 +43,15 @@ export const track = {
       "The desk's WhatsApp, phone and email appear here once they are published. Until then, this page has no way to pass a tracking number on.",
   },
 
+  /** Under the field: sign-in to the billing portal (URLs in `company.portals`). */
+  portals: {
+    note: "Have a portal account? Sign in to view your consignments and bills.",
+    customerLabel: "Customer / Supplier login",
+    consigneeLabel: "Consignee login",
+    /** Read after each label by screen readers: the link leaves this site. */
+    newTabHint: "(opens in a new tab)",
+  },
+
   /** Message under the LR field, keyed by the code `validate.ts` returns. */
   errors: {
     LrRequired: "Enter the AWB, LR or tracking number.",

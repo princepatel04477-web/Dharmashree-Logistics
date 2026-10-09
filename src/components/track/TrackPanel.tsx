@@ -1,6 +1,8 @@
 "use client";
 
+import { ArrowUpRightIcon } from "lucide-react";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { TrackingInput } from "@/components/vendor/origin";
 import { company } from "@/content/company";
 import { track } from "@/content/track";
@@ -81,9 +83,12 @@ export function TrackPanel() {
 
   if (destination === "none") {
     return (
-      <p className="text-muted border-line bg-paper-2 max-w-measure leading-body rounded-xs border p-6 text-xs font-light">
-        {track.panel.unavailable}
-      </p>
+      <div className="flex flex-col gap-4">
+        <p className="text-muted border-line bg-paper-2 max-w-measure leading-body rounded-xs border p-6 text-xs font-light">
+          {track.panel.unavailable}
+        </p>
+        <PortalLogins />
+      </div>
     );
   }
 
@@ -110,6 +115,50 @@ export function TrackPanel() {
           {track.panel.callNote}
         </p>
       )}
+      <PortalLogins />
+    </div>
+  );
+}
+
+/* The billing portal's two sign-in pages, under a hairline — the slot where
+   Delhivery's track card keeps its app-store pair. Outline buttons, not fills:
+   the page's one filled button stays the quote CTA (house rule 6). They leave
+   the site, so they are plain `<a>` tags in a new tab (house rule 10), and a
+   `null` URL in `company.portals` drops its button (house rule 4). */
+interface PortalLogin {
+  href: string | null;
+  label: string;
+}
+
+function PortalLogins() {
+  const candidates: readonly PortalLogin[] = [
+    { href: company.portals.customer, label: track.portals.customerLabel },
+    { href: company.portals.consignee, label: track.portals.consigneeLabel },
+  ];
+  const logins = candidates.filter(
+    (login): login is PortalLogin & { href: string } => login.href !== null,
+  );
+
+  if (logins.length === 0) return null;
+
+  return (
+    <div className="border-line mt-2 flex flex-col gap-4 border-t pt-6">
+      <p className="text-ink-2 max-w-measure leading-body text-xs font-light">
+        {track.portals.note}
+      </p>
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {logins.map((login) => (
+          <li key={login.href}>
+            <Button asChild variant="outline" className="w-full">
+              <a href={login.href} target="_blank" rel="noopener noreferrer">
+                {login.label}
+                <span className="sr-only"> {track.portals.newTabHint}</span>
+                <ArrowUpRightIcon aria-hidden="true" />
+              </a>
+            </Button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

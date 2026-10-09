@@ -27,6 +27,15 @@ export interface Credit {
   url: string | null;
 }
 
+/** Sign-in pages of the company's billing portal. A `null` URL hides that
+   button on `/track`. */
+export interface Portals {
+  /** Customers and suppliers (the consignor side). */
+  customer: string | null;
+  /** Consignees (the receiving side). */
+  consignee: string | null;
+}
+
 export interface Company {
   name: string;
   legalName: string | null;
@@ -49,6 +58,7 @@ export interface Company {
   services: string[];
   industries: string[];
   social: SocialLinks;
+  portals: Portals;
   credit: Credit;
 }
 

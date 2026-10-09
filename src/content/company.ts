@@ -31,5 +31,9 @@ export const company: Company = {
     "Engineering & industrial",
   ],
   social: { instagram: null, linkedin: null },
+  portals: {
+    customer: "https://dharmashreegroup.in/Customer/BillOnUserLogin.aspx",
+    consignee: "https://dharmashreegroup.in/Consignee/BillOnConsigneeLogin.aspx",
+  },
   credit: { name: "Varunya Technologies", url: null },
 };
