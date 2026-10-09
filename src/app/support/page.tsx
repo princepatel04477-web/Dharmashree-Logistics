@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/support/" },
 };
 
-const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display font-light";
+const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display";
 
 export default function SupportPage() {
   const links = contactLinks();
@@ -92,7 +92,7 @@ export default function SupportPage() {
                     <dd>
                       <a
                         href={link.href}
-                        className="font-display text-ink hover:text-accent-ink text-2xl font-light [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                        className="font-display text-ink hover:text-accent-ink text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
                       >
                         {link.label}
                       </a>
@@ -102,7 +102,7 @@ export default function SupportPage() {
                 {company.supportHours !== null && (
                   <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">
                     <dt className="label-caps">{support.help.hoursLabel}</dt>
-                    <dd className="font-display text-ink text-2xl font-light sm:text-3xl">
+                    <dd className="font-display text-ink text-2xl sm:text-3xl">
                       {company.supportHours}
                     </dd>
                   </div>

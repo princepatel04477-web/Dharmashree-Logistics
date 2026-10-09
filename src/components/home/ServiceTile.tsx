@@ -49,7 +49,7 @@ export function ServiceTile({ service, index, total }: ServiceTileProps) {
           className="flex h-full flex-col justify-between gap-8 p-6 sm:p-8"
         >
           <div className="flex flex-col gap-4">
-            <h3 className="font-display text-ink leading-headline tracking-display text-3xl font-light">
+            <h3 className="font-display text-ink leading-headline tracking-display text-3xl">
               {service.name}
             </h3>
             <p className="text-ink-2 max-w-measure text-sm font-light">{service.summary}</p>

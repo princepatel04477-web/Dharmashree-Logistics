@@ -51,7 +51,7 @@ function HeroTitle() {
   return (
     <h1
       ref={titleRef}
-      className="font-display text-display text-ink leading-display tracking-display font-light"
+      className="font-display text-display text-ink leading-display tracking-display"
     >
       {hero.title}
     </h1>

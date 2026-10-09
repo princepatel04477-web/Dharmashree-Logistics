@@ -133,7 +133,7 @@ export function ProcessSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+            titleClassName="font-display text-headline text-ink leading-headline tracking-display"
           />
 
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-stretch">
@@ -148,7 +148,7 @@ export function ProcessSection() {
                     /* A template string, not `cn`: tailwind-merge reads `text-display` as
                        a colour and drops it in favour of `text-ink`, which left the
                        numeral at body size. */
-                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block font-light ${index > 0 ? "opacity-0" : ""}`}
+                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block ${index > 0 ? "opacity-0" : ""}`}
                   >
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -161,7 +161,7 @@ export function ProcessSection() {
                 <div className="relative">
                   <div aria-hidden="true" className="invisible">
                     <p className="section-index">01</p>
-                    <div className="font-display leading-headline tracking-display mt-3 text-3xl font-light">
+                    <div className="font-display leading-headline tracking-display mt-3 text-3xl">
                       {tallest.title}
                     </div>
                     <p className="text-ink-2 max-w-measure mt-4 text-base font-light">
@@ -175,7 +175,7 @@ export function ProcessSection() {
                       className={cn("absolute inset-0 flex flex-col", index > 0 && "opacity-0")}
                     >
                       <p className="section-index">{String(index + 1).padStart(2, "0")}</p>
-                      <h3 className="font-display text-ink leading-headline tracking-display mt-3 text-3xl font-light">
+                      <h3 className="font-display text-ink leading-headline tracking-display mt-3 text-3xl">
                         {step.title}
                       </h3>
                       <p className="text-ink-2 max-w-measure mt-4 text-base font-light">
@@ -194,7 +194,7 @@ export function ProcessSection() {
                       />
                       <Reveal delay={index * STEP_REVEAL_STAGGER}>
                         <p className="section-index">{String(index + 1).padStart(2, "0")}</p>
-                        <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl font-light">
+                        <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl">
                           {step.title}
                         </h3>
                         <p className="text-ink-2 max-w-measure mt-3 text-sm font-light">

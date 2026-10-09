@@ -155,9 +155,7 @@ export function PartnerForm() {
           </p>
           <div className="flex flex-col gap-1">
             <p className="label-caps">{copy.successReference}</p>
-            <p className="font-display text-ink text-step-4 tracking-display font-light">
-              {reference}
-            </p>
+            <p className="font-display text-ink text-step-4 tracking-display">{reference}</p>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
             <Button type="button" variant="ghost" onClick={handleReset}>

@@ -59,7 +59,7 @@ export function BusinessSelector() {
               transition={{ duration, ease: MOTION_EASES.out }}
               className="border-line flex flex-col gap-6 border-t pt-6 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-10"
             >
-              <p className="font-display text-ink leading-headline tracking-display text-2xl font-light sm:text-3xl">
+              <p className="font-display text-ink leading-headline tracking-display text-2xl sm:text-3xl">
                 {selected.note}
               </p>
               <div className="flex flex-col gap-3">
@@ -72,7 +72,7 @@ export function BusinessSelector() {
                         className="group/svc flex min-h-14 items-center justify-between gap-4 py-3"
                       >
                         <span>
-                          <span className="font-display text-ink group-hover/svc:text-accent-ink block text-xl font-light transition-colors">
+                          <span className="font-display text-ink group-hover/svc:text-accent-ink block text-xl transition-colors">
                             {service.name}
                           </span>
                           <span className="text-ink-2 block text-sm font-light">

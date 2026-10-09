@@ -55,6 +55,14 @@ original port; where a token appears in both tables, this table wins.
 Shadows and the map border / state-line colours were re-based on the new ink
 (`rgb(20,23,31)`); the glows use `--brand` and `--highway`.
 
+**Display type (Phase 1).** The serif display (Fraunces, Instrument Serif) is
+replaced by Archivo, a sturdy sans with a width axis, so headings read like
+highway signage. `.font-display` in `globals.css` sets weight 700 and
+`font-stretch: 88%`; `--tracking-display` is `-0.02em`, `--leading-display`
+is `1` and `--leading-headline` is `1.05`. Body stays DM Sans and labels stay
+JetBrains Mono. The §2 family table, the §2 line-height table and §5 below
+describe the original Maa Sheetla port and are superseded for the display face.
+
 **Retired names, kept as aliases for one release** (Phase 6 removes them):
 `--accent: var(--brand)`, `--accent-ink: var(--brand-deep)`,
 `--signal: var(--highway)`. `--gold-deep` keeps its Maa Sheetla value until
@@ -192,6 +200,18 @@ Focus ring (house rule 11) has no source equivalent (only one ad-hoc
 offset (8.43:1 on paper ✓), documented here as an addition, not a port.
 
 ## 5. Fonts — self-hosted via `next/font/local`
+
+**Update (Phase 1):** the Fraunces and Instrument Serif files listed in the
+table below were deleted. The display face is now
+`archivo-var-latin-normal.woff2` (90.1 KB), the `latin` subset of the Google
+Fonts v25 Archivo variable file
+(`https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdnoLg.woff2`, from the
+CSS2 API request `family=Archivo:wdth,wght@62..125,400..800`). Its `fvar` table
+carries two axes: `wght` 100–900 and `wdth` 62–125. `fonts.ts` declares weight
+`100 900` and `font-stretch: 62% 125%` (via `declarations`, because next/font
+does not write the width range itself). Headings use weight 700 at 88% width.
+`--font-display-accent` no longer exists. The rest of this section is the
+original port, kept for provenance.
 
 Maa Sheetla loads Google Fonts via `<link>` (Fraunces opsz+wght + italics,
 DM Sans opsz+wght + italics, JetBrains Mono 300–500, Instrument Serif 400 +

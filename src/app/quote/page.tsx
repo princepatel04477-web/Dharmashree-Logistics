@@ -35,7 +35,7 @@ export default function QuotePage() {
               as="h1"
               index={quote.eyebrow}
               title={quote.title}
-              titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
+              titleClassName="font-display text-ink text-display leading-display tracking-display"
             />
           </div>
           <Reveal

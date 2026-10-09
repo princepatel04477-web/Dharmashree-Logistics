@@ -26,8 +26,8 @@ export default function StyleguidePage() {
       <div className="wrap space-y-20 py-24 sm:py-32">
         <header className="space-y-3">
           <p className="section-index">00 — Styleguide</p>
-          <h1 className="font-display text-headline leading-headline tracking-display font-light">
-            Tokens, <i className="text-gold-deep">verified.</i>
+          <h1 className="font-display text-headline leading-headline tracking-display">
+            Tokens, <span className="text-gold-deep">verified.</span>
           </h1>
           <p className="max-w-measure text-ink-2 text-sm font-light">
             Source of truth: <span className="font-mono text-xs">src/styles/tokens.css</span>.
@@ -38,7 +38,7 @@ export default function StyleguidePage() {
         <section aria-labelledby="sg-colour" className="space-y-8">
           <div className="space-y-3">
             <p className="section-index">01 — Colour</p>
-            <h2 id="sg-colour" className="font-display text-3xl font-light tracking-tight">
+            <h2 id="sg-colour" className="font-display text-3xl tracking-tight">
               Every token against paper
             </h2>
           </div>
@@ -48,7 +48,7 @@ export default function StyleguidePage() {
         <section aria-labelledby="sg-type" className="space-y-8">
           <div className="space-y-3">
             <p className="section-index">02 — Type scale</p>
-            <h2 id="sg-type" className="font-display text-3xl font-light tracking-tight">
+            <h2 id="sg-type" className="font-display text-3xl tracking-tight">
               Display and body faces
             </h2>
           </div>
@@ -60,7 +60,7 @@ export default function StyleguidePage() {
               >
                 <p className="text-muted font-mono text-xs">{`--step-${step}`}</p>
                 <p
-                  className="font-display tracking-display font-light"
+                  className="font-display tracking-display"
                   style={{ fontSize: `var(--step-${step})`, lineHeight: "var(--leading-display)" }}
                 >
                   {specimenFor(step)}
@@ -76,7 +76,7 @@ export default function StyleguidePage() {
             <div className="border-line grid grid-cols-1 gap-2 border-y py-6 sm:grid-cols-[10rem_1fr_1fr] sm:items-baseline sm:gap-6">
               <p className="text-muted font-mono text-xs">mono</p>
               <p className="font-mono text-sm font-light">AaBbCc 0123456789</p>
-              <p className="font-display text-gold-deep text-2xl font-light italic">farther.</p>
+              <p className="font-display text-gold-deep text-2xl">farther.</p>
             </div>
           </div>
         </section>
@@ -84,7 +84,7 @@ export default function StyleguidePage() {
         <section aria-labelledby="sg-labels" className="space-y-8">
           <div className="space-y-3">
             <p className="section-index">03 — Labels and rules</p>
-            <h2 id="sg-labels" className="font-display text-3xl font-light tracking-tight">
+            <h2 id="sg-labels" className="font-display text-3xl tracking-tight">
               Caps, index, hairline, focus
             </h2>
           </div>

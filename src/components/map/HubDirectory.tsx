@@ -117,7 +117,7 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
                       }`}
                     >
                       <span>
-                        <span className="font-display block text-lg font-light">{hub.name}</span>
+                        <span className="font-display block text-lg">{hub.name}</span>
                         <span className="text-muted block text-xs font-light">{hub.state}</span>
                       </span>
                       <span className="shrink-0 text-right font-mono text-[11px]">

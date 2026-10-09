@@ -22,7 +22,7 @@ export function IndustriesSection() {
         <SectionHeading
           index={heading.index}
           title={heading.title}
-          titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+          titleClassName="font-display text-headline text-ink leading-headline tracking-display"
         />
       </div>
 
@@ -45,7 +45,7 @@ export function IndustriesSection() {
                 </ImageCurtain>
               )}
               <div className="flex flex-col gap-3">
-                <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+                <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                   {industry.name}
                 </h3>
                 {/* A name with no note yet renders as a name-only card. */}

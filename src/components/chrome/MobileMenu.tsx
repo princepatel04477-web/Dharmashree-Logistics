@@ -288,7 +288,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                               aria-current={active ? "page" : undefined}
                               className={cn(
                                 "font-display relative flex items-baseline justify-between gap-4 py-3",
-                                "leading-headline tracking-display text-4xl font-light",
+                                "leading-headline tracking-display text-4xl",
                                 active ? "text-ink" : "text-ink-2 hover:text-ink",
                                 "transition-colors duration-200",
                               )}
@@ -359,7 +359,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                         href={link.href}
                         target={link.kind === "whatsapp" ? "_blank" : undefined}
                         rel={link.kind === "whatsapp" ? "noopener" : undefined}
-                        className="font-display text-ink hover:text-accent-ink text-lg font-light transition-colors duration-200"
+                        className="font-display text-ink hover:text-accent-ink text-lg transition-colors duration-200"
                       >
                         {link.label}
                       </a>

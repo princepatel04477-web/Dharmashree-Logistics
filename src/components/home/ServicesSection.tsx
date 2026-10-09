@@ -19,7 +19,7 @@ export function ServicesSection() {
         <SectionHeading
           index={heading.index}
           title={heading.title}
-          titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+          titleClassName="font-display text-headline text-ink leading-headline tracking-display"
         />
 
         <ul className="grid grid-cols-1 gap-4 lg:grid-cols-12">

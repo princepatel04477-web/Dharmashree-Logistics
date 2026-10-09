@@ -22,7 +22,7 @@ export function PageIntro({ eyebrow, title, lede, footnote }: PageIntroProps) {
               as="h1"
               index={eyebrow}
               title={title}
-              titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
+              titleClassName="font-display text-ink text-display leading-display tracking-display"
             />
           </div>
           <Reveal

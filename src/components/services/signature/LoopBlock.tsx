@@ -108,7 +108,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                 <SectionHeading
                   index={serviceDetail.signatureEyebrow}
                   title={signature.title}
-                  titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+                  titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
                 />
               </div>
               <p className="text-ink-2 max-w-measure leading-body text-base font-light lg:col-span-5 lg:col-start-8 lg:pt-8">
@@ -208,7 +208,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                     )}
                   >
                     <p className="section-index">{numbered(position)}</p>
-                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                       {stage.title}
                     </h3>
                     <p className="text-ink-2 leading-body text-sm font-light">{stage.body}</p>
@@ -224,7 +224,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                       className="border-line-strong bg-paper absolute top-2 -left-[calc(2rem+5px)] size-2.5 rounded-full border"
                     />
                     <p className="section-index">{numbered(position)}</p>
-                    <h3 className="font-display text-ink leading-headline tracking-display mt-1 text-xl font-light">
+                    <h3 className="font-display text-ink leading-headline tracking-display mt-1 text-xl">
                       {stage.title}
                     </h3>
                     <p className="text-ink-2 leading-body mt-1 text-sm font-light">{stage.body}</p>
@@ -244,7 +244,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
           <SectionHeading
             index={serviceDetail.signatureEyebrow}
             title={signature.capabilitiesTitle}
-            titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+            titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
           />
           <ul className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {signature.capabilities.map((item, position) => {
@@ -255,7 +255,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                   <InteractiveCard shadow={false} className="h-full p-6 sm:p-8">
                     <div className="flex h-full flex-col gap-4">
                       <p className="section-index">{numbered(position)}</p>
-                      <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+                      <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                         {item.title}
                       </h3>
                       <p className="text-ink-2 max-w-measure leading-body text-sm font-light">

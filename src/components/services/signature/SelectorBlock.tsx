@@ -50,7 +50,7 @@ export function SelectorBlock({ signature, serviceSlug }: SelectorBlockProps) {
             <SectionHeading
               index={serviceDetail.signatureEyebrow}
               title={signature.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
           </div>
           <p className="text-ink-2 max-w-measure leading-body text-base font-light lg:col-span-5 lg:col-start-8 lg:pt-8">
@@ -74,7 +74,7 @@ export function SelectorBlock({ signature, serviceSlug }: SelectorBlockProps) {
               {option !== undefined && (
                 <motion.div key={option.id} {...swap} className="flex flex-col gap-5">
                   <p className="label-caps">{signature.vehicleLabel}</p>
-                  <p className="font-display text-ink leading-display tracking-display text-4xl font-light sm:text-5xl">
+                  <p className="font-display text-ink leading-display tracking-display text-4xl sm:text-5xl">
                     {option.vehicle}
                   </p>
                   <p className="text-ink-2 max-w-measure leading-body text-base font-light">
@@ -99,7 +99,7 @@ export function SelectorBlock({ signature, serviceSlug }: SelectorBlockProps) {
             <AnimatePresence mode="wait" initial={false}>
               {mode !== undefined && (
                 <motion.div key={mode.id} {...swap} className="flex flex-col gap-3">
-                  <h3 className="font-display text-ink leading-headline tracking-display text-3xl font-light">
+                  <h3 className="font-display text-ink leading-headline tracking-display text-3xl">
                     {mode.title}
                   </h3>
                   <p className="text-ink-2 max-w-measure leading-body text-base font-light">

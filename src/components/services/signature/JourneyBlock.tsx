@@ -70,7 +70,7 @@ export function JourneyBlock({ signature }: { signature: JourneySignature }) {
             <SectionHeading
               index={serviceDetail.signatureEyebrow}
               title={signature.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
           </div>
           <p className="text-ink-2 max-w-measure leading-body text-base font-light lg:col-span-5 lg:col-start-8 lg:pt-8">
@@ -103,7 +103,7 @@ export function JourneyBlock({ signature }: { signature: JourneySignature }) {
                   </span>
                   <div data-stop="" className="flex flex-col gap-2">
                     <p className="section-index">{numbered(position)}</p>
-                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                       {stop.title}
                     </h3>
                     <p className="text-ink-2 leading-body mx-auto max-w-[16rem] text-sm font-light">
@@ -122,7 +122,7 @@ export function JourneyBlock({ signature }: { signature: JourneySignature }) {
                     className="border-line-strong bg-paper absolute top-2 -left-[calc(2rem+5px)] size-2.5 rounded-full border"
                   />
                   <p className="section-index">{numbered(position)}</p>
-                  <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl font-light">
+                  <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl">
                     {stop.title}
                   </h3>
                   <p className="text-ink-2 leading-body mt-2 text-sm font-light">{stop.body}</p>
@@ -154,7 +154,7 @@ export function JourneyBlock({ signature }: { signature: JourneySignature }) {
                   }}
                   className="flex flex-col gap-3"
                 >
-                  <h3 className="font-display text-ink leading-headline tracking-display text-3xl font-light">
+                  <h3 className="font-display text-ink leading-headline tracking-display text-3xl">
                     {segment.title}
                   </h3>
                   <p className="text-ink-2 max-w-measure leading-body text-base font-light">

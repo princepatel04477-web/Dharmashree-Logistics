@@ -125,7 +125,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         <div className="flex flex-col gap-10">
           {service.sections.map((section) => (
             <div key={section.title} className="flex flex-col gap-4">
-              <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                 {section.title}
               </h3>
               {section.body.map((paragraph) => (
@@ -203,9 +203,9 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               as="h1"
               index={`${serviceDetail.eyebrow} ${numbered(position)}`}
               title={service.name}
-              titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
+              titleClassName="font-display text-ink text-display leading-display tracking-display"
             />
-            <p className="font-display text-ink-2 leading-headline tracking-display text-step-3 font-light">
+            <p className="font-display text-ink-2 leading-headline tracking-display text-step-3">
               {service.headline}
             </p>
             <div className="flex flex-col gap-4">
@@ -255,7 +255,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               <SectionHeading
                 index={numbered(index)}
                 title={block.title}
-                titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+                titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
               />
               {block.body}
             </section>

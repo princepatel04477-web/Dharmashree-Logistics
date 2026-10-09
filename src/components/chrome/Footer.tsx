@@ -48,7 +48,7 @@ export function Footer() {
             height={logo.height}
             className="h-8 w-auto"
           />
-          <p className="font-display text-headline leading-headline tracking-display font-light">
+          <p className="font-display text-headline leading-headline tracking-display">
             {footer.slogan}
           </p>
         </div>

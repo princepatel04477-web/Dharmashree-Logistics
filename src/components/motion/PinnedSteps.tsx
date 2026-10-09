@@ -146,7 +146,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
             <SectionHeading
               index={index}
               title={title}
-              titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+              titleClassName="font-display text-headline text-ink leading-headline tracking-display"
             />
             {lede !== undefined && (
               <Reveal as="p" className="text-ink-2 max-w-measure leading-body text-base font-light">
@@ -165,7 +165,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                     /* A template string, not `cn`: tailwind-merge reads `text-display` as
                        a colour and drops it in favour of `text-ink`, which left the
                        numeral at body size. */
-                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block font-light ${position > 0 ? "opacity-0" : ""}`}
+                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block ${position > 0 ? "opacity-0" : ""}`}
                   >
                     {numeral(position)}
                   </span>
@@ -178,7 +178,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                 <div className="relative">
                   <div aria-hidden="true" className="invisible">
                     <p className="section-index">01</p>
-                    <div className="font-display leading-headline tracking-display mt-3 text-3xl font-light">
+                    <div className="font-display leading-headline tracking-display mt-3 text-3xl">
                       {tallest.title}
                     </div>
                     {tallest.body.map((paragraph) => (
@@ -197,7 +197,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                       className={cn("absolute inset-0 flex flex-col", position > 0 && "opacity-0")}
                     >
                       <p className="section-index">{numeral(position)}</p>
-                      <h3 className="font-display text-ink leading-headline tracking-display mt-3 text-3xl font-light">
+                      <h3 className="font-display text-ink leading-headline tracking-display mt-3 text-3xl">
                         {step.title}
                       </h3>
                       {step.body.map((paragraph) => (
@@ -221,7 +221,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                       />
                       <Reveal delay={position * STEP_REVEAL_STAGGER}>
                         <p className="section-index">{numeral(position)}</p>
-                        <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl font-light">
+                        <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl">
                           {step.title}
                         </h3>
                         {step.body.map((paragraph) => (

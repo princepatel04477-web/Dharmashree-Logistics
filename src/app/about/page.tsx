@@ -30,7 +30,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about/" },
 };
 
-const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display font-light";
+const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display";
 
 export default function AboutPage() {
   const carriedFor = industries();
@@ -67,7 +67,7 @@ export default function AboutPage() {
                 className={index === 0 ? "flex flex-col" : "flex flex-col pt-10 sm:pt-12"}
               >
                 {index > 0 && <DrawLine className="mb-10 sm:mb-12" />}
-                <p className="font-display text-ink leading-headline tracking-display text-3xl font-light sm:text-4xl">
+                <p className="font-display text-ink leading-headline tracking-display text-3xl sm:text-4xl">
                   {line}
                 </p>
               </div>
@@ -126,7 +126,7 @@ export default function AboutPage() {
                     className="group/svc grid grid-cols-[2.5rem_1fr] gap-x-4 gap-y-1 py-5 sm:grid-cols-[3rem_1fr]"
                   >
                     <span className="section-index pt-2">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="font-display text-ink group-hover/svc:text-accent-ink text-2xl font-light transition-colors">
+                    <span className="font-display text-ink group-hover/svc:text-accent-ink text-2xl transition-colors">
                       {service.name}
                     </span>
                     <span className="text-ink-2 col-start-2 text-sm font-light">
@@ -156,7 +156,7 @@ export default function AboutPage() {
                 key={industry.name}
                 className="grid grid-cols-1 gap-1 py-5 sm:grid-cols-2 sm:gap-8"
               >
-                <dt className="font-display text-ink text-xl font-light">{industry.name}</dt>
+                <dt className="font-display text-ink text-xl">{industry.name}</dt>
                 {industry.note !== "" && (
                   <dd className="text-ink-2 leading-body text-sm font-light">{industry.note}</dd>
                 )}

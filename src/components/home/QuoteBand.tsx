@@ -18,7 +18,7 @@ export function QuoteBand() {
   return (
     <section className="bg-ink text-paper py-20 sm:py-24 lg:py-28">
       <div className="wrap flex flex-col items-start gap-10 lg:flex-row lg:items-end lg:justify-between lg:gap-16">
-        <h2 className="font-display text-headline text-paper leading-headline tracking-display font-light">
+        <h2 className="font-display text-headline text-paper leading-headline tracking-display">
           {quoteBand.line}
         </h2>
 

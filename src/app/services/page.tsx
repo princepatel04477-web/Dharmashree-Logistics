@@ -41,7 +41,7 @@ export default function ServicesIndexPage() {
                 as="h1"
                 index={servicesIndex.eyebrow}
                 title={servicesIndex.title}
-                titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
+                titleClassName="font-display text-ink text-display leading-display tracking-display"
               />
             </div>
             <Reveal
@@ -92,7 +92,7 @@ export default function ServicesIndexPage() {
               {/* A plain h2, not a numbered section label: the rows above are
                   numbered 01–05 as items, and a numbered heading underneath
                   them would read as a sixth row. */}
-              <h2 className="font-display text-ink text-step-3 leading-headline tracking-display font-light lg:col-span-5">
+              <h2 className="font-display text-ink text-step-3 leading-headline tracking-display lg:col-span-5">
                 {servicesIndex.fleetTitle}
               </h2>
               <p className="text-ink-2 max-w-measure leading-body text-sm font-light lg:col-span-6 lg:col-start-7">

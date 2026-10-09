@@ -274,6 +274,13 @@
 }
 
 @layer components {
+  /* Display headings: Archivo at weight 700 and 88% width, so they read like
+     highway signage. Utilities such as font-medium still override the weight. */
+  .font-display {
+    font-weight: 700;
+    font-stretch: 88%;
+  }
+
   /* Small-caps mono label in muted ink. */
   .label-caps {
     font-family: var(--font-mono);

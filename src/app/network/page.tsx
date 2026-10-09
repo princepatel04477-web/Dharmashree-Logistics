@@ -43,7 +43,7 @@ export default function NetworkPage() {
             <SectionHeading
               index={networkPage.directoryIndex}
               title={networkPage.directoryTitle}
-              titleClassName="font-display text-ink text-4xl leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-4xl leading-headline tracking-display"
             />
           </div>
           <HubDirectory className="lg:col-span-8" />

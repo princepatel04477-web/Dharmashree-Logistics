@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/partners/" },
 };
 
-const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display font-light";
+const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display";
 const bandItems: string[] = partners.map((partner) => `${partner.name} · ${partner.city}`);
 
 export default function PartnersPage() {
@@ -64,7 +64,7 @@ export default function PartnersPage() {
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <div className="flex flex-col gap-3">
-                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light sm:text-3xl">
+                    <h3 className="font-display text-ink leading-headline tracking-display text-2xl sm:text-3xl">
                       {item.title}
                     </h3>
                     <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
@@ -104,7 +104,7 @@ export default function PartnersPage() {
                   key={step.title}
                   className="grid grid-cols-1 gap-1 py-4 sm:grid-cols-[12rem_1fr] sm:gap-6"
                 >
-                  <dt className="font-display text-ink text-xl font-light">{step.title}</dt>
+                  <dt className="font-display text-ink text-xl">{step.title}</dt>
                   <dd className="text-ink-2 leading-body text-sm font-light">{step.body}</dd>
                 </div>
               ))}

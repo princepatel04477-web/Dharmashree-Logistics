@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact/" },
 };
 
-const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display font-light";
+const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display";
 
 export default function ContactPage() {
   const links = contactLinks();
@@ -50,7 +50,7 @@ export default function ContactPage() {
                 <dd>
                   <a
                     href={link.href}
-                    className="font-display text-ink hover:text-accent-ink text-2xl font-light [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                    className="font-display text-ink hover:text-accent-ink text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
                   >
                     {link.label}
                   </a>
@@ -60,7 +60,7 @@ export default function ContactPage() {
             <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">
               <dt className="label-caps">{contact.officeLabel}</dt>
               <dd className="sm:text-right">
-                <span className="font-display text-ink block text-2xl font-light sm:text-3xl">
+                <span className="font-display text-ink block text-2xl sm:text-3xl">
                   {contact.office}
                 </span>
                 {lines.map((line) =>
@@ -83,7 +83,7 @@ export default function ContactPage() {
             {company.supportHours !== null && (
               <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">
                 <dt className="label-caps">{contact.hoursLabel}</dt>
-                <dd className="font-display text-ink text-2xl font-light sm:text-right sm:text-3xl">
+                <dd className="font-display text-ink text-2xl sm:text-right sm:text-3xl">
                   {company.supportHours}
                 </dd>
               </div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
             {company.branches.length > 0 && (
               <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">
                 <dt className="label-caps">{contact.branchesLabel}</dt>
-                <dd className="font-display text-ink text-2xl font-light sm:text-right sm:text-3xl">
+                <dd className="font-display text-ink text-2xl sm:text-right sm:text-3xl">
                   {company.branches.map((branch) => `${branch.city}, ${branch.state}`).join(" · ")}
                 </dd>
               </div>

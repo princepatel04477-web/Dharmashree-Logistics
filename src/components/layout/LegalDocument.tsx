@@ -24,9 +24,7 @@ export function LegalDocument({ doc }: { doc: LegalDoc }) {
               >
                 <div className="flex items-baseline gap-4 lg:col-span-4">
                   <span className="section-index">{String(index + 1).padStart(2, "0")}</span>
-                  <h2 className="font-display text-ink text-2xl leading-tight font-light">
-                    {section.title}
-                  </h2>
+                  <h2 className="font-display text-ink text-2xl leading-tight">{section.title}</h2>
                 </div>
                 <div className="text-ink-2 leading-body max-w-2xl space-y-4 text-base font-light lg:col-span-8">
                   {section.paragraphs.map((paragraph) => (

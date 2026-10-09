@@ -35,7 +35,7 @@ export function NetworkShowcase() {
     <section aria-labelledby="sg-network" className="space-y-8">
       <div className="wrap space-y-3">
         <p className="section-index">06 — Network</p>
-        <h2 id="sg-network" className="font-display text-3xl font-light tracking-tight">
+        <h2 id="sg-network" className="font-display text-3xl tracking-tight">
           India corridors from Surat
         </h2>
       </div>

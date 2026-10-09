@@ -48,11 +48,12 @@
   --map-halo: var(--paper);
 
   /* ——— Typography ———
-     --font-display-face / --font-body / --font-mono-face /
-     --font-display-accent are set by next/font/local (see src/app/fonts.ts).
-     They resolve at computed-value time; the stacks below preserve Maa
-     Sheetla's fallback order verbatim. */
-  --font-display: var(--font-display-face), var(--font-display-accent), Georgia, serif;
+     --font-display-face / --font-body / --font-mono-face are set by
+     next/font/local (see src/app/fonts.ts). They resolve at computed-value
+     time. The display face is Archivo (weight 700, width 88% for headings,
+     see .font-display in globals.css); body and mono keep the Maa Sheetla
+     fallback order. */
+  --font-display: var(--font-display-face), "Archivo", system-ui, sans-serif;
   --font-sans: var(--font-body), "DM Sans", system-ui, sans-serif;
   --font-mono: var(--font-mono-face), "JetBrains Mono", "DM Mono", ui-monospace, monospace;
 
@@ -65,12 +66,12 @@
   --step-5: clamp(2.625rem, 5vw, 4.375rem);
   --step-6: clamp(3.25rem, 8vw, 7.5rem);
 
-  --leading-display: 0.88;
-  --leading-headline: 0.95;
+  --leading-display: 1;
+  --leading-headline: 1.05;
   --leading-body: 1.65;
 
   --tracking-caps: 0.24em;
-  --tracking-display: -0.04em;
+  --tracking-display: -0.02em;
 
   --measure: 28rem;
 

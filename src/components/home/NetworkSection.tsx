@@ -24,7 +24,7 @@ export function NetworkSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+            titleClassName="font-display text-headline text-ink leading-headline tracking-display"
           />
           <p className="label-caps lg:pb-2">
             {HUBS.length} hubs across {REGION_COUNT} regions

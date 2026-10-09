@@ -84,7 +84,7 @@ export function DedicatedBlock({ signature }: { signature: DedicatedSignature })
             <SectionHeading
               index={serviceDetail.signatureEyebrow}
               title={signature.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
             <p className="text-ink-2 max-w-measure leading-body text-base font-light">
               {signature.lede}
@@ -99,7 +99,7 @@ export function DedicatedBlock({ signature }: { signature: DedicatedSignature })
               onChange={(next) => setMode(next === "shared" ? "shared" : "dedicated")}
             />
             <div className="flex flex-col gap-3" aria-live="polite">
-              <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                 {active.title}
               </h3>
               <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
@@ -199,7 +199,7 @@ export function DedicatedBlock({ signature }: { signature: DedicatedSignature })
           <SectionHeading
             index={serviceDetail.signatureEyebrow}
             title={signature.flowTitle}
-            titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+            titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
           />
         </div>
         <ScrollCarousel className="pb-14 sm:pb-16 lg:pb-20">
@@ -209,7 +209,7 @@ export function DedicatedBlock({ signature }: { signature: DedicatedSignature })
               className="border-line bg-paper-2 flex w-72 shrink-0 flex-col gap-4 rounded-xs border p-6 sm:w-80 sm:p-8"
             >
               <p className="section-index">{numbered(position)}</p>
-              <h3 className="font-display text-ink leading-headline tracking-display text-2xl font-light">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
                 {leg.title}
               </h3>
               <p className="text-ink-2 leading-body text-sm font-light">{leg.body}</p>

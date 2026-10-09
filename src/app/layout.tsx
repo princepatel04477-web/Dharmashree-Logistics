@@ -8,7 +8,7 @@ import { MapSelectionProvider } from "@/components/map/MapSelection";
 import { Toaster } from "@/components/vendor/lightswind";
 import { company } from "@/content/company";
 import { MotionProviders } from "@/providers/MotionProviders";
-import { fontBody, fontDisplayAccent, fontDisplayFace, fontMono } from "./fonts";
+import { fontBody, fontDisplayFace, fontMono } from "./fonts";
 import "./globals.css";
 
 /* Root shell (Prompt 04): fonts → motion + map providers → skip link → fixed
@@ -48,7 +48,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en-IN"
-      className={`${fontDisplayFace.variable} ${fontDisplayAccent.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontDisplayFace.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="bg-paper text-ink flex min-h-full flex-col font-sans">
         <MotionProviders>

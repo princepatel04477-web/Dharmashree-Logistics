@@ -64,7 +64,7 @@ export function ServiceRow({ service, index }: ServiceRowProps) {
           <div className="relative z-10 grid grid-cols-1 items-start gap-x-8 gap-y-2 sm:grid-cols-[2.5rem_minmax(0,1fr)] lg:grid-cols-[2.5rem_minmax(0,26rem)_minmax(0,1fr)_1.5rem]">
             <span className="section-index pt-2 lg:pt-4">{numbered(index)}</span>
 
-            <h2 className="font-display text-ink text-step-4 leading-headline tracking-display font-light">
+            <h2 className="font-display text-ink text-step-4 leading-headline tracking-display">
               {service.name}
             </h2>
 

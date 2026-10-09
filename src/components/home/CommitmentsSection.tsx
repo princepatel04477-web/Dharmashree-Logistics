@@ -17,7 +17,7 @@ export function CommitmentsSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            titleClassName="font-display text-headline text-ink leading-headline font-light tracking-display"
+            titleClassName="font-display text-headline text-ink leading-headline tracking-display"
           />
         </div>
 
@@ -28,7 +28,7 @@ export function CommitmentsSection() {
               className={index === 0 ? "flex flex-col" : "flex flex-col pt-10 sm:pt-12"}
             >
               {index > 0 && <DrawLine className="mb-10 sm:mb-12" />}
-              <p className="font-display text-ink leading-headline tracking-display text-2xl font-light sm:text-3xl">
+              <p className="font-display text-ink leading-headline tracking-display text-2xl sm:text-3xl">
                 {line}
               </p>
             </div>

@@ -132,7 +132,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
     <div className="flex flex-col gap-8">
       <div className="space-y-3">
         <p className="section-index">{copy.eyebrow}</p>
-        <h3 className="font-display text-ink text-3xl leading-tight font-light tracking-tight">
+        <h3 className="font-display text-ink text-3xl leading-tight tracking-tight">
           {copy.title(hubs.length)}
         </h3>
         <p className="text-ink-2 leading-body max-w-measure text-sm font-light">{copy.body}</p>
@@ -188,9 +188,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                     className="group/result hover:text-accent-ink flex min-h-11 w-full items-center justify-between gap-4 py-2 text-left transition-colors"
                   >
                     <span>
-                      <span className="font-display block text-lg leading-tight font-light">
-                        {hub.name}
-                      </span>
+                      <span className="font-display block text-lg leading-tight">{hub.name}</span>
                       <span className="text-muted block text-xs font-light">{hub.state}</span>
                     </span>
                     <ArrowRightIcon
@@ -290,7 +288,7 @@ function Corridor({ hub, headingRef, onClose }: CorridorProps) {
         <h3
           ref={headingRef}
           tabIndex={-1}
-          className="font-display text-ink text-4xl leading-none font-light tracking-tight outline-none"
+          className="font-display text-ink text-4xl leading-none tracking-tight outline-none"
         >
           {hub.name}
         </h3>

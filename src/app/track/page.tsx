@@ -42,7 +42,7 @@ export default function TrackPage() {
               as="h1"
               index={track.eyebrow}
               title={track.title}
-              titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
+              titleClassName="font-display text-ink text-display leading-display tracking-display"
             />
           </div>
           <Reveal
@@ -69,7 +69,7 @@ export default function TrackPage() {
             <SectionHeading
               index="01"
               title={track.explainer.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
             <div className="flex flex-col gap-4">
               {track.explainer.body.map((paragraph) => (
@@ -97,7 +97,7 @@ export default function TrackPage() {
             <SectionHeading
               index={track.statuses.index}
               title={track.statuses.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
             <Reveal as="p" className="text-ink-2 max-w-measure leading-body text-sm font-light">
               {track.statuses.note}
@@ -116,7 +116,7 @@ export default function TrackPage() {
             <SectionHeading
               index={track.noNumber.index}
               title={track.noNumber.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
           </div>
           <div className="lg:col-span-7 lg:col-start-6">
@@ -132,7 +132,7 @@ export default function TrackPage() {
             <SectionHeading
               index={track.help.index}
               title={track.help.title}
-              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+              titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
             />
           </div>
           <div className="flex flex-col items-start gap-6 lg:col-span-7 lg:col-start-6">

@@ -39,7 +39,7 @@ function PartnerList() {
               <span className="flex flex-1 flex-col gap-1">
                 <span
                   className={cn(
-                    "font-display leading-headline text-xl font-light transition-colors duration-200 sm:text-2xl",
+                    "font-display leading-headline text-xl transition-colors duration-200 sm:text-2xl",
                     selected ? "text-accent-ink" : "text-ink group-hover/row:text-accent-ink",
                   )}
                 >

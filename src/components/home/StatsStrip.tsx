@@ -31,7 +31,7 @@ export function StatsStrip() {
           <div key={stat.id} className="flex flex-col-reverse gap-2 py-6 lg:px-8">
             {/* A cell with no label omits the row entirely — no empty dt. */}
             {stat.label !== "" && <dt className="label-caps">{stat.label}</dt>}
-            <dd className="font-display text-headline text-signal tracking-display leading-none font-light">
+            <dd className="font-display text-headline text-signal tracking-display leading-none">
               {stat.count !== null ? <CountUp to={stat.count} duration={1.4} /> : stat.staticText}
             </dd>
           </div>
