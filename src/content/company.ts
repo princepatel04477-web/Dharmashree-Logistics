@@ -10,7 +10,7 @@ export const company: Company = {
   branches: [],
   phone: null,
   whatsapp: null,
-  email: "hello@dharmashreelogistics.com",
+  email: "admin@dharmashreegroup.com",
   supportHours: null,
   gstin: null,
   foundedYear: null,
