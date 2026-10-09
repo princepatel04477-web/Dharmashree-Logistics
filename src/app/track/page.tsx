@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageIntro } from "@/components/layout/PageIntro";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { ArrowLink } from "@/components/layout/ArrowLink";
@@ -7,7 +8,9 @@ import { NoNumberPanel } from "@/components/track/NoNumberPanel";
 import { StatusLadder } from "@/components/track/StatusLadder";
 import { TrackPanel } from "@/components/track/TrackPanel";
 import { company } from "@/content/company";
+import { images } from "@/content/images";
 import { track } from "@/content/track";
+import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/track` — the AWB / LR handoff (Prompts 08 and 12).
 
@@ -34,29 +37,21 @@ export const metadata: Metadata = {
 
 export default function TrackPage() {
   return (
-    <>
-      <section className="border-line border-b">
-        <div className="wrap grid grid-cols-1 gap-8 py-16 sm:py-20 lg:grid-cols-12 lg:gap-10 lg:py-24">
-          <div className="lg:col-span-7">
-            <SectionHeading
-              as="h1"
-              index={track.eyebrow}
-              title={track.title}
-              titleClassName="font-display text-ink text-display leading-display tracking-display"
-            />
-          </div>
-          <Reveal
-            as="p"
-            className="text-ink-2 max-w-measure leading-body text-base font-light lg:col-span-5 lg:pt-10"
-          >
-            {track.line} {lineChannelNote}
-          </Reveal>
-        </div>
-      </section>
+    <InnerPage>
+      <PageIntro
+        eyebrow={track.eyebrow}
+        title={track.title}
+        lede={`${track.line} ${lineChannelNote}`}
+        imageKey={images.pages.track.key}
+        imageAlt={images.pages.track.alt}
+        overlap
+      />
 
-      <section className="py-14 sm:py-16 lg:py-20">
+      {/* The lookup sits in a white card pulled up 64px over the bottom of the
+          band: the form is the first thing under the heading. */}
+      <section className="relative z-10 -mt-16 pb-14 sm:pb-16 lg:pb-20">
         <div className="wrap">
-          <div className="max-w-xl">
+          <div className="bg-paper border-line shadow-card-lift max-w-2xl rounded-md border p-6 sm:p-8">
             <TrackPanel />
           </div>
         </div>
@@ -143,6 +138,6 @@ export default function TrackPage() {
           </div>
         </div>
       </section>
-    </>
+    </InnerPage>
   );
 }

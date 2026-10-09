@@ -40,14 +40,14 @@ function PartnerList() {
                 <span
                   className={cn(
                     "font-display leading-headline text-xl transition-colors duration-200 sm:text-2xl",
-                    selected ? "text-accent-ink" : "text-ink group-hover/row:text-accent-ink",
+                    selected ? "text-brand-deep" : "text-ink group-hover/row:text-brand-deep",
                   )}
                 >
                   {partner.name}
                 </span>
                 <span className="label-caps">{partner.city}</span>
               </span>
-              <span aria-hidden="true" className="text-accent pt-1 font-mono text-sm">
+              <span aria-hidden="true" className="text-brand pt-1 font-mono text-sm">
                 {selected ? "−" : "+"}
               </span>
             </button>
@@ -82,7 +82,7 @@ function PartnerList() {
                             <li key={phone}>
                               <a
                                 href={`tel:${phone}`}
-                                className="text-ink hover:text-accent-ink inline-flex min-h-11 items-center gap-2 font-mono text-sm transition-colors duration-200"
+                                className="text-ink hover:text-brand-deep inline-flex min-h-11 items-center gap-2 font-mono text-sm transition-colors duration-200"
                               >
                                 <span className="label-caps">{copy.callLabel}</span>
                                 {formatPhoneIN(phone)}

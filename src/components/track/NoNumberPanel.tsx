@@ -25,10 +25,10 @@ export function NoNumberPanel() {
         aria-expanded={open}
         aria-controls={panelId}
         onClick={() => setOpen((current) => !current)}
-        className="text-accent-ink hover:text-ink inline-flex min-h-11 items-center gap-2 self-start font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+        className="text-brand-deep hover:text-ink inline-flex min-h-11 items-center gap-2 self-start font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
       >
         {open ? copy.toggleClose : copy.toggleOpen}
-        <span aria-hidden="true" className="text-accent">
+        <span aria-hidden="true" className="text-brand">
           {open ? "−" : "+"}
         </span>
       </button>

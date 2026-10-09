@@ -165,7 +165,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                     /* A template string, not `cn`: tailwind-merge reads `text-display` as
                        a colour and drops it in favour of `text-ink`, which left the
                        numeral at body size. */
-                    className={`font-display text-display text-ink leading-display tracking-display absolute inset-0 block ${position > 0 ? "opacity-0" : ""}`}
+                    className={`font-display text-display text-brand leading-display tracking-display absolute inset-0 block ${position > 0 ? "opacity-0" : ""}`}
                   >
                     {numeral(position)}
                   </span>
@@ -177,7 +177,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
               {pinned && tallest !== null ? (
                 <div className="relative">
                   <div aria-hidden="true" className="invisible">
-                    <p className="section-index">01</p>
+                    <p className="section-index text-brand">01</p>
                     <div className="font-display leading-headline tracking-display mt-3 text-3xl">
                       {tallest.title}
                     </div>
@@ -196,7 +196,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                       ref={refAt(stepRefs, position)}
                       className={cn("absolute inset-0 flex flex-col", position > 0 && "opacity-0")}
                     >
-                      <p className="section-index">{numeral(position)}</p>
+                      <p className="section-index text-brand">{numeral(position)}</p>
                       <h3 className="font-display text-ink leading-headline tracking-display mt-3 text-3xl">
                         {step.title}
                       </h3>
@@ -220,7 +220,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                         className="border-line-strong bg-paper absolute top-2 -left-[calc(2rem+5px)] size-2.5 rounded-full border"
                       />
                       <Reveal delay={position * STEP_REVEAL_STAGGER}>
-                        <p className="section-index">{numeral(position)}</p>
+                        <p className="section-index text-brand">{numeral(position)}</p>
                         <h3 className="font-display text-ink leading-headline tracking-display mt-2 text-2xl">
                           {step.title}
                         </h3>
@@ -245,7 +245,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                   <span className="bg-line absolute inset-y-0 left-[4.5px] w-px" />
                   <span
                     ref={fillRef}
-                    className="bg-accent absolute inset-y-0 left-[4.5px] w-px origin-top"
+                    className="bg-brand absolute inset-y-0 left-[4.5px] w-px origin-top"
                   />
                   {steps.map((step, position) => (
                     <span key={`rail-${step.title}`} className="relative block size-2.5">
@@ -253,7 +253,7 @@ export function PinnedSteps({ index, title, lede, steps }: PinnedStepsProps) {
                       <span
                         ref={refAt(nodeRefs, position)}
                         className={cn(
-                          "bg-accent absolute inset-0 rounded-full",
+                          "bg-brand absolute inset-0 rounded-full",
                           position > 0 && "opacity-0",
                         )}
                       />

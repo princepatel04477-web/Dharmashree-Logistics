@@ -4,7 +4,7 @@ import { ArrowUpRightIcon } from "lucide-react";
 import Link from "next/link";
 import { motion, type Variants } from "motion/react";
 import { hasImage } from "@/components/media/ResponsiveImage";
-import { serviceImageKey } from "@/content/services";
+import { serviceImage } from "@/content/images";
 import type { Service } from "@/content/types";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -40,7 +40,8 @@ export function ServiceRow({ service, index }: ServiceRowProps) {
   const reduced = useReducedMotionSafe();
   /* The row renders no picture — it only says whether the list should chase the
      cursor at all. No photo in the manifest, no preview. */
-  const previewable = hasImage(serviceImageKey(service));
+  const slot = serviceImage(service.slug);
+  const previewable = slot !== null && hasImage(slot.key);
 
   return (
     <li
@@ -76,7 +77,7 @@ export function ServiceRow({ service, index }: ServiceRowProps) {
               aria-hidden="true"
               variants={ARROW_VARIANTS}
               transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
-              className="text-accent hidden justify-self-end pt-4 lg:inline-flex"
+              className="text-brand hidden justify-self-end pt-4 lg:inline-flex"
             >
               <ArrowUpRightIcon className="size-5" />
             </motion.span>

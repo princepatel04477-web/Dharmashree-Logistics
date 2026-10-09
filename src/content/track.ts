@@ -103,6 +103,8 @@ export const track = {
       },
       {
         question: "Requires attention",
+        /** Marked with --signal-red on the ladder; every other status is --brand. */
+        attention: true,
         answer:
           "Something needs a decision or a correction before the shipment can move on. Contact support with your number and a short description of the query.",
       },

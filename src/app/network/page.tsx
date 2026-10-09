@@ -4,7 +4,9 @@ import { HubDirectory } from "@/components/map/HubDirectory";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { HUBS, REGIONS } from "@/content/hubs";
+import { images } from "@/content/images";
 import { networkPage } from "@/content/network";
+import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/network` — the map at full width and the complete directory under it.
    The nav, the footer's hub band and the home page's "See every hub" link
@@ -21,12 +23,14 @@ const REGION_COUNT = REGIONS.filter((entry) => entry.id !== "all").length;
 
 export default function NetworkPage() {
   return (
-    <>
+    <InnerPage>
       <PageIntro
         eyebrow={networkPage.eyebrow}
         title={networkPage.title}
         lede={networkPage.lede}
         footnote={networkPage.countLine(HUBS.length, REGION_COUNT)}
+        imageKey={images.pages.network.key}
+        imageAlt={images.pages.network.alt}
       />
 
       {/* ——— The map ——— */}
@@ -49,6 +53,6 @@ export default function NetworkPage() {
           <HubDirectory className="lg:col-span-8" />
         </div>
       </section>
-    </>
+    </InnerPage>
   );
 }

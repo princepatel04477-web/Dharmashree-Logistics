@@ -56,7 +56,7 @@ export function QuoteAside() {
       <ol className="flex flex-col gap-3">
         {quote.aside.steps.map((line, index) => (
           <li key={line} className="flex items-start gap-3">
-            <span className="text-gold-deep shrink-0 font-mono text-[11px]">
+            <span className="text-brand shrink-0 font-mono text-[11px]">
               {String(index + 1).padStart(2, "0")}
             </span>
             <span className="text-ink-2 leading-body text-sm font-light">{line}</span>

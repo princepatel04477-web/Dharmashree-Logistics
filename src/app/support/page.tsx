@@ -8,7 +8,9 @@ import { SupportFaq } from "@/components/support/SupportFaq";
 import { company } from "@/content/company";
 import { contact } from "@/content/contact";
 import { contactLinks } from "@/content/navigation";
+import { images } from "@/content/images";
 import { support } from "@/content/support";
+import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/support` (Prompt 12). The company profile's Support page, made usable: the
    six questions it answers, filterable by topic, plus the four things to have
@@ -29,8 +31,14 @@ export default function SupportPage() {
   const links = contactLinks();
 
   return (
-    <>
-      <PageIntro eyebrow={support.eyebrow} title={support.title} lede={support.lede} />
+    <InnerPage>
+      <PageIntro
+        eyebrow={support.eyebrow}
+        title={support.title}
+        lede={support.lede}
+        imageKey={images.pages.support.key}
+        imageAlt={images.pages.support.alt}
+      />
 
       {/* ——— 01 · Have these ready ——— */}
       <section className="py-14 sm:py-16 lg:py-20">
@@ -92,7 +100,7 @@ export default function SupportPage() {
                     <dd>
                       <a
                         href={link.href}
-                        className="font-display text-ink hover:text-accent-ink text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                        className="font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
                       >
                         {link.label}
                       </a>
@@ -120,6 +128,6 @@ export default function SupportPage() {
           </div>
         </div>
       </section>
-    </>
+    </InnerPage>
   );
 }

@@ -12,9 +12,11 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { HeritageTimeline } from "@/components/vendor/origin";
 import { about } from "@/content/about";
+import { images } from "@/content/images";
 import { industries } from "@/content/industries";
 import { services } from "@/content/services";
 import { timeline } from "@/content/timeline";
+import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/about`. The company profile's own story (Prompt 10): the tagline as the
    H1, the three things logistics is about, the four commitments as a pinned
@@ -36,8 +38,14 @@ export default function AboutPage() {
   const carriedFor = industries();
 
   return (
-    <>
-      <PageIntro eyebrow={about.eyebrow} title={about.title} lede={about.lede} />
+    <InnerPage>
+      <PageIntro
+        eyebrow={about.eyebrow}
+        title={about.title}
+        lede={about.lede}
+        imageKey={images.pages.about.key}
+        imageAlt={images.pages.about.alt}
+      />
 
       <StatsStrip />
 
@@ -126,7 +134,7 @@ export default function AboutPage() {
                     className="group/svc grid grid-cols-[2.5rem_1fr] gap-x-4 gap-y-1 py-5 sm:grid-cols-[3rem_1fr]"
                   >
                     <span className="section-index pt-2">{String(index + 1).padStart(2, "0")}</span>
-                    <span className="font-display text-ink group-hover/svc:text-accent-ink text-2xl transition-colors">
+                    <span className="font-display text-ink group-hover/svc:text-brand-deep text-2xl transition-colors">
                       {service.name}
                     </span>
                     <span className="text-ink-2 col-start-2 text-sm font-light">
@@ -205,6 +213,6 @@ export default function AboutPage() {
       )}
 
       <QuoteBand />
-    </>
+    </InnerPage>
   );
 }

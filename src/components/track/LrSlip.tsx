@@ -158,7 +158,7 @@ export function LrSlip() {
           width="122"
           height="34"
           rx="2"
-          className="stroke-accent"
+          className="stroke-brand"
           strokeWidth="1"
         />
         {/* The line the number sits on: the only accent stroke inside the slip. */}
@@ -168,7 +168,7 @@ export function LrSlip() {
           y1="94"
           x2="313"
           y2="94"
-          className="stroke-accent/60"
+          className="stroke-brand/60"
           strokeWidth="1"
         />
         <line

@@ -72,7 +72,7 @@ export function BusinessSelector() {
                         className="group/svc flex min-h-14 items-center justify-between gap-4 py-3"
                       >
                         <span>
-                          <span className="font-display text-ink group-hover/svc:text-accent-ink block text-xl transition-colors">
+                          <span className="font-display text-ink group-hover/svc:text-brand-deep block text-xl transition-colors">
                             {service.name}
                           </span>
                           <span className="text-ink-2 block text-sm font-light">
@@ -81,7 +81,7 @@ export function BusinessSelector() {
                         </span>
                         <ArrowRightIcon
                           aria-hidden="true"
-                          className="text-accent size-4 shrink-0 transition-transform duration-200 group-hover/svc:translate-x-0.5"
+                          className="text-brand size-4 shrink-0 transition-transform duration-200 group-hover/svc:translate-x-0.5"
                         />
                       </Link>
                     </li>

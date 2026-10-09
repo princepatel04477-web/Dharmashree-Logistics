@@ -10,6 +10,8 @@ import { MicroLift } from "@/components/motion/MicroLift";
 import { QuoteStepper } from "@/components/vendor/origin";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { partners, partnersPage } from "@/content/partners";
+import { images } from "@/content/images";
+import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/partners` — delivery partners (Prompt 13). The company profile's Delivery
    Partner page: the four reasons to join (set as an asymmetric list, not a row
@@ -34,12 +36,16 @@ export default function PartnersPage() {
   const { benefits, onboarding, network, join } = partnersPage;
 
   return (
-    <>
+    <InnerPage>
       <PageIntro
         eyebrow={partnersPage.eyebrow}
         title={partnersPage.title}
         lede={partnersPage.lede}
-        footnote={<ArrowLink href={partnersPage.joinHref} label={partnersPage.joinLabel} />}
+        footnote={
+          <ArrowLink href={partnersPage.joinHref} label={partnersPage.joinLabel} tone="on-deep" />
+        }
+        imageKey={images.pages.partners.key}
+        imageAlt={images.pages.partners.alt}
       />
 
       {/* ——— 01 · Why partner with us ——— */}
@@ -139,7 +145,7 @@ export default function PartnersPage() {
             duration={60}
             decorative
             itemClassName="label-caps"
-            separatorClassName="text-accent"
+            separatorClassName="text-brand"
           />
         </div>
       </section>
@@ -160,6 +166,6 @@ export default function PartnersPage() {
           </div>
         </div>
       </section>
-    </>
+    </InnerPage>
   );
 }
