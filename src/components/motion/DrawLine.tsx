@@ -48,7 +48,7 @@ export function DrawLine({ orientation = "horizontal", className = "" }: DrawLin
           y1="0"
           x2="0.5"
           y2="100"
-          stroke="var(--accent)"
+          stroke="var(--brand)"
           strokeOpacity={0.6}
           strokeWidth={1}
           vectorEffect="non-scaling-stroke"
@@ -70,7 +70,7 @@ export function DrawLine({ orientation = "horizontal", className = "" }: DrawLin
         y1="0.5"
         x2="100"
         y2="0.5"
-        stroke="var(--accent)"
+        stroke="var(--brand)"
         strokeOpacity={0.6}
         strokeWidth={1}
         vectorEffect="non-scaling-stroke"

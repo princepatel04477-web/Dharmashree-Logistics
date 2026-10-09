@@ -5,7 +5,7 @@ import { MapCanvas } from "@/components/map/MapCanvas";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { sectionHeadings, sectionLinks } from "@/content/home";
 import { HUBS, REGIONS } from "@/content/hubs";
-import { SECTION_INDEX_CLASS, SECTION_TITLE_CLASS } from "./shared";
+import { SECTION_TITLE_CLASS } from "./shared";
 
 /* H3 · The network, on `--brand-tint`. The count line is derived from
    `hubs.ts`, never from `company.hubsServed`: the map and the directory are the
@@ -27,7 +27,6 @@ export function NetworkSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            className={SECTION_INDEX_CLASS}
             titleClassName={SECTION_TITLE_CLASS}
           />
           <p className="label-caps text-ink/75 lg:pb-2">

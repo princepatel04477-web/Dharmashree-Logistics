@@ -7,7 +7,6 @@ import { company } from "@/content/company";
 import { contact } from "@/content/contact";
 import { faqs } from "@/content/faq";
 import { contactLines, contactLinks, quoteCta } from "@/content/navigation";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/contact` — channels, the quote route, and the general FAQ (#faq, linked
    from the footer). Every channel row is a fact from `company.ts` via
@@ -28,7 +27,7 @@ export default function ContactPage() {
   const lines = contactLines();
 
   return (
-    <InnerPage>
+    <>
       <PageIntro eyebrow={contact.eyebrow} title={contact.title} lede={contact.lede} />
 
       {/* ——— Channels ——— */}
@@ -146,6 +145,6 @@ export default function ContactPage() {
           </div>
         </section>
       )}
-    </InnerPage>
+    </>
   );
 }

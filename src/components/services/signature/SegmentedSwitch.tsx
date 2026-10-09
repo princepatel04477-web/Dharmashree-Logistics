@@ -54,7 +54,7 @@ export function SegmentedSwitch({
                     layoutId="segment-underline"
                     aria-hidden="true"
                     className={cn(
-                      "bg-accent absolute -bottom-px h-px",
+                      "bg-brand absolute -bottom-px h-px",
                       position > 0 ? "right-5 left-5" : "right-5 left-0",
                     )}
                     transition={{

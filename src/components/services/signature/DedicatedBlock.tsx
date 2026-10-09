@@ -175,7 +175,7 @@ export function DedicatedBlock({ signature }: { signature: DedicatedSignature })
                     height={BODY_H}
                     rx="1"
                     strokeWidth="1"
-                    className={yours ? "stroke-accent" : "stroke-line-strong"}
+                    className={yours ? "stroke-brand" : "stroke-line-strong"}
                     initial={false}
                     animate={{
                       x: target.x,

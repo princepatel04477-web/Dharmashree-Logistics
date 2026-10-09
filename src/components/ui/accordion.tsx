@@ -34,14 +34,14 @@ function AccordionTrigger({
     <AccordionPrimitive.Header className="flex">
       <AccordionPrimitive.Trigger
         className={cn(
-          "group text-ink hover:text-accent-ink flex flex-1 cursor-pointer items-center justify-between gap-4 rounded-xs py-4 text-left text-sm font-medium transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50",
+          "group text-ink hover:text-brand-deep flex flex-1 cursor-pointer items-center justify-between gap-4 rounded-xs py-4 text-left text-sm font-medium transition-colors duration-200 disabled:pointer-events-none disabled:opacity-50",
           className,
         )}
         data-slot="accordion-trigger"
         {...props}
       >
         {children}
-        <span className="text-signal pointer-events-none relative size-4 shrink-0">
+        <span className="text-brand pointer-events-none relative size-4 shrink-0">
           <PlusIcon
             aria-hidden="true"
             className="absolute inset-0 size-4 group-data-[state=open]:hidden"

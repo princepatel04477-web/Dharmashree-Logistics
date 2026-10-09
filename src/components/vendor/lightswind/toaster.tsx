@@ -90,7 +90,7 @@ const toastVariants = cva(
       type: {
         default: "border-line",
         success: "border-line",
-        destructive: "border-accent",
+        destructive: "border-brand",
       },
     },
   },
@@ -99,11 +99,11 @@ const toastVariants = cva(
 function ToastIcon({ type }: { type: ToastType }) {
   if (type === "success") {
     return (
-      <CheckCircle2Icon aria-hidden="true" className="text-gold-deep mt-0.5 size-4 shrink-0" />
+      <CheckCircle2Icon aria-hidden="true" className="text-brand mt-0.5 size-4 shrink-0" />
     );
   }
   if (type === "destructive") {
-    return <AlertCircleIcon aria-hidden="true" className="text-accent mt-0.5 size-4 shrink-0" />;
+    return <AlertCircleIcon aria-hidden="true" className="text-brand mt-0.5 size-4 shrink-0" />;
   }
   return <InfoIcon aria-hidden="true" className="text-muted mt-0.5 size-4 shrink-0" />;
 }

@@ -5,6 +5,7 @@ import { partners, partnersPage } from "@/content/partners";
 import { cn } from "@/lib/utils";
 import { INDIA_PATHS, INDIA_VIEWBOX } from "./india-outline";
 import { INDIA_STATES } from "./india-states";
+import { percentOf } from "./map-layout";
 import { useMapSelection } from "./MapSelection";
 import { projectPoint } from "./projection";
 
@@ -113,8 +114,8 @@ export function PartnerMap({ className }: { className?: string }) {
               key={pin.id}
               className="absolute"
               style={{
-                left: `${String(((pin.x - crop.x) / crop.w) * 100)}%`,
-                top: `${String(((pin.y - crop.y) / crop.h) * 100)}%`,
+                left: percentOf(pin.x - crop.x, crop.w),
+                top: percentOf(pin.y - crop.y, crop.h),
               }}
             >
               <button
@@ -124,14 +125,14 @@ export function PartnerMap({ className }: { className?: string }) {
                 onClick={() => select(selected ? null : pin.id)}
                 className={cn(
                   "bg-paper text-ink absolute -top-4 -left-4 flex size-8 items-center justify-center rounded-full border font-mono text-[11px] transition-colors duration-200",
-                  selected ? "border-accent" : "border-line-strong hover:border-accent",
+                  selected ? "border-brand" : "border-line-strong hover:border-brand",
                 )}
               >
                 <span aria-hidden="true">{position + 1}</span>
                 {selected && (
                   <span
                     aria-hidden="true"
-                    className="border-accent pointer-events-none absolute -inset-1.5 rounded-full border"
+                    className="border-brand pointer-events-none absolute -inset-1.5 rounded-full border"
                   />
                 )}
               </button>

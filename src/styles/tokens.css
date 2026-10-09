@@ -11,8 +11,10 @@
   --paper-3: #eef2f7;
 
   --ink: #14171f;
-  --ink-2: #665e59;
-  --muted: #665e59;
+  /* Cool slate greys. Contrast on --paper / --brand-tint / --paper-3:
+     --ink-2 7.69 / 6.76 / 6.84, --muted 5.81 / 5.11 / 5.16 (AA text >= 4.5). */
+  --ink-2: #475467;
+  --muted: #5b6678;
 
   --line: rgba(20, 23, 31, 0.1);
   --line-strong: rgba(20, 23, 31, 0.2);
@@ -31,21 +33,10 @@
   --on-deep-line: color-mix(in srgb, var(--paper) 12%, transparent);
   --on-deep-band: color-mix(in srgb, var(--paper) 6%, transparent);
 
-  /* Retired Maa Sheetla names, kept as aliases for one release so nothing
-     breaks. Phase 6 of docs/antigravity-redesign-plan.md removes them. */
-  --accent: var(--brand);
-  --accent-ink: var(--brand-deep);
-  --signal: var(--highway);
-  --gold-deep: #8a6715;
+  /* Scrollbar thumb: a cool grey, --brand on hover (see globals.css). */
+  --scrollbar-thumb: color-mix(in srgb, var(--ink) 22%, var(--paper));
 
-  --scrollbar-thumb: #e5dfc8;
-
-  /* Map panel (Prompt 03) */
-  --map-ground: #111016;
-  --map-land: #29232a;
-  --map-land-stroke: #665154;
-
-  /* Network map, light ground (Maa Sheetla's nation stroke is rgba(28,25,23,.35)) */
+  /* Network map, light ground */
   --map-border: rgba(20, 23, 31, 0.35);
   --map-state-line: rgba(20, 23, 31, 0.1);
   --map-land-quiet: var(--paper-2);
@@ -98,8 +89,6 @@
   /* ——— Shadows ——— */
   --shadow-2xs: 0 1px 2px rgba(20, 23, 31, 0.04);
   --shadow-xs: 0 1px 3px rgba(20, 23, 31, 0.07), 0 1px 2px rgba(20, 23, 31, 0.04);
-  --shadow-accent-glow: 0 0 30px rgba(40, 96, 176, 0.18);
-  --shadow-signal-glow: 0 0 30px rgba(245, 166, 35, 0.18);
   --shadow-card: 0 4px 20px -2px rgba(20, 23, 31, 0.06), 0 2px 6px -1px rgba(20, 23, 31, 0.04);
   --shadow-card-lift: 0 4px 20px -2px rgba(20, 23, 31, 0.1), 0 2px 6px -1px rgba(20, 23, 31, 0.06);
 }

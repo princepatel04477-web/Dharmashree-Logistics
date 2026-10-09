@@ -66,7 +66,7 @@ function HeaderButton({ href, className }: { href: string; className: string }) 
       rel="noopener"
       aria-label={`Chat with ${company.name} on WhatsApp`}
       className={cn(
-        "border-line text-ink hover:border-accent hover:text-accent-ink inline-flex h-11 items-center gap-2 rounded-xs border px-3 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
+        "border-line text-ink hover:border-brand hover:text-brand-deep inline-flex h-11 items-center gap-2 rounded-xs border px-3 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
         className,
       )}
     >
@@ -98,7 +98,7 @@ function FloatingButton({ href, className }: { href: string; className: string }
           rel="noopener"
           aria-label={`Chat with ${company.name} on WhatsApp`}
           className={cn(
-            "border-line bg-paper text-accent hover:border-accent-ink hover:text-accent-ink",
+            "border-line bg-paper text-brand hover:border-brand-deep hover:text-brand-deep",
             "fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30",
             "flex size-14 items-center justify-center rounded-full border shadow-xs lg:hidden",
             className,

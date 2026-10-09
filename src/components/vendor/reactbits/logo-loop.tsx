@@ -84,8 +84,8 @@ export function LogoLoop({
 
   const renderItem = (item: string, key: string): ReactElement => (
     <span key={key} className="flex items-center gap-8">
-      <span className={cn("hover:text-gold-deep transition-colors", itemClassName)}>{item}</span>
-      <span aria-hidden="true" className={cn("text-signal/50 text-xs", separatorClassName)}>
+      <span className={cn("hover:text-brand transition-colors", itemClassName)}>{item}</span>
+      <span aria-hidden="true" className={cn("text-brand/50 text-xs", separatorClassName)}>
         {separator}
       </span>
     </span>

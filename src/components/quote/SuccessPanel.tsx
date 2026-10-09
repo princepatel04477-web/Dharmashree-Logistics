@@ -55,7 +55,7 @@ export function SuccessPanel({ reference, whatsappHref, onReset }: SuccessPanelP
             href={whatsappHref}
             target="_blank"
             rel="noopener"
-            className="text-accent-ink hover:text-ink font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+            className="text-brand-deep hover:text-ink font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
           >
             {quote.success.whatsappLabel}
           </a>

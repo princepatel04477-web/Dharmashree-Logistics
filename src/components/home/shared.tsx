@@ -29,9 +29,6 @@ import { images, type ProcessImageStep } from "@/content/images";
 export const SECTION_TITLE_CLASS =
   "font-display text-step-4 sm:text-5xl text-ink leading-headline tracking-display";
 
-/** Colours the numbered index label (`01`) in the brand blue. */
-export const SECTION_INDEX_CLASS = "[&_.section-index]:text-brand";
-
 export type HomeIconName =
   | "package"
   | "truck"

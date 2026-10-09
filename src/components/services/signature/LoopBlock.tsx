@@ -139,20 +139,20 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                 y1={LINE_Y}
                 x2={lastX}
                 y2={LINE_Y}
-                className="stroke-accent"
+                className="stroke-brand"
                 strokeWidth="1"
               />
               <path
                 data-return=""
                 d={returnPath}
-                className="stroke-accent"
+                className="stroke-brand"
                 strokeWidth="1"
                 strokeDasharray="none"
               />
               <path
                 data-return-head=""
                 d={`M ${String(backX - 5)} ${String(LINE_Y + 24)} L ${String(backX)} ${String(LINE_Y + 14)} L ${String(backX + 5)} ${String(LINE_Y + 24)}`}
-                className="stroke-accent"
+                className="stroke-brand"
                 strokeWidth="1"
               />
               {signature.stages.map((stage, position) => (
@@ -169,7 +169,7 @@ export function LoopBlock({ signature }: { signature: LoopSignature }) {
                     cx={nodeX(position, count)}
                     cy={LINE_Y}
                     r="3"
-                    className="fill-accent stroke-none"
+                    className="fill-brand stroke-none"
                   />
                   <text
                     x={nodeX(position, count)}

@@ -275,7 +275,7 @@ export function PartnerForm() {
               {status === "sending" ? <PendingDots label={copy.sendingLabel} /> : copy.submitLabel}
             </Button>
             {status === "failed" && failure !== null && (
-              <p role="alert" className="text-accent max-w-measure font-mono text-[11px]">
+              <p role="alert" className="text-brand max-w-measure font-mono text-[11px]">
                 {copy.failure} {copy.reasons[failure]}
               </p>
             )}

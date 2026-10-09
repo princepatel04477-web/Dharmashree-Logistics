@@ -467,7 +467,7 @@ async function main(): Promise<void> {
   check(slip.includes("DharmaShree Logistics"), "slip does not carry the desk's name");
   check(slip.includes("<figcaption"), "slip has no caption");
   check((slip.match(/data-draw/g) ?? []).length >= 10, "slip is not drawn");
-  check(slip.includes("stroke-accent"), "the LR field is not in the accent");
+  check(slip.includes("stroke-brand"), "the LR field is not drawn in --brand (stroke-brand)");
   check(
     !/[0-9]{4}/.test(slip.replace(/viewBox|rx|text-\[|font-mono|[0-9.]+px/g, "")),
     "the slip contains something that looks like a real number",

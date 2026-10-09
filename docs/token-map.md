@@ -30,7 +30,8 @@ not read as a logistics business. The palette below is sampled from the logo
 (`public/brand/dharmashree-logo.png`). The plan is in
 `docs/antigravity-redesign-plan.md`; house rules 5–7 in `AGENTS.md` were
 rewritten to match. The Maa Sheetla values in §1 remain as provenance for the
-original port; where a token appears in both tables, this table wins.
+original port; where a token appears in both tables, this table wins, and the
+Phase 6 table below lists the §1 tokens that no longer exist.
 
 | Token               | Value                                 | Use                                                                                                   |
 | ------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -68,16 +69,41 @@ is `1` and `--leading-headline` is `1.05`. Body stays DM Sans and labels stay
 JetBrains Mono. The §2 family table, the §2 line-height table and §5 below
 describe the original Maa Sheetla port and are superseded for the display face.
 
-**Retired names, kept as aliases for one release** (Phase 6 removes them):
-`--accent: var(--brand)`, `--accent-ink: var(--brand-deep)`,
-`--signal: var(--highway)`. `--gold-deep` keeps its Maa Sheetla value until
-Phase 6 re-homes its few remaining users.
+**Phase 6 clean-up (colour).** The Maa Sheetla colour names are gone from
+`tokens.css`, `globals.css` and every component:
+
+| Removed                                                           | Replaced by                                                                              |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `--accent` (and `bg-accent`, `text-accent`, …)                    | `--brand` (`bg-brand`, `text-brand`, …)                                                  |
+| `--accent-ink` (`text-accent-ink`, …)                             | `--brand-deep` (`text-brand-deep`, …)                                                    |
+| `--signal` (`text-signal`, …)                                     | `--brand` for icons and rules on white; `--highway` only for highlights on dark ground   |
+| `--gold-deep` (section indexes, form labels, eyebrows, accordion) | `--brand`; `.section-index` is `--brand` itself, so no per-page override is needed       |
+| `--map-ground`, `--map-land`, `--map-land-stroke`                 | none: the dark map panel was never built; the light-ground `--map-*` tokens remain       |
+| `--shadow-accent-glow`, `--shadow-signal-glow`                    | none: unused                                                                             |
+| `.shimmer-text`                                                   | none: unused (the `shimmer` keyframes stay for `ShinyText`)                              |
+
+Two tokens were re-pointed to cool greys so secondary text no longer reads warm
+(contrast on `--paper` / `--brand-tint` / `--paper-3`):
+
+| Token       | Value     | Contrast                | Use                                                    |
+| ----------- | --------- | ----------------------- | ------------------------------------------------------ |
+| `--ink-2`   | `#475467` | 7.69 / 6.76 / 6.84      | Body-adjacent text: nav links, ledes, descriptions.    |
+| `--muted`   | `#5B6678` | 5.81 / 5.11 / 5.16      | Captions, helper text, label caps, placeholders.       |
+
+`--scrollbar-thumb` is now `color-mix(--ink 22%, --paper)` (hover `--brand`).
+The focus ring is `2px solid var(--brand)` (6.19:1 on `--paper`). Error text and
+invalid borders use `--brand` as well; there is no separate error colour (see the
+open items in the Phase 6 report).
 
 Tailwind utilities: `bg-brand`, `text-brand`, `border-brand`,
 `bg-brand-deep`, `bg-brand-tint`, `text-signal-red`, `bg-signal-red`,
 `bg-highway`, `text-highway`, and so on, from `--color-*` in `globals.css`.
 
 ## 1. Colour roles
+
+> Provenance only. `--accent`, `--accent-ink`, `--signal`, `--gold-deep`,
+> `--map-ground`, `--map-land` and `--map-land-stroke` below no longer exist, and
+> `--ink-2`, `--muted` and `--scrollbar-thumb` have new values (see §0).
 
 | Our token           | Value                | Source value                                   | Contrast | Notes                                                                                                                                                                                                            |
 | ------------------- | -------------------- | ---------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -201,8 +227,8 @@ insets, `overscroll-behavior-y: contain`, tap-highlight removal,
 house rule 9 by the motion layer in Prompt 02.
 
 Focus ring (house rule 11) has no source equivalent (only one ad-hoc
-`focus-visible:ring` in TSX): derived as `2px solid var(--accent)` with `3px`
-offset (8.43:1 on paper ✓), documented here as an addition, not a port.
+`focus-visible:ring` in TSX): derived as `2px solid var(--brand)` with `3px`
+offset (6.19:1 on paper ✓; it was `--accent` before Phase 6), documented here as an addition, not a port.
 
 ## 5. Fonts — self-hosted via `next/font/local`
 

@@ -9,7 +9,6 @@ import { images } from "@/content/images";
 import { fleetVehicles } from "@/content/fleet";
 import { quoteCta } from "@/content/navigation";
 import { services, servicesIndex } from "@/content/services";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/services` — the index (Prompt 06).
 
@@ -32,7 +31,7 @@ export default function ServicesIndexPage() {
   const fleet = fleetVehicles();
 
   return (
-    <InnerPage>
+    <>
       {/* ——— H1 band: the services have no page-level slot in images.ts, so the
               band borrows the home hero photograph. ——— */}
       <PageIntro
@@ -92,6 +91,6 @@ export default function ServicesIndexPage() {
           </div>
         </section>
       )}
-    </InnerPage>
+    </>
   );
 }

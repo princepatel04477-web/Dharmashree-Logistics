@@ -4,14 +4,14 @@ import { useEffect, useRef, type HTMLAttributes, type MouseEvent, type ReactNode
 import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
-const DEFAULT_SPOTLIGHT = "color-mix(in srgb, var(--accent) 8%, transparent)";
+const DEFAULT_SPOTLIGHT = "color-mix(in srgb, var(--brand) 8%, transparent)";
 
 interface SpotlightCardProps extends HTMLAttributes<HTMLDivElement> {
   spotlightColor?: string;
   children: ReactNode;
 }
 
-/* Card with a cursor-following accent wash (8% alpha max). Static — no
+/* Card with a cursor-following brand wash (8% alpha max). Static — no
    spotlight layer at all — on touch devices and under reduced motion. */
 export function SpotlightCard({
   spotlightColor = DEFAULT_SPOTLIGHT,

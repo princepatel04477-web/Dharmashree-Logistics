@@ -27,7 +27,7 @@ export default function StyleguidePage() {
         <header className="space-y-3">
           <p className="section-index">00 — Styleguide</p>
           <h1 className="font-display text-headline leading-headline tracking-display">
-            Tokens, <span className="text-gold-deep">verified.</span>
+            Tokens, <span className="text-brand">verified.</span>
           </h1>
           <p className="max-w-measure text-ink-2 text-sm font-light">
             Source of truth: <span className="font-mono text-xs">src/styles/tokens.css</span>.
@@ -76,7 +76,7 @@ export default function StyleguidePage() {
             <div className="border-line grid grid-cols-1 gap-2 border-y py-6 sm:grid-cols-[10rem_1fr_1fr] sm:items-baseline sm:gap-6">
               <p className="text-muted font-mono text-xs">mono</p>
               <p className="font-mono text-sm font-light">AaBbCc 0123456789</p>
-              <p className="font-display text-gold-deep text-2xl">farther.</p>
+              <p className="font-display text-brand text-2xl">farther.</p>
             </div>
           </div>
         </section>
@@ -90,7 +90,7 @@ export default function StyleguidePage() {
           </div>
           <div className="border-line bg-paper-2 space-y-6 border p-6 sm:p-10">
             <p className="label-caps">Label caps — small caps in muted ink</p>
-            <p className="section-index">04 — Section index in deep gold</p>
+            <p className="section-index">04 — Section index in brand blue</p>
             <hr className="hairline" />
             <p className="max-w-measure text-ink-2 text-sm font-light">
               Body measure sample: this paragraph is capped at the measure token so line lengths
@@ -98,7 +98,7 @@ export default function StyleguidePage() {
             </p>
             <a
               href="#sg-labels"
-              className="border-accent text-accent inline-flex items-center border px-4 py-3 font-mono text-[10px] tracking-[0.14em] uppercase"
+              className="border-brand text-brand inline-flex items-center border px-4 py-3 font-mono text-[10px] tracking-[0.14em] uppercase"
             >
               Focus me to see the ring
             </a>

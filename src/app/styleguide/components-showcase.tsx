@@ -95,13 +95,13 @@ export function ComponentsShowcase() {
         <DemoPanel index="RB-3" title="CountUp" note="en-IN grouping, derived counts.">
           <div className="flex gap-10">
             <div className="space-y-1">
-              <p className="font-display text-signal text-5xl">
+              <p className="font-display text-brand text-5xl">
                 <CountUp to={company.services.length} duration={1.2} />
               </p>
               <p className="label-caps">Core services</p>
             </div>
             <div className="space-y-1">
-              <p className="font-display text-signal text-5xl">
+              <p className="font-display text-brand text-5xl">
                 <CountUp to={company.industries.length} duration={1.2} />
               </p>
               <p className="label-caps">Industries served</p>
@@ -129,7 +129,7 @@ export function ComponentsShowcase() {
             className="font-mono text-xs tracking-[0.2em] uppercase"
           />
         </DemoPanel>
-        <DemoPanel index="RB-5" title="SpotlightCard" note="Service tiles, accent 8% max.">
+        <DemoPanel index="RB-5" title="SpotlightCard" note="Service tiles, brand wash 8% max.">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {company.services.slice(0, 2).map((service, position) => (
               <SpotlightCard key={service} className="p-6">

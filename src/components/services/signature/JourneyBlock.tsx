@@ -92,14 +92,14 @@ export function JourneyBlock({ signature }: { signature: JourneySignature }) {
               <span
                 aria-hidden="true"
                 data-line=""
-                className="bg-accent absolute top-[5px] h-px origin-left"
+                className="bg-brand absolute top-[5px] h-px origin-left"
                 style={{ left: inset, right: inset }}
               />
               {signature.stops.map((stop, position) => (
                 <li key={stop.title} className="flex flex-col items-center gap-4 text-center">
                   <span className="relative block size-2.5">
                     <span className="border-line-strong bg-paper absolute inset-0 rounded-full border" />
-                    <span data-node="" className="bg-accent absolute inset-0 rounded-full" />
+                    <span data-node="" className="bg-brand absolute inset-0 rounded-full" />
                   </span>
                   <div data-stop="" className="flex flex-col gap-2">
                     <p className="section-index">{numbered(position)}</p>

@@ -10,7 +10,6 @@ import { contact } from "@/content/contact";
 import { contactLinks } from "@/content/navigation";
 import { images } from "@/content/images";
 import { support } from "@/content/support";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/support` (Prompt 12). The company profile's Support page, made usable: the
    six questions it answers, filterable by topic, plus the four things to have
@@ -31,7 +30,7 @@ export default function SupportPage() {
   const links = contactLinks();
 
   return (
-    <InnerPage>
+    <>
       <PageIntro
         eyebrow={support.eyebrow}
         title={support.title}
@@ -128,6 +127,6 @@ export default function SupportPage() {
           </div>
         </div>
       </section>
-    </InnerPage>
+    </>
   );
 }

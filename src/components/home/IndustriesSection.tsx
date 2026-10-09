@@ -3,7 +3,7 @@ import { sectionHeadings } from "@/content/home";
 import { industryImage } from "@/content/images";
 import { industries } from "@/content/industries";
 import { IndustryTile } from "./IndustryTile";
-import { industryIcon, SECTION_INDEX_CLASS, SECTION_TITLE_CLASS } from "./shared";
+import { industryIcon, SECTION_TITLE_CLASS } from "./shared";
 
 /* H5 · Industries, on `--brand-tint`. One photo tile per entry in
    `company.industries`: the photo fills the tile, a single-hue `--brand-deep`
@@ -23,7 +23,6 @@ export function IndustriesSection() {
         <SectionHeading
           index={heading.index}
           title={heading.title}
-          className={SECTION_INDEX_CLASS}
           titleClassName={SECTION_TITLE_CLASS}
         />
 

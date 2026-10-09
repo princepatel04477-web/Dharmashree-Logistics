@@ -24,11 +24,11 @@ const buttonVariants = cva(
       },
       variant: {
         default: "bg-brand text-paper hover:bg-brand-deep",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-accent-ink",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-brand-deep",
         ghost: "text-ink-2 hover:bg-paper-3 hover:text-ink",
-        link: "text-accent-ink underline-offset-4 hover:underline",
+        link: "text-brand-deep underline-offset-4 hover:underline",
         outline:
-          "border border-accent bg-transparent text-accent hover:bg-accent hover:text-primary-foreground",
+          "border border-brand bg-transparent text-brand hover:bg-brand hover:text-primary-foreground",
         secondary: "bg-secondary text-secondary-foreground hover:bg-paper-3",
       },
     },

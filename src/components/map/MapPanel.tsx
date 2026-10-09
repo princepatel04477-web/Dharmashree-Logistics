@@ -167,7 +167,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                 setQuery("");
               }
             }}
-            className="border-line-strong bg-paper-2 text-ink placeholder:text-muted/70 focus-visible:border-accent h-11 w-full rounded-xs border pr-3 pl-9 text-sm font-light transition-colors duration-200 [&::-webkit-search-cancel-button]:appearance-none"
+            className="border-line-strong bg-paper-2 text-ink placeholder:text-muted focus-visible:border-brand h-11 w-full rounded-xs border pr-3 pl-9 text-sm font-light transition-colors duration-200 [&::-webkit-search-cancel-button]:appearance-none"
           />
         </div>
         <div id={resultsId} aria-live="polite">
@@ -185,7 +185,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                     onPointerLeave={() => onPreview(null)}
                     onFocus={() => onPreview(hub.id)}
                     onBlur={() => onPreview(null)}
-                    className="group/result hover:text-accent-ink flex min-h-11 w-full items-center justify-between gap-4 py-2 text-left transition-colors"
+                    className="group/result hover:text-brand-deep flex min-h-11 w-full items-center justify-between gap-4 py-2 text-left transition-colors"
                   >
                     <span>
                       <span className="font-display block text-lg leading-tight">{hub.name}</span>
@@ -193,7 +193,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                     </span>
                     <ArrowRightIcon
                       aria-hidden="true"
-                      className="text-accent size-4 shrink-0 transition-transform duration-200 group-hover/result:translate-x-0.5"
+                      className="text-brand size-4 shrink-0 transition-transform duration-200 group-hover/result:translate-x-0.5"
                     />
                   </button>
                 </li>
@@ -205,7 +205,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
               <span>{copy.noMatch(trimmed)}</span>
               <Link
                 href="/quote"
-                className="text-accent-ink font-mono text-[11px] tracking-[0.14em] uppercase underline-offset-4 hover:underline"
+                className="text-brand-deep font-mono text-[11px] tracking-[0.14em] uppercase underline-offset-4 hover:underline"
               >
                 {copy.noMatchAction}
               </Link>
@@ -226,7 +226,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                   aria-pressed={active}
                   onClick={() => onRegion(active ? "all" : row.id)}
                   className={`group/region flex min-h-12 w-full flex-col justify-center gap-2 py-2.5 text-left transition-colors ${
-                    active ? "text-accent-ink" : "text-ink hover:text-accent-ink"
+                    active ? "text-brand-deep" : "text-ink hover:text-brand-deep"
                   }`}
                 >
                   <span className="flex w-full items-baseline justify-between gap-4">
@@ -238,7 +238,7 @@ function Overview({ hubs, region, onRegion, onSelect, onPreview }: OverviewProps
                   <span aria-hidden="true" className="bg-line relative block h-px w-full">
                     <span
                       className={`absolute inset-y-0 left-0 block origin-left transition-colors ${
-                        active ? "bg-accent" : "bg-ink-2/50 group-hover/region:bg-accent"
+                        active ? "bg-brand" : "bg-ink-2/50 group-hover/region:bg-brand"
                       }`}
                       style={{ width: `${String(Math.round(row.share * 100))}%` }}
                     />
@@ -298,7 +298,7 @@ function Corridor({ hub, headingRef, onClose }: CorridorProps) {
             : `${hub.state} · ${regionLabel(hub.region)}`}
         </p>
         {hub.primary && (
-          <p className="text-accent-ink border-accent mt-3 inline-block border-l pl-2.5 font-mono text-[10px] tracking-[0.18em] uppercase">
+          <p className="text-brand-deep border-brand mt-3 inline-block border-l pl-2.5 font-mono text-[10px] tracking-[0.18em] uppercase">
             {copy.primaryTag}
           </p>
         )}

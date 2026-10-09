@@ -81,7 +81,7 @@ export function MotionShowcase() {
           note="Clip-path wipe opens downward; media settles from 1.08 scale."
         >
           <ImageCurtain className="aspect-[16/10]">
-            <div className="bg-accent-ink text-paper flex h-full w-full items-center justify-center">
+            <div className="bg-brand-deep text-paper flex h-full w-full items-center justify-center">
               <p className="font-mono text-xs tracking-[0.2em] uppercase">Media reveals here</p>
             </div>
           </ImageCurtain>
@@ -116,11 +116,11 @@ export function MotionShowcase() {
               <path
                 data-trace
                 d="M8 100 C 80 100, 90 20, 160 20 S 250 90, 312 40"
-                stroke="var(--accent)"
+                stroke="var(--brand)"
                 strokeWidth="2"
               />
-              <circle cx="8" cy="100" r="4" fill="var(--accent)" />
-              <circle cx="312" cy="40" r="4" fill="var(--accent)" />
+              <circle cx="8" cy="100" r="4" fill="var(--brand)" />
+              <circle cx="312" cy="40" r="4" fill="var(--brand)" />
             </svg>
           </CorridorTrace>
         </DemoPanel>
@@ -134,7 +134,7 @@ export function MotionShowcase() {
             {company.services.map((service) => (
               <span key={service} className="flex items-center">
                 <span className="font-display mx-6 text-xl whitespace-nowrap">{service}</span>
-                <span aria-hidden="true" className="text-accent">
+                <span aria-hidden="true" className="text-brand">
                   ·
                 </span>
               </span>

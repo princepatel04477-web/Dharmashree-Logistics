@@ -223,7 +223,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
         className={cn(
-          "border-line text-ink hover:border-accent hover:text-accent-ink",
+          "border-line text-ink hover:border-brand hover:text-brand-deep",
           "inline-flex size-11 shrink-0 items-center justify-center rounded-xs border transition-colors duration-200",
         )}
       >
@@ -323,7 +323,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                         href={item.href}
                         onClick={close}
                         aria-current={pathname.startsWith(item.href) ? "page" : undefined}
-                        className="text-ink-2 hover:text-accent-ink inline-flex min-h-11 items-center font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+                        className="text-ink-2 hover:text-brand-deep inline-flex min-h-11 items-center font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
                       >
                         {item.label}
                       </Link>
@@ -347,7 +347,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                           href={line.href}
                           target="_blank"
                           rel="noopener"
-                          className="text-ink-2 hover:text-accent-ink text-sm font-light transition-colors duration-200"
+                          className="text-ink-2 hover:text-brand-deep text-sm font-light transition-colors duration-200"
                         >
                           {line.text}
                         </a>
@@ -359,7 +359,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                         href={link.href}
                         target={link.kind === "whatsapp" ? "_blank" : undefined}
                         rel={link.kind === "whatsapp" ? "noopener" : undefined}
-                        className="font-display text-ink hover:text-accent-ink text-lg transition-colors duration-200"
+                        className="font-display text-ink hover:text-brand-deep text-lg transition-colors duration-200"
                       >
                         {link.label}
                       </a>

@@ -9,7 +9,7 @@ import { GSAP_EASES, MOTION_DURATIONS, MOTION_STAGGER } from "@/lib/motion-token
 
 /* The LR slip, drawn rather than photographed: inline SVG line art, hairlines
    in the house ink, and the one thing worth pointing at — the number field — in
-   the accent. It is GSAP's, because it draws itself on entry (house rule 8), and
+   --brand. It is GSAP's, because it draws itself on entry (house rule 8), and
    it is decoration: the caption under it carries the meaning, so the drawing is
    `aria-hidden` and no text inside it is read out.
 
@@ -161,7 +161,7 @@ export function LrSlip() {
           className="stroke-brand"
           strokeWidth="1"
         />
-        {/* The line the number sits on: the only accent stroke inside the slip. */}
+        {/* The line the number sits on: the only soft --brand stroke inside the slip. */}
         <line
           data-draw
           x1="206"

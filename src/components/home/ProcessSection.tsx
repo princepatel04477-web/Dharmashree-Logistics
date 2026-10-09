@@ -9,7 +9,7 @@ import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { gsap, settleScrollTriggers, useGSAP } from "@/lib/gsap";
 import { cn } from "@/lib/utils";
-import { processIcon, SECTION_INDEX_CLASS, SECTION_TITLE_CLASS } from "./shared";
+import { processIcon, SECTION_TITLE_CLASS } from "./shared";
 import { SlotPhoto } from "./SlotPhoto";
 
 /* H4 · How a consignment moves, on white. From `lg` up the section pins and a
@@ -173,7 +173,6 @@ export function ProcessSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            className={SECTION_INDEX_CLASS}
             titleClassName={SECTION_TITLE_CLASS}
           />
 

@@ -874,13 +874,13 @@ export function IndiaNetworkMap({
                   aria-pressed={on}
                   onClick={() => handleRegion(entry.id)}
                   className={`relative inline-flex min-h-11 items-baseline gap-2 py-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors ${
-                    on ? "text-accent-ink font-medium" : "text-muted hover:text-ink"
+                    on ? "text-brand-deep font-medium" : "text-muted hover:text-ink"
                   }`}
                 >
                   {on && (
                     <motion.span
                       layoutId="region-pill"
-                      className="bg-accent absolute inset-x-0 bottom-1 h-px"
+                      className="bg-brand absolute inset-x-0 bottom-1 h-px"
                       transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
                     />
                   )}
@@ -913,7 +913,7 @@ export function IndiaNetworkMap({
                   networkMap.readoutIdle
                 ) : (
                   <>
-                    {networkMap.originLabel} <span className="text-accent">→</span>{" "}
+                    {networkMap.originLabel} <span className="text-brand">→</span>{" "}
                     <span className="text-ink">{active.name}</span>
                   </>
                 )}

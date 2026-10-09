@@ -10,7 +10,7 @@ interface ShinyTextProps {
   className?: string;
 }
 
-/* Sheen sweep across deep-gold text. Single production use: the branch
+/* Sheen sweep across brand-blue text. Single production use: the branch
    announcement label (rendered only when company.branches is non-empty).
    Static solid text when disabled or under reduced motion. */
 export function ShinyText({ text, disabled = false, speed = 4, className = "" }: ShinyTextProps) {
@@ -18,12 +18,12 @@ export function ShinyText({ text, disabled = false, speed = 4, className = "" }:
   const static_ = disabled || prefersReduced === true;
 
   if (static_) {
-    return <span className={`text-gold-deep inline-block ${className}`}>{text}</span>;
+    return <span className={`text-brand inline-block ${className}`}>{text}</span>;
   }
 
   const style: CSSProperties = {
     backgroundImage:
-      "linear-gradient(120deg, var(--gold-deep) 0%, var(--gold-deep) 40%, color-mix(in srgb, var(--gold-deep) 20%, var(--paper-2)) 50%, var(--gold-deep) 60%, var(--gold-deep) 100%)",
+      "linear-gradient(120deg, var(--brand) 0%, var(--brand) 40%, color-mix(in srgb, var(--brand) 20%, var(--paper-2)) 50%, var(--brand) 60%, var(--brand) 100%)",
     backgroundSize: "200% 100%",
     WebkitBackgroundClip: "text",
     backgroundClip: "text",

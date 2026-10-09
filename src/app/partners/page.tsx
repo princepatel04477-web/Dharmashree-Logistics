@@ -11,7 +11,6 @@ import { QuoteStepper } from "@/components/vendor/origin";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { partners, partnersPage } from "@/content/partners";
 import { images } from "@/content/images";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/partners` — delivery partners (Prompt 13). The company profile's Delivery
    Partner page: the four reasons to join (set as an asymmetric list, not a row
@@ -36,7 +35,7 @@ export default function PartnersPage() {
   const { benefits, onboarding, network, join } = partnersPage;
 
   return (
-    <InnerPage>
+    <>
       <PageIntro
         eyebrow={partnersPage.eyebrow}
         title={partnersPage.title}
@@ -166,6 +165,6 @@ export default function PartnersPage() {
           </div>
         </div>
       </section>
-    </InnerPage>
+    </>
   );
 }

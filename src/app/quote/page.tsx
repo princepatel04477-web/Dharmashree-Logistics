@@ -3,7 +3,6 @@ import { PageIntro } from "@/components/layout/PageIntro";
 import { QuoteAside } from "@/components/quote/QuoteAside";
 import { QuoteForm } from "@/components/quote/QuoteForm";
 import { quote } from "@/content/quote";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/quote` — the enquiry form (Prompt 08).
 
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function QuotePage() {
   return (
-    <InnerPage>
+    <>
       <PageIntro eyebrow={quote.eyebrow} title={quote.title} lede={responseLine} />
 
       <section className="py-14 sm:py-16 lg:py-20">
@@ -38,6 +37,6 @@ export default function QuotePage() {
           <QuoteAside />
         </div>
       </section>
-    </InnerPage>
+    </>
   );
 }

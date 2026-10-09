@@ -83,7 +83,7 @@ function TimelineDate({ asChild = false, className, ...props }: TimelineDateProp
   return (
     <Comp
       className={cn(
-        "label-caps text-gold-deep mb-1 block group-data-[orientation=vertical]/timeline:max-sm:h-4",
+        "label-caps text-brand mb-1 block group-data-[orientation=vertical]/timeline:max-sm:h-4",
         className,
       )}
       data-slot="timeline-date"
@@ -105,7 +105,7 @@ function TimelineIndicator({
     <div
       aria-hidden="true"
       className={cn(
-        "border-signal/40 bg-paper-2 group-data-completed/timeline-item:border-signal absolute size-3.5 rounded-full border-2 group-data-[orientation=horizontal]/timeline:-top-6 group-data-[orientation=horizontal]/timeline:left-0 group-data-[orientation=horizontal]/timeline:-translate-y-1/2 group-data-[orientation=vertical]/timeline:top-0 group-data-[orientation=vertical]/timeline:-left-6 group-data-[orientation=vertical]/timeline:-translate-x-1/2",
+        "border-brand/40 bg-paper-2 group-data-completed/timeline-item:border-brand absolute size-3.5 rounded-full border-2 group-data-[orientation=horizontal]/timeline:-top-6 group-data-[orientation=horizontal]/timeline:left-0 group-data-[orientation=horizontal]/timeline:-translate-y-1/2 group-data-[orientation=vertical]/timeline:top-0 group-data-[orientation=vertical]/timeline:-left-6 group-data-[orientation=vertical]/timeline:-translate-x-1/2",
         className,
       )}
       data-slot="timeline-indicator"
@@ -126,7 +126,7 @@ function TimelineItem({ step, className, ...props }: TimelineItemProps) {
   return (
     <div
       className={cn(
-        "group/timeline-item has-[+[data-completed]]:[&_[data-slot=timeline-separator]]:bg-signal relative flex flex-1 flex-col gap-0.5 group-data-[orientation=horizontal]/timeline:mt-8 group-data-[orientation=horizontal]/timeline:not-last:pe-8 group-data-[orientation=vertical]/timeline:ms-8 group-data-[orientation=vertical]/timeline:not-last:pb-12",
+        "group/timeline-item has-[+[data-completed]]:[&_[data-slot=timeline-separator]]:bg-brand relative flex flex-1 flex-col gap-0.5 group-data-[orientation=horizontal]/timeline:mt-8 group-data-[orientation=horizontal]/timeline:not-last:pe-8 group-data-[orientation=vertical]/timeline:ms-8 group-data-[orientation=vertical]/timeline:not-last:pb-12",
         className,
       )}
       data-completed={step <= activeStep || undefined}

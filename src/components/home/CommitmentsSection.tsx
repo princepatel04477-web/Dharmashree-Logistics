@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { commitments, sectionHeadings, sectionLinks } from "@/content/home";
-import { commitmentIcon, HomeIcon, SECTION_INDEX_CLASS, SECTION_TITLE_CLASS } from "./shared";
+import { commitmentIcon, HomeIcon, SECTION_TITLE_CLASS } from "./shared";
 
 /* H6 · How we work, on white. The commitments from the company profile, each
    with a lucide icon in a `--brand-tint` circle, a `--brand` number and its
@@ -22,7 +22,6 @@ export function CommitmentsSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            className={SECTION_INDEX_CLASS}
             titleClassName={SECTION_TITLE_CLASS}
           />
           <Link

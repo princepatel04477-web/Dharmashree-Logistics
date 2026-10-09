@@ -22,7 +22,6 @@ import { findService, serviceDetail, services, servicesIndex } from "@/content/s
 import { formatPhoneIN } from "@/lib/format";
 import { cn, numbered } from "@/lib/utils";
 import type { Service } from "@/content/types";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/services/[slug]` — the detail template (Prompt 06).
 
@@ -172,7 +171,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   }
 
   return (
-    <InnerPage>
+    <>
       {/* ——— Intro: the service's photo when the file exists, a solid
               --brand-deep band until then. The H1 is server-rendered, then split
               client-side. ——— */}
@@ -256,7 +255,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           <NeighbourLink service={next} side="next" />
         </div>
       </nav>
-    </InnerPage>
+    </>
   );
 }
 

@@ -88,7 +88,7 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
               aria-pressed={active}
               onClick={() => setFilter(entry.id)}
               className={`min-h-[44px] py-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors ${
-                active ? "text-accent font-medium" : "text-muted hover:text-ink"
+                active ? "text-brand font-medium" : "text-muted hover:text-ink"
               }`}
             >
               {entry.label}
@@ -113,7 +113,7 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
                       aria-current={selected ? "true" : undefined}
                       onClick={() => toggle(hub)}
                       className={`flex w-full items-center justify-between gap-4 py-3 text-left transition-colors ${
-                        selected ? "text-accent" : "text-ink hover:text-accent"
+                        selected ? "text-brand" : "text-ink hover:text-brand"
                       }`}
                     >
                       <span>
@@ -122,7 +122,7 @@ export function HubDirectory({ hubs, className = "" }: HubDirectoryProps) {
                       </span>
                       <span className="shrink-0 text-right font-mono text-[11px]">
                         {hub.transitDays !== null && (
-                          <span className="text-accent block">
+                          <span className="text-brand block">
                             {hub.transitDays.min}–{hub.transitDays.max} days
                           </span>
                         )}

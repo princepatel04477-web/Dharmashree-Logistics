@@ -23,6 +23,12 @@ const ASPECT = VB_H / VB_W;
 const MIN_ZOOM_WIDTH = 235;
 const ZOOM_PADDING = 0.22;
 
+/** A percentage of a box, as a CSS length with fixed precision, so the server
+   and the client serialise the same text for the same position. */
+export function percentOf(offset: number, size: number): string {
+  return `${((offset / size) * 100).toFixed(3)}%`;
+}
+
 export function viewBoxString(vb: ViewBox): string {
   return `${vb.x.toFixed(2)} ${vb.y.toFixed(2)} ${vb.w.toFixed(2)} ${vb.h.toFixed(2)}`;
 }

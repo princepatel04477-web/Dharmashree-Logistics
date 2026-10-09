@@ -10,7 +10,6 @@ import { TrackPanel } from "@/components/track/TrackPanel";
 import { company } from "@/content/company";
 import { images } from "@/content/images";
 import { track } from "@/content/track";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/track` — the AWB / LR handoff (Prompts 08 and 12).
 
@@ -37,7 +36,7 @@ export const metadata: Metadata = {
 
 export default function TrackPage() {
   return (
-    <InnerPage>
+    <>
       <PageIntro
         eyebrow={track.eyebrow}
         title={track.title}
@@ -138,6 +137,6 @@ export default function TrackPage() {
           </div>
         </div>
       </section>
-    </InnerPage>
+    </>
   );
 }

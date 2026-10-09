@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { sectionHeadings, sectionLinks } from "@/content/home";
 import { services } from "@/content/services";
-import { SECTION_INDEX_CLASS, SECTION_TITLE_CLASS } from "./shared";
+import { SECTION_TITLE_CLASS } from "./shared";
 import { ServiceTile } from "./ServiceTile";
 
 /* H2 · Services, on white. Four photo cards, two by two from `md` up and one
@@ -21,7 +21,6 @@ export function ServicesSection() {
           <SectionHeading
             index={heading.index}
             title={heading.title}
-            className={SECTION_INDEX_CLASS}
             titleClassName={SECTION_TITLE_CLASS}
           />
           <Link

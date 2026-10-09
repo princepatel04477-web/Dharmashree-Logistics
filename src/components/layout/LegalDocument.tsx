@@ -1,13 +1,12 @@
 import { PageIntro } from "@/components/layout/PageIntro";
 import type { LegalDoc } from "@/content/legal";
 import { formatDateIN } from "@/lib/format";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/privacy` and `/terms`: the intro band, then numbered sections on a
    reading measure, each title in the left four columns at `lg`. */
 export function LegalDocument({ doc }: { doc: LegalDoc }) {
   return (
-    <InnerPage>
+    <>
       <PageIntro
         eyebrow={doc.eyebrow}
         title={doc.title}
@@ -45,6 +44,6 @@ export function LegalDocument({ doc }: { doc: LegalDoc }) {
           </ol>
         </div>
       </section>
-    </InnerPage>
+    </>
   );
 }

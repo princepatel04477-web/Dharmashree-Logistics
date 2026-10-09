@@ -29,10 +29,6 @@ const TOKENS: TokenSpec[] = [
   { name: "--brand-tint", use: "surface", criterion: "background" },
   { name: "--signal-red", use: "decorative", criterion: "small marks only, never text" },
   { name: "--highway", use: "decorative", criterion: "highlights only, text on it is --ink" },
-  { name: "--accent", use: "text", criterion: "AA text ≥ 4.5 (alias of --brand)" },
-  { name: "--accent-ink", use: "text", criterion: "AA text ≥ 4.5 (alias of --brand-deep)" },
-  { name: "--signal", use: "decorative", criterion: "alias of --highway" },
-  { name: "--gold-deep", use: "text", criterion: "AA text ≥ 4.5" },
 ];
 
 interface Rgb {
@@ -169,9 +165,9 @@ export function TokenGrid() {
             <p
               className={
                 state === "pass"
-                  ? "label-caps text-gold-deep"
+                  ? "label-caps text-brand"
                   : state === "fail"
-                    ? "label-caps text-accent"
+                    ? "label-caps text-brand"
                     : "label-caps"
               }
             >

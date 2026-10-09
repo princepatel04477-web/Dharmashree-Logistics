@@ -16,7 +16,6 @@ import { images } from "@/content/images";
 import { industries } from "@/content/industries";
 import { services } from "@/content/services";
 import { timeline } from "@/content/timeline";
-import { InnerPage } from "@/components/layout/InnerPage";
 
 /* `/about`. The company profile's own story (Prompt 10): the tagline as the
    H1, the three things logistics is about, the four commitments as a pinned
@@ -38,7 +37,7 @@ export default function AboutPage() {
   const carriedFor = industries();
 
   return (
-    <InnerPage>
+    <>
       <PageIntro
         eyebrow={about.eyebrow}
         title={about.title}
@@ -213,6 +212,6 @@ export default function AboutPage() {
       )}
 
       <QuoteBand />
-    </InnerPage>
+    </>
   );
 }
