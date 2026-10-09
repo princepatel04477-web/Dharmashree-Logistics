@@ -1,24 +1,34 @@
-/* DharmaShree Logistics — design tokens, ported 1:1 from Maa Sheetla.
-   Provenance for every value: docs/token-map.md.
+/* DharmaShree Logistics — design tokens ("DharmaShree Blue").
+   The palette is sampled from public/brand/dharmashree-logo.png; the type and
+   spacing scale come from the Maa Sheetla port. Provenance: docs/token-map.md.
    House rule 5: components reference these tokens (directly or via Tailwind
    utilities) and never hard-code a colour or font stack. */
 
 :root {
   /* ——— Colour roles ——— */
-  --paper: #fcfbf7;
-  --paper-2: #ffffff;
-  --paper-3: #f6f2ec;
+  --paper: #ffffff;
+  --paper-2: #f5f7fa;
+  --paper-3: #eef2f7;
 
-  --ink: #1c1917;
+  --ink: #14171f;
   --ink-2: #665e59;
   --muted: #665e59;
 
-  --line: rgba(28, 25, 23, 0.08);
-  --line-strong: rgba(28, 25, 23, 0.18);
+  --line: rgba(20, 23, 31, 0.1);
+  --line-strong: rgba(20, 23, 31, 0.2);
 
-  --accent: #8b2628;
-  --accent-ink: #6d1b1d;
-  --signal: #a67c26;
+  /* Brand (sampled from the logo) */
+  --brand: #2860b0;
+  --brand-deep: #123a73;
+  --brand-tint: #eaf1fb;
+  --signal-red: #ff3131;
+  --highway: #f5a623;
+
+  /* Retired Maa Sheetla names, kept as aliases for one release so nothing
+     breaks. Phase 6 of docs/antigravity-redesign-plan.md removes them. */
+  --accent: var(--brand);
+  --accent-ink: var(--brand-deep);
+  --signal: var(--highway);
   --gold-deep: #8a6715;
 
   --scrollbar-thumb: #e5dfc8;
@@ -29,12 +39,12 @@
   --map-land-stroke: #665154;
 
   /* Network map, light ground (Maa Sheetla's nation stroke is rgba(28,25,23,.35)) */
-  --map-border: rgba(28, 25, 23, 0.35);
-  --map-state-line: rgba(28, 25, 23, 0.1);
+  --map-border: rgba(20, 23, 31, 0.35);
+  --map-state-line: rgba(20, 23, 31, 0.1);
   --map-land-quiet: var(--paper-2);
-  --map-land-served: var(--paper-3);
-  --map-land-focus: #efe7da;
-  --map-corridor: rgba(28, 25, 23, 0.13);
+  --map-land-served: var(--brand-tint);
+  --map-land-focus: color-mix(in srgb, var(--brand) 16%, var(--paper));
+  --map-corridor: color-mix(in srgb, var(--brand) 35%, transparent);
   --map-halo: var(--paper);
 
   /* ——— Typography ———
@@ -73,14 +83,15 @@
 
   /* ——— Radius ——— */
   --radius-2xs: 1px;
-  --radius-xs: 2px;
-  --radius-sm: 2px;
+  --radius-xs: 6px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
 
   /* ——— Shadows ——— */
-  --shadow-2xs: 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-xs: 0 1px 3px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-accent-glow: 0 0 30px rgba(139, 38, 40, 0.18);
-  --shadow-signal-glow: 0 0 30px rgba(166, 124, 38, 0.18);
-  --shadow-card: 0 4px 20px -2px rgba(28, 25, 23, 0.06), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
-  --shadow-card-lift: 0 4px 20px -2px rgba(28, 25, 23, 0.1), 0 2px 6px -1px rgba(28, 25, 23, 0.06);
+  --shadow-2xs: 0 1px 2px rgba(20, 23, 31, 0.04);
+  --shadow-xs: 0 1px 3px rgba(20, 23, 31, 0.07), 0 1px 2px rgba(20, 23, 31, 0.04);
+  --shadow-accent-glow: 0 0 30px rgba(40, 96, 176, 0.18);
+  --shadow-signal-glow: 0 0 30px rgba(245, 166, 35, 0.18);
+  --shadow-card: 0 4px 20px -2px rgba(20, 23, 31, 0.06), 0 2px 6px -1px rgba(20, 23, 31, 0.04);
+  --shadow-card-lift: 0 4px 20px -2px rgba(20, 23, 31, 0.1), 0 2px 6px -1px rgba(20, 23, 31, 0.06);
 }

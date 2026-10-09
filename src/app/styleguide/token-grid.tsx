@@ -24,9 +24,14 @@ const TOKENS: TokenSpec[] = [
   { name: "--muted", use: "text", criterion: "AA text ≥ 4.5" },
   { name: "--line", use: "decorative", criterion: "non-text" },
   { name: "--line-strong", use: "decorative", criterion: "non-text" },
-  { name: "--accent", use: "text", criterion: "AA text ≥ 4.5" },
-  { name: "--accent-ink", use: "text", criterion: "AA text ≥ 4.5" },
-  { name: "--signal", use: "large", criterion: "AA large ≥ 3.0" },
+  { name: "--brand", use: "text", criterion: "AA text ≥ 4.5" },
+  { name: "--brand-deep", use: "text", criterion: "AA text ≥ 4.5" },
+  { name: "--brand-tint", use: "surface", criterion: "background" },
+  { name: "--signal-red", use: "decorative", criterion: "small marks only, never text" },
+  { name: "--highway", use: "decorative", criterion: "highlights only, text on it is --ink" },
+  { name: "--accent", use: "text", criterion: "AA text ≥ 4.5 (alias of --brand)" },
+  { name: "--accent-ink", use: "text", criterion: "AA text ≥ 4.5 (alias of --brand-deep)" },
+  { name: "--signal", use: "decorative", criterion: "alias of --highway" },
   { name: "--gold-deep", use: "text", criterion: "AA text ≥ 4.5" },
 ];
 

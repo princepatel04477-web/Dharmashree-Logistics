@@ -4,9 +4,9 @@
 2. No `console.log` / `console.*` anywhere in shipped code. Surface errors in UI state.
 3. Complete working code only: no stubs, TODOs, "lorem ipsum" or placeholder copy. All copy comes from `src/content/**`.
 4. Facts (years, fleet size, hub counts, phone numbers) come ONLY from `src/content/company.ts`. If a field is `null`, the UI hides that element. Never invent a number.
-5. Visual language = Maa Sheetla. Tokens live in `src/styles/tokens.css`. Never hard-code a hex value or font-family in a component.
-6. Accent restraint: the accent colour appears only as hairlines, outlines, icon strokes, dividers, small caps labels and the map's corridor trace. Never as a large fill. The ONE filled button on any page is the primary "Request a quote" CTA.
-7. Forbidden: countdown timers, star ratings, fake testimonials, trust-badge rows, "limited offer" banners, pop-up modals on load, emoji in UI, stock gradients, glassmorphism stacks, generic 3-equal-card feature grids.
+5. Visual language = "DharmaShree Blue". Tokens live in `src/styles/tokens.css`. Never hard-code a hex value or font-family in a component.
+6. Colour use: `--brand` (logo blue) is the primary colour for links, icons, the active nav item and the filled primary CTA. `--brand-deep` is for full-width bands (hero overlay, quote band, footer). `--brand-tint` and `--paper-2` alternate as section grounds. `--signal-red` is only for small marks (status dots, the Surat pin, badges). `--highway` amber is only for highlights, and text on it is always `--ink`. Every page has at most two filled buttons: the primary "Request a quote" (brand fill) and one secondary action.
+7. Forbidden: countdown timers, star ratings, fake testimonials, invented client logos, "limited offer" banners, pop-up modals on load, emoji in UI, glassmorphism stacks, rainbow or multi-hue gradients. Allowed: photography from `assets/originals` (through `ResponsiveImage`), a single-hue `--brand-deep` overlay on photos for text legibility, and icon badges on `--brand-tint`. No AI-generated image may show readable text, logos, number plates, or people presented as DharmaShree staff or customers.
 8. Animation ownership (one owner per element, never two):
    - GSAP: anything scroll-driven, pinned, scrubbed, SVG-drawn, or timeline-sequenced (map, section reveals, process pin).
    - Framer Motion (`motion/react`): the finishing layer — hover/tap micro-interactions, `layout`/`layoutId` transitions, `AnimatePresence` for panels, drawers, route transitions.

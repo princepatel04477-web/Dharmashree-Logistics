@@ -23,6 +23,47 @@ for both schemes) — so none is created here.
 
 Contrast ratios below are relative luminance vs `--paper` (#FCFBF7) unless noted.
 
+## 0. DharmaShree Blue redesign (supersedes the colour values in §1)
+
+**Why:** the client's feedback is that the site is not colourful enough and does
+not read as a logistics business. The palette below is sampled from the logo
+(`public/brand/dharmashree-logo.png`). The plan is in
+`docs/antigravity-redesign-plan.md`; house rules 5–7 in `AGENTS.md` were
+rewritten to match. The Maa Sheetla values in §1 remain as provenance for the
+original port; where a token appears in both tables, this table wins.
+
+| Token               | Value                                 | Use                                                                                                   |
+| ------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--brand`           | `#2860B0`                             | Logo blue. Links, icons, active nav, filled primary CTA, focus ring. White on it is about 6.2:1 (AA). |
+| `--brand-deep`      | `#123A73`                             | Full-width bands: hero overlay, quote band, footer.                                                   |
+| `--brand-tint`      | `#EAF1FB`                             | Pale blue section ground, alternating with white. Icon badges.                                        |
+| `--signal-red`      | `#FF3131`                             | Small marks only: status dots, the Surat pin, badges. Never text.                                     |
+| `--highway`         | `#F5A623`                             | Highlights: step numbers, corridors on dark ground, underline marks. Text on it is always `--ink`.    |
+| `--ink`             | `#14171F`                             | Body text (was `#1C1917`): a cooler near-black beside the blue.                                       |
+| `--paper`           | `#FFFFFF`                             | Main ground (was cream `#FCFBF7`).                                                                    |
+| `--paper-2`         | `#F5F7FA`                             | Card ground on tinted sections (was white `#FFFFFF`).                                                 |
+| `--paper-3`         | `#EEF2F7`                             | Deepest neutral: badges, inputs (was `#F6F2EC`).                                                      |
+| `--line`            | `rgba(20,23,31,.10)`                  | Hairlines (was `rgba(28,25,23,.08)`).                                                                 |
+| `--line-strong`     | `rgba(20,23,31,.20)`                  | Stronger borders (was `rgba(28,25,23,.18)`).                                                          |
+| `--radius-xs`       | `6px`                                 | Was `2px`. `--radius-sm` is also `6px`.                                                               |
+| `--radius-md`       | `12px`                                | New: cards, the hero track card. Exposed as `rounded-md`.                                             |
+| `--map-land-quiet`  | `var(--paper-2)`                      | Network map land.                                                                                     |
+| `--map-land-served` | `var(--brand-tint)`                   | Network map served land.                                                                              |
+| `--map-land-focus`  | `color-mix(--brand 16%, --paper)`     | Network map focused region (was `#EFE7DA`).                                                           |
+| `--map-corridor`    | `color-mix(--brand 35%, transparent)` | Network map corridor trace.                                                                           |
+
+Shadows and the map border / state-line colours were re-based on the new ink
+(`rgb(20,23,31)`); the glows use `--brand` and `--highway`.
+
+**Retired names, kept as aliases for one release** (Phase 6 removes them):
+`--accent: var(--brand)`, `--accent-ink: var(--brand-deep)`,
+`--signal: var(--highway)`. `--gold-deep` keeps its Maa Sheetla value until
+Phase 6 re-homes its few remaining users.
+
+Tailwind utilities: `bg-brand`, `text-brand`, `border-brand`,
+`bg-brand-deep`, `bg-brand-tint`, `text-signal-red`, `bg-signal-red`,
+`bg-highway`, `text-highway`, and so on, from `--color-*` in `globals.css`.
+
 ## 1. Colour roles
 
 | Our token           | Value                | Source value                                   | Contrast | Notes                                                                                                                                                                                                            |

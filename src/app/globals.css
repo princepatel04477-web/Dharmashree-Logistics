@@ -14,6 +14,11 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-signal: var(--signal);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-tint: var(--brand-tint);
+  --color-signal-red: var(--signal-red);
+  --color-highway: var(--highway);
   --color-gold-deep: var(--gold-deep);
   --color-map-ground: var(--map-ground);
   --color-map-land: var(--map-land);
@@ -43,7 +48,7 @@
   --radius-2xs: var(--radius-2xs);
   --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-sm);
+  --radius-md: var(--radius-md);
   --radius-lg: var(--radius-sm);
   --radius-xl: var(--radius-sm);
 
