@@ -105,6 +105,12 @@ export function HeroSection() {
         aria-hidden="true"
         className="from-brand-deep/85 to-brand-deep/70 md:from-brand-deep/85 md:to-brand-deep/10 absolute inset-0 -z-10 bg-linear-to-b md:bg-linear-to-r"
       />
+      {/* Same hue again, top edge only: the bright sky behind the headline
+          would otherwise leave the 60px title under 3:1. It is clear by 55%. */}
+      <div
+        aria-hidden="true"
+        className="from-brand-deep/45 absolute inset-0 -z-10 hidden bg-linear-to-b via-transparent via-55% to-transparent md:block"
+      />
 
       <div className="wrap flex w-full flex-col gap-10 py-12 sm:py-16 lg:gap-12 lg:pt-16 lg:pb-0">
         <div className="flex max-w-3xl flex-col items-start gap-6 lg:max-w-[44rem]">

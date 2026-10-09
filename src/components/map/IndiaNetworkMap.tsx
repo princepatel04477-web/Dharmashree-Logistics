@@ -885,7 +885,7 @@ export function IndiaNetworkMap({
                     />
                   )}
                   <span className="relative">{entry.label}</span>
-                  <span className="relative text-[10px] tracking-normal opacity-70">
+                  <span className="relative text-[10px] tracking-normal">
                     {regionCounts.get(entry.id) ?? 0}
                   </span>
                 </button>

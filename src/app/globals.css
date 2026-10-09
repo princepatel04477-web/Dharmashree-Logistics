@@ -507,7 +507,7 @@
     line-height: 12px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ink-2);
+    color: var(--ink);
     pointer-events: none;
     text-shadow:
       0 0 2px var(--map-halo),
