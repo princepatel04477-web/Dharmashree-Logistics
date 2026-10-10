@@ -180,7 +180,7 @@ export function HeroTabs(): ReactElement {
             active !== "track" && "lg:invisible",
           )}
         >
-          <TrackPanel />
+          <TrackPanel context="hero" />
         </div>
         <div
           role="tabpanel"

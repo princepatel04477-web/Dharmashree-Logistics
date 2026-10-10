@@ -1,4 +1,5 @@
-/* The tracking flow's three calls: send a code, verify it, read the LR.
+/* The tracking flow's calls: send a code, verify it, read the LR — and, in
+   "direct" mode, look an LR up by its number alone.
 
    Transport only. What to send and how to read the reply is `adapter.ts`; this
    file adds the base URL, a timeout, and the rules every call shares:
@@ -16,6 +17,7 @@ import { formatMaskedMobileIN } from "@/lib/format";
 import { normalizeLr, normalizePhone } from "@/lib/validate";
 import {
   buildFetchLrRequest,
+  buildLookupLrRequest,
   buildSendOtpRequest,
   buildVerifyOtpRequest,
   mapErrorResponse,
@@ -150,4 +152,17 @@ export async function fetchLr(
   return send("fetchLr", buildFetchLrRequest(lrNumber, session), (body) =>
     parseLrRecord(body, lrNumber),
   );
+}
+
+/** The direct lookup: the LR number alone, no SMS code ("direct" mode). */
+export async function lookupLr(lr: string): Promise<BackendResult<LrRecord>> {
+  const lrNumber = normalizeLr(lr);
+
+  if (backendMode === "mock-direct") {
+    const mock = await loadMock();
+    return mock === null ? UNCONFIGURED : mock.lookupLr(lrNumber);
+  }
+  if (backendMode !== "direct") return UNCONFIGURED;
+
+  return send("lookupLr", buildLookupLrRequest(lrNumber), (body) => parseLrRecord(body, lrNumber));
 }

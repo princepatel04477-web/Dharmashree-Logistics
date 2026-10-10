@@ -23,8 +23,17 @@
                    111111  TooManyAttempts
                    anything else  OtpInvalid; the third wrong code in a row is
                    TooManyAttempts.
-   The resend timer is 10 seconds, so it can be watched. */
+   The resend timer is 10 seconds, so it can be watched.
 
+   Direct lookup (`mock-direct`, no SMS code) — answered by running a sample
+   E-Transport record through `vendor-lr.ts`, the same reader the Pages Function
+   uses, so the whole chain is exercised:
+     SRT-1001   in transit, every slip section filled
+     SRT-1002   delivered, a sparse record (only what booking requires)
+     SRT-1003   a network failure
+     anything else  NotFound */
+
+import { parseLrQuery, readVendorLr } from "./vendor-lr";
 import {
   mapErrorResponse,
   parseLrRecord,
@@ -196,5 +205,94 @@ export async function fetchLr(
   if (lr !== KNOWN_LR) return fail("fetchLr", { status: 404, body: { code: "LR_NOT_FOUND" } });
 
   const record = parseLrRecord(sampleLr(), lr);
+  return record === null ? { ok: false, error: "BadResponse" } : { ok: true, data: record };
+}
+
+/* ——— Direct lookup ——— */
+
+/** `/Date(ms)/`, as the vendor writes a date, `days` ago at an India time. */
+function dotnetDate(days: number, hour: number, minute: number): string {
+  return `/Date(${String(Date.parse(istMoment(days, hour, minute)))})/`;
+}
+
+function vendorSample(lrno: string): Record<string, unknown> | null {
+  if (lrno === "1001") {
+    return {
+      Lrdate: dotnetDate(1, 11, 0),
+      FromBranchCode: "SRT",
+      FromStation: "SURAT",
+      Station: "LUCKNOW",
+      ConsignorName: "SAMPLE TEXTILE MILLS",
+      ConsignorGSTNo: "24ABCDE1234F1Z5",
+      ConsigneeName: "SAMPLE TRADERS",
+      ConsigneeGSTNo: "09ABCDE1234F1Z5",
+      ConsigneeMobile: "9876543210",
+      Package: 1,
+      PackageType: "PARCEL",
+      GrossWeight: 65,
+      ChargeWeight: 65,
+      Status: "Dispatched from Surat",
+      ChallanNo: "CH-118",
+      VehicleNo: "GJ05AB1234",
+      BookingTerms: "DOOR DELIVERY",
+      CNType: "TO PAY",
+      PartyInvoiceNo: "11741",
+      PartyInvoiceDate: "07/10/2026",
+      InvoiceValue: 92789,
+      PrivateMarkSingle: "837*1",
+      Contains: "CLOTHES",
+      EWayBillNo: "682197133510",
+      RateType: "PER PKG",
+      Freight: 480,
+      StCharge: 20,
+      Loading: 20,
+      Total: 520,
+      Advance: 0,
+      Balance: 520,
+      SupplierName: "SAMPLE DESIGNER",
+      StationAddress:
+        "AISHBAGH, MALVIYA NAGAR TIRAHA, LUCKNOW, UTTAR PRADESH. CONTACT NO : 9876500001 | 9876500002",
+      EDDDate: dotnetDate(-3, 18, 0),
+    };
+  }
+  if (lrno === "1002") {
+    return {
+      Lrdate: dotnetDate(6, 10, 30),
+      FromBranchCode: "SRT",
+      FromStation: "SURAT",
+      Station: "KANPUR",
+      ConsignorName: "SAMPLE FABRICS",
+      ConsigneeName: "SAMPLE STORES",
+      Package: 4,
+      GrossWeight: 210,
+      Status: "Delivered",
+      RecieveDate: dotnetDate(2, 9, 15),
+      DeliveryDate: dotnetDate(1, 15, 40),
+      CNType: "PAID",
+      Total: 0,
+    };
+  }
+  return null;
+}
+
+export async function lookupLr(lr: string): Promise<BackendResult<LrRecord>> {
+  await pause();
+  const query = parseLrQuery(lr);
+  if (query === null) return fail("lookupLr", { status: 400, body: null });
+  if (query.lrno === "1003") return { ok: false, error: "Network" };
+
+  const row = vendorSample(query.lrno);
+  const envelope =
+    row === null
+      ? { statuscode: "401", message: "error", data: [], count: 0 }
+      : { statuscode: "200", message: "success", data: [[row]], count: 1 };
+  const reading = readVendorLr(envelope, query);
+  if (reading.kind === "not-found") {
+    return fail("lookupLr", { status: 404, body: { code: "LR_NOT_FOUND" } });
+  }
+  if (reading.kind === "unreadable") return { ok: false, error: "BadResponse" };
+
+  /* Through JSON and the adapter, exactly as the browser would receive it. */
+  const record = parseLrRecord(JSON.parse(JSON.stringify(reading.record)) as unknown, lr);
   return record === null ? { ok: false, error: "BadResponse" } : { ok: true, data: record };
 }

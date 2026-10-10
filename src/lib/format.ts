@@ -61,3 +61,13 @@ export function formatMaskedMobileIN(masked: string): string | null {
   if (match === null) return null;
   return `+91 ••••• •${match[1] ?? ""}`;
 }
+
+/** Rupees with paise, as an LR prints them: 520 → "₹520.00", 92789 → "₹92,789.00". */
+export function formatAmountINR(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+}

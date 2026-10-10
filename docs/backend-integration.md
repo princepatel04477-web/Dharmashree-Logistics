@@ -8,6 +8,56 @@ against a documented *assumed* contract. Connecting the real API means editing
 Until the variable is set, nothing changes: `/track` and the home hero's Track tab
 keep validating the AWB / LR number and handing it to WhatsApp / email / phone.
 
+## Direct LR lookup (no SMS) — the client's E-Transport API
+
+The client's own software (E-Transport, at `dharmashreegroup.in`) publishes an LR
+inquiry API. Until SMS codes are set up, `/track` can look an LR up by its number
+alone:
+
+```
+browser ──▶ /api/lr?no=SRT-3230          functions/api/lr.ts (Cloudflare Pages Function)
+               │  parses SRT-3230 → code=SRT, lrno=3230 (a bare number → code=0, every branch)
+               ▼
+   https://dharmashreegroup.in/api/LRInquiry.ashx?apiname=lrinquiry&code=SRT&lrno=3230
+               │  src/lib/backend/vendor-lr.ts maps the record to the contract below
+               ▼
+   200 { lrNumber, bookedOn, origin, destination, consignor, consignee, packages,
+         weightKg, status, statusText, currentLocation, expectedDelivery,
+         deliveredOn, events[], details{…} }     → parseLrRecord (adapter.ts)
+```
+
+- **Switch it on:** `NEXT_PUBLIC_DSL_API_BASE=direct` at build time, then redeploy.
+  Local QA: `NEXT_PUBLIC_DSL_API_BASE=mock-direct npm run dev` (LRs `SRT-1001`,
+  `SRT-1002`, `SRT-1003` → network error; anything else → not found).
+- **What the customer sees:** what the printed LR carries — status and the desk's own
+  words for it, route, dates, vehicle, consignor and consignee (with GSTIN and
+  contact), invoice details, e-way bill, freight details, delivery address and its
+  numbers, and the movement history. A field the booking does not carry is left out.
+- **What never leaves the server:** the vendor's raw record. The function returns
+  only the contract above.
+- **In the home hero** a lookup opens `/track/?lr=…`; `/track` reads `lr` on arrival.
+- **Abuse:** LR numbers run in sequence, so one address is limited to 30 lookups in
+  5 minutes per Cloudflare isolate. Add a Cloudflare rate-limiting rule on `/api/lr`
+  (Security › WAF › Rate limiting rules) for a limit that holds across the network.
+- **Status:** read from the record's milestones (delivery date → delivered, receive
+  date → arrived, a challan or vehicle → in transit, otherwise booked), refined by
+  the words in `Status`. Tested in `npm run verify:lr`.
+
+**Blocked on the vendor (2026-10-10):** `LRInquiry.ashx` answers `401 Unauthorized`
+to every caller — anonymous, with the panel's admin login, with a logged-in panel
+session, and with the "Transporter API" user. The sibling `PartyInvoiceInquiry.ashx`
+answers anonymously, so this is access control on the LR endpoint itself. Ask the
+E-Transport vendor to enable the LR Inquiry API for this site (an API key, or
+allow-listing — note the calls come from Cloudflare, not a fixed IP). Then:
+
+1. `curl "https://dharmashreegroup.in/api/LRInquiry.ashx?apiname=lrinquiry&code=SRT&lrno=<a real LR>"`
+   and compare the field names with the ones `vendorDetails()` reads (marked "seen"
+   where confirmed from the Party Invoice reply). Adjust that one function.
+2. If they issue a key, add it as an encrypted Pages variable and send it from
+   `functions/api/lr.ts` — never in a `NEXT_PUBLIC_*` variable.
+3. Check `https://dharmashree-logistics.pages.dev/api/lr?no=<a real LR>`, then build
+   with `NEXT_PUBLIC_DSL_API_BASE=direct` and redeploy.
+
 ## What the visitor gets
 
 1. Enters the **LR number** and the **mobile number on the booking**, presses *Send OTP*.

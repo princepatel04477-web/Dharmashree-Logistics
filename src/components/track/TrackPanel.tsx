@@ -8,14 +8,16 @@ import { company } from "@/content/company";
 import { track } from "@/content/track";
 import { backendMode } from "@/lib/backend/config";
 import { normalizeLr, validateLr } from "@/lib/validate";
+import { DirectTrackFlow } from "./DirectTrackFlow";
 import { LiveTrackFlow } from "./LiveTrackFlow";
 
-/* The track card, in one of two modes fixed at build time (`backendMode`,
+/* The track card, in one of three modes fixed at build time (`backendMode`,
    src/lib/backend/config.ts).
 
-   Backend off (the default): the LR handoff below, untouched. With the client's
-   backend connected (or its local mock): the LR + SMS-code flow in
-   `LiveTrackFlow`. The portal sign-in buttons stay under the card in both, and
+   Backend off (the default): the LR handoff below, untouched. Direct lookup
+   (`direct`, or `mock-direct` locally): the LR number alone, read through this
+   site's `/api/lr` (`DirectTrackFlow`). With the client's OTP backend connected
+   (or its local mock): the LR + SMS-code flow in `LiveTrackFlow`. The portal sign-in buttons stay under the card in both, and
    the card's root is a `div` whose last child is the portal block in both —
    `HeroTabs` lays the home card out by that shape.
 
@@ -45,11 +47,14 @@ function whatsappDigits(number: string): string {
   return number.replace(/\D/g, "");
 }
 
-export function TrackPanel() {
+/** `hero`: the home page's card, too narrow for a whole LR — a direct lookup
+    there opens /track with the number instead of answering in place. */
+export function TrackPanel({ context = "page" }: { context?: "page" | "hero" }) {
   if (backendMode === "off") return <HandoffPanel />;
+  const direct = backendMode === "direct" || backendMode === "mock-direct";
   return (
     <div className="flex flex-col gap-4">
-      <LiveTrackFlow />
+      {direct ? <DirectTrackFlow openOnTrackPage={context === "hero"} /> : <LiveTrackFlow />}
       <PortalLogins />
     </div>
   );

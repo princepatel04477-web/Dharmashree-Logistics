@@ -45,6 +45,14 @@
           ]
         }
 
+   4. Direct lookup, no SMS code (`NEXT_PUBLIC_DSL_API_BASE=direct`)
+        GET /api/lr?no={lrNumber}                      (this site's own Pages Function)
+        200 the same LR body as call 3, plus "statusText" (the backend's own
+            words for the status) and "details" (the printed slip's sections:
+            see `parseDetails`). The function reads the client's E-Transport API
+            and writes this shape — functions/api/lr.ts, src/lib/backend/vendor-lr.ts.
+        404 not found · 429 rate limited · 502 / 503 / 504 the client's API failed
+
    Failures: the HTTP status, and optionally `{ "code": "…", "message": "…" }`.
      404 → NotFound            (the LR; on /otp/verify, an unknown requestId)
      403 on /otp/send → MobileMismatch   (mobile is not the one on the LR)
@@ -57,14 +65,18 @@
    ——————————————————————————————————————————————————————————————————————————— */
 
 import { isRecord, readArray, readInstant, readIstDate, readNumber, readString } from "./guards";
-import type {
-  BackendErrorCode,
-  BackendOperation,
-  LrEvent,
-  LrRecord,
-  LrStatus,
-  OtpChallenge,
-  VerifiedSession,
+import {
+  EMPTY_LR_DETAILS,
+  isLrChargeKey,
+  type BackendErrorCode,
+  type BackendOperation,
+  type LrCharge,
+  type LrDetails,
+  type LrEvent,
+  type LrRecord,
+  type LrStatus,
+  type OtpChallenge,
+  type VerifiedSession,
 } from "./types";
 
 /* ——— Requests ——— */
@@ -98,6 +110,11 @@ export function buildFetchLrRequest(lrNumber: string, session: VerifiedSession):
     path: `/lr/${encodeURIComponent(lrNumber)}`,
     bearerToken: session.token,
   };
+}
+
+/** The direct lookup: same-origin, no token. */
+export function buildLookupLrRequest(lrNumber: string): ApiRequest {
+  return { method: "GET", path: `/lr?no=${encodeURIComponent(lrNumber)}` };
 }
 
 /* ——— Responses ——— */
@@ -189,6 +206,59 @@ function optionalDate(
   return readIstDate(value) ?? undefined;
 }
 
+/** A list of ten-digit mobiles; anything else in the list is skipped. */
+function readMobiles(record: Record<string, unknown>, keys: readonly string[]): string[] {
+  const list = readArray(record, keys) ?? [];
+  return list.filter(
+    (item): item is string => typeof item === "string" && /^[6-9]\d{9}$/.test(item),
+  );
+}
+
+function parseCharges(record: Record<string, unknown>): LrCharge[] {
+  const list = readArray(record, ["charges"]) ?? [];
+  const charges: LrCharge[] = [];
+  for (const item of list) {
+    if (!isRecord(item)) continue;
+    const key = item["key"];
+    const amount = readNumber(item, ["amount"]);
+    if (isLrChargeKey(key) && amount !== null) charges.push({ key, amount });
+  }
+  return charges;
+}
+
+/** The slip's sections. Lenient by design: a field that is missing or not the
+    right kind is simply absent, never a failed reply — the core of the LR
+    (route, dates, status) is what `parseLrRecord` insists on. */
+export function parseDetails(raw: unknown): LrDetails {
+  if (!isRecord(raw)) return EMPTY_LR_DETAILS;
+  const invoiceDateRaw = readString(raw, ["invoiceDate"]);
+  return {
+    vehicleNo: readString(raw, ["vehicleNo"]),
+    deliveryType: readString(raw, ["deliveryType"]),
+    paymentMode: readString(raw, ["paymentMode"]),
+    consignorGstin: readString(raw, ["consignorGstin"]),
+    consignorContact: readString(raw, ["consignorContact"]),
+    consigneeGstin: readString(raw, ["consigneeGstin"]),
+    consigneeContact: readString(raw, ["consigneeContact"]),
+    invoiceNo: readString(raw, ["invoiceNo"]),
+    invoiceDate: invoiceDateRaw === null ? null : readIstDate(invoiceDateRaw),
+    invoiceValue: readNumber(raw, ["invoiceValue"]),
+    privateMark: readString(raw, ["privateMark"]),
+    contains: readString(raw, ["contains"]),
+    ewayBill: readString(raw, ["ewayBill"]),
+    packageType: readString(raw, ["packageType"]),
+    chargeWeightKg: readNumber(raw, ["chargeWeightKg"]),
+    rateType: readString(raw, ["rateType"]),
+    charges: parseCharges(raw),
+    total: readNumber(raw, ["total"]),
+    advance: readNumber(raw, ["advance"]),
+    balance: readNumber(raw, ["balance"]),
+    supplier: readString(raw, ["supplier"]),
+    deliveryAddress: readString(raw, ["deliveryAddress"]),
+    deliveryContacts: readMobiles(raw, ["deliveryContacts"]),
+  };
+}
+
 export function parseLrRecord(raw: unknown, requestedLr: string): LrRecord | null {
   if (!isRecord(raw)) return null;
 
@@ -226,10 +296,12 @@ export function parseLrRecord(raw: unknown, requestedLr: string): LrRecord | nul
     packages: readNumber(raw, ["packages", "noOfPackages", "pkgs"]),
     weightKg: readNumber(raw, ["weightKg", "weight_kg", "weight"]),
     status,
+    statusText: readString(raw, ["statusText", "status_text"]),
     currentLocation: readString(raw, ["currentLocation", "current_location", "location"]),
     expectedDelivery,
     deliveredOn,
     events,
+    details: parseDetails(raw["details"]),
   };
 }
 
@@ -275,5 +347,6 @@ export function mapErrorResponse(
     return "OtpInvalid";
   }
   if (operation === "fetchLr" && (status === 401 || status === 403)) return "SessionExpired";
+  if (operation === "lookupLr" && status === 400) return "NotFound";
   return "Server";
 }

@@ -6,7 +6,12 @@
    Setting or changing the variable therefore needs a rebuild (on Cloudflare
    Pages: set it in the project's environment variables, then redeploy).
 
-   Three modes:
+   The modes:
+   - "direct": the variable is the word `direct`. The LR number alone is looked
+     up — no SMS code — through this site's own Pages Function at `/api/lr`,
+     which reads the client's E-Transport API (functions/api/lr.ts).
+   - "mock-direct": the word `mock-direct`, outside production. The same direct
+     flow, answered by the local simulator.
    - "live": the variable is an https URL — the client's API, called straight
      from the browser (see docs/backend-integration.md).
    - "mock": the variable is the word `mock` AND this is not a production build.
@@ -15,7 +20,10 @@
    - "off": anything else. The /track page keeps its WhatsApp / email / phone
      handoff exactly as it was before the backend existed. */
 
-export type BackendMode = "live" | "mock" | "off";
+export type BackendMode = "live" | "mock" | "direct" | "mock-direct" | "off";
+
+/** The same-origin path the Pages Function answers on. */
+const DIRECT_BASE = "/api";
 
 export const BACKEND_BASE_ENV = "NEXT_PUBLIC_DSL_API_BASE" as const;
 
@@ -39,6 +47,12 @@ export function resolveBackend(
 ): { mode: BackendMode; base: string | null } {
   const value = raw?.trim() ?? "";
   if (value === "") return { mode: "off", base: null };
+  if (value === "direct") return { mode: "direct", base: DIRECT_BASE };
+  if (value === "mock-direct") {
+    return nodeEnv === "production"
+      ? { mode: "off", base: null }
+      : { mode: "mock-direct", base: null };
+  }
   if (value === "mock") {
     return nodeEnv === "production" ? { mode: "off", base: null } : { mode: "mock", base: null };
   }
@@ -53,5 +67,5 @@ const resolved = resolveBackend(process.env.NEXT_PUBLIC_DSL_API_BASE, process.en
 
 export const backendMode: BackendMode = resolved.mode;
 
-/** The API base for "live" mode; `null` in every other mode. */
+/** The API base for "live" and "direct" modes; `null` in every other mode. */
 export const apiBase: string | null = resolved.base;

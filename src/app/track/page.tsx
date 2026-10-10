@@ -37,10 +37,12 @@ const lineChannelNote =
     : (track.lineChannelNote ?? track.lineChannelFallback);
 
 const live = backendMode !== "off";
+const direct = backendMode === "direct" || backendMode === "mock-direct";
+const liveCopy = direct ? track.live.direct : track.live;
 
 export const metadata: Metadata = {
   title: track.metadata.title,
-  description: live ? track.live.metadataDescription : track.metadata.description,
+  description: live ? liveCopy.metadataDescription : track.metadata.description,
   alternates: { canonical: "/track/" },
 };
 
@@ -50,7 +52,7 @@ export default function TrackPage() {
       <PageIntro
         eyebrow={track.eyebrow}
         title={track.title}
-        lede={live ? track.live.line : `${track.line} ${lineChannelNote}`}
+        lede={live ? liveCopy.line : `${track.line} ${lineChannelNote}`}
         imageKey={images.pages.track.key}
         imageAlt={images.pages.track.alt}
         overlap

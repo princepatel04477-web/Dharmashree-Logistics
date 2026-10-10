@@ -18,7 +18,7 @@
    `lineChannelFallback` carries the same sentence without the promise. Same
    pattern as `responseNote` in `quote.ts`. */
 
-import type { BackendErrorCode } from "@/lib/backend/types";
+import type { BackendErrorCode, LrChargeKey } from "@/lib/backend/types";
 import type { LrCode, MobileCode, OtpCode } from "@/lib/validate";
 
 export const track = {
@@ -153,6 +153,18 @@ export const track = {
     metadataDescription:
       "Enter your LR number and the mobile number on the booking. A one-time code confirms it is you, then the status and history of the consignment are shown.",
 
+    /* The direct lookup (`direct` mode): the LR number alone, no SMS code. */
+    direct: {
+      line: "Enter the LR number printed on your slip to see where the consignment is, along with the booking details on the LR.",
+      metadataDescription:
+        "Enter your LR number to see the consignment's status, route, invoice and freight details, and its movement history.",
+      lrLabel: "LR number",
+      placeholder: "SRT-3230",
+      helper: "As printed on your LR slip, for example SRT-3230.",
+      submit: "Track",
+      submitting: "Looking up…",
+    },
+
     details: {
       lrLabel: "LR number",
       mobileLabel: "Mobile number on the booking",
@@ -196,6 +208,38 @@ export const track = {
       expectedLabel: "Expected delivery",
       deliveredLabel: "Delivered on",
       locationLabel: "Last known location",
+      /** The desk's own words for the status, under the ladder's label. */
+      deskUpdate: (words: string): string => `Latest update: ${words}`,
+      vehicleLabel: "Vehicle no.",
+      deliveryTypeLabel: "Delivery",
+      gstinLabel: "GSTIN",
+      contactLabel: "Contact",
+      invoiceTitle: "Invoice details",
+      invoiceNoLabel: "Invoice no.",
+      invoiceDateLabel: "Invoice date",
+      invoiceValueLabel: "Invoice value",
+      privateMarkLabel: "Private mark",
+      containsLabel: "Contains",
+      ewayBillLabel: "E-way bill no.",
+      packageTypeLabel: "Package type",
+      chargeWeightLabel: "Charged weight",
+      supplierLabel: "Supplier",
+      freightTitle: "Freight details",
+      rateTypeLabel: "Rate type",
+      charges: {
+        freight: "Freight",
+        pickup: "Collection / pickup",
+        stCharge: "St. charge",
+        insurance: "Insurance",
+        doorDelivery: "Door delivery",
+        loading: "Loading",
+        unloading: "Unloading",
+        other: "Other charges",
+      } satisfies Record<LrChargeKey, string>,
+      totalLabel: "Total",
+      advanceLabel: "Advance",
+      balanceLabel: "Balance",
+      deliveryAtTitle: "Delivery at",
       historyTitle: "Shipment history",
       noEvents: "No movement has been recorded for this consignment yet.",
       /** The history opens on the newest few movements; the rest sit behind this. */
