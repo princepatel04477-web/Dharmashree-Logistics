@@ -43,20 +43,23 @@ browser ──▶ /api/lr?no=SRT-3230          functions/api/lr.ts (Cloudflare P
   date → arrived, a challan or vehicle → in transit, otherwise booked), refined by
   the words in `Status`. Tested in `npm run verify:lr`.
 
-**Blocked on the vendor (2026-10-10):** `LRInquiry.ashx` answers `401 Unauthorized`
-to every caller — anonymous, with the panel's admin login, with a logged-in panel
-session, and with the "Transporter API" user. The sibling `PartyInvoiceInquiry.ashx`
-answers anonymously, so this is access control on the LR endpoint itself. Ask the
-E-Transport vendor to enable the LR Inquiry API for this site (an API key, or
-allow-listing — note the calls come from Cloudflare, not a fixed IP). Then:
+**Access (2026-10-10):** `LRInquiry.ashx` answers `401 Unauthorized` unless the
+vendor's key is sent in the `Authorization` header (the raw key and `Bearer <key>`
+are both accepted; a wrong or missing key is 401). The key lives only as the
+encrypted Pages variable `DSL_LR_API_KEY`, read by `functions/api/lr.ts`:
 
-1. `curl "https://dharmashreegroup.in/api/LRInquiry.ashx?apiname=lrinquiry&code=SRT&lrno=<a real LR>"`
-   and compare the field names with the ones `vendorDetails()` reads (marked "seen"
-   where confirmed from the Party Invoice reply). Adjust that one function.
-2. If they issue a key, add it as an encrypted Pages variable and send it from
-   `functions/api/lr.ts` — never in a `NEXT_PUBLIC_*` variable.
-3. Check `https://dharmashree-logistics.pages.dev/api/lr?no=<a real LR>`, then build
-   with `NEXT_PUBLIC_DSL_API_BASE=direct` and redeploy.
+```
+# from the repo root, with wrangler logged in to the account that owns the project
+printf '%s' "<the key>" | npx wrangler pages secret put DSL_LR_API_KEY --project-name dharmashree-logistics
+```
+
+It is never committed, never in `.env*`, and never in a `NEXT_PUBLIC_*` variable
+(those are inlined into the public bundle). A secret change applies to the *next*
+deployment, so redeploy after setting it. If the vendor rotates the key, repeat the
+command above and redeploy. A `503 UPSTREAM_LOCKED` from `/api/lr` means the key is
+missing, wrong or revoked.
+
+Checking the live function: `curl "https://dharmashree-logistics.pages.dev/api/lr?no=<a real LR, e.g. SRT-1234>"`.
 
 ## What the visitor gets
 

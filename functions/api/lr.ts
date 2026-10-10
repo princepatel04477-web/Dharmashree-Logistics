@@ -16,8 +16,16 @@
      502 the API answered with something unreadable · 503 the API refused us
      504 the API did not answer in time
 
+   The vendor wants its key in the `Authorization` header (checked 2026-10-10: the
+   raw key and `Bearer <key>` are both accepted; a wrong or missing one is 401).
+   The key is a server-side secret: it is read from the environment here and sent
+   from here only, so it never reaches the browser or the exported bundle.
+
    Environment (Cloudflare Pages › Settings › Variables):
      DSL_LR_API_BASE   optional; defaults to https://dharmashreegroup.in/api
+     DSL_LR_API_KEY    the vendor's key — set it as an *encrypted* variable
+                       (`wrangler pages secret put DSL_LR_API_KEY`), never in the
+                       repo and never in a NEXT_PUBLIC_* variable
 
    LR numbers run in sequence, so a lookup is limited per address. The limit
    here is per Cloudflare isolate and best effort; a Cloudflare rate-limiting
@@ -27,6 +35,7 @@ import { parseLrQuery, readVendorLr, vendorLrUrl } from "../../src/lib/backend/v
 
 interface Env {
   DSL_LR_API_BASE?: string;
+  DSL_LR_API_KEY?: string;
 }
 
 interface PagesContext {
@@ -79,10 +88,14 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
     controller.abort();
   }, UPSTREAM_TIMEOUT_MS);
 
+  const headers: Record<string, string> = { Accept: "application/json" };
+  const key = env.DSL_LR_API_KEY?.trim();
+  if (key !== undefined && key !== "") headers["Authorization"] = key;
+
   let upstream: Response;
   try {
     upstream = await fetch(vendorLrUrl(env.DSL_LR_API_BASE ?? DEFAULT_BASE, query), {
-      headers: { Accept: "application/json" },
+      headers,
       signal: controller.signal,
     });
   } catch (error) {
@@ -92,8 +105,8 @@ export async function onRequestGet(context: PagesContext): Promise<Response> {
     clearTimeout(timer);
   }
 
-  /* The vendor's server answers 401/403 with an HTML page while API access has
-     not been granted to us. */
+  /* The vendor's server answers 401/403 with an HTML page when the key is
+     missing, wrong or revoked. */
   if (upstream.status === 401 || upstream.status === 403) {
     return json(503, { code: "UPSTREAM_LOCKED" });
   }
