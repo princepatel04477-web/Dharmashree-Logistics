@@ -9,6 +9,8 @@ import { TextField } from "@/components/vendor/origin";
 import { track } from "@/content/track";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { lookupLr } from "@/lib/backend/client";
+import { trackDemo } from "@/lib/backend/config";
+import { DEMO_SAMPLE } from "@/lib/backend/demo";
 import { parseLrQuery } from "@/lib/backend/vendor-lr";
 import type { BackendErrorCode, LrRecord } from "@/lib/backend/types";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -199,6 +201,25 @@ export function DirectTrackFlow({
           {!openOnTrackPage && (
             <p className="text-muted max-w-measure leading-body text-xs font-light">
               {copy.privacyNote}
+            </p>
+          )}
+
+          {trackDemo && (
+            <p className="text-ink-2 leading-body max-w-measure text-xs font-light">
+              {copy.demoHint}{" "}
+              <button
+                type="button"
+                onClick={() => {
+                  setLr(DEMO_SAMPLE.lr);
+                  setMobile(DEMO_SAMPLE.mobile);
+                  setFieldError(undefined);
+                  setMobileError(undefined);
+                  setFailure(null);
+                }}
+                className="text-brand-deep hover:text-ink font-mono text-[11px] tracking-[0.14em] uppercase underline underline-offset-4"
+              >
+                {copy.demoFill}
+              </button>
             </p>
           )}
 

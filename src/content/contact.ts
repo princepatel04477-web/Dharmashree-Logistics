@@ -28,7 +28,10 @@ export const contact = {
     route: "",
   },
   officeLabel: "Desk",
-  office: `${company.headquarters.city}, ${company.headquarters.state}`,
+  /** The place the printed address is in; the desk's own city when none is set. */
+  office: company.contactAddress
+    ? `${company.contactAddress.city}, ${company.contactAddress.state}`
+    : `${company.headquarters.city}, ${company.headquarters.state}`,
   branchesLabel: "Also dispatching from",
 
   messageIndex: "02",

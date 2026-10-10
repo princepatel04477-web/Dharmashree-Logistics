@@ -51,6 +51,11 @@ browser ──▶ POST /api/lr  { no: "SRT-3230", mobile: "9876543210" }
   `vendorDetails()` (`ConsignorMobile` / `ConsigneeMobile` are assumed) and adjust
   that one function. Local QA: `NEXT_PUBLIC_DSL_API_BASE=mock-direct` — SRT-1001
   with `9876543210`, SRT-1002 with `9812345670`; anything else is `NotVerified`.
+- **Prototype demonstration:** build with `NEXT_PUBLIC_TRACK_DEMO=1` (and `NEXT_PUBLIC_DSL_API_BASE=direct`)
+  and `/track` offers two sample bookings that answer locally, labelled "Sample booking · for demonstration only":
+  `DEMO - 1001` with mobile `98765 43210` (in transit, every section filled) and `DEMO - 1002` with `98123 45670`
+  (delivered). The branch code `DEMO` is not a real branch, so a sample can't shadow a real LR; every other number
+  still goes through the verified `/api/lr`. Leave the variable unset for production. Code: `src/lib/backend/demo.ts`.
 - **Switch it on:** `NEXT_PUBLIC_DSL_API_BASE=direct` at build time, then redeploy.
   Local QA: `NEXT_PUBLIC_DSL_API_BASE=mock-direct npm run dev` (LRs `SRT-1001`,
   `SRT-1002`, `SRT-1003` → network error; anything else → not found).

@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/timeline";
 import { Button } from "@/components/ui/button";
 import { track } from "@/content/track";
+import { isDemoLr } from "@/lib/backend/demo";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import type { LrDetails, LrRecord, LrStatus } from "@/lib/backend/types";
 import {
@@ -237,6 +238,13 @@ export function LrResult({ record, onReset }: LrResultProps): ReactElement {
       }
       className="@container flex flex-col gap-6"
     >
+      {isDemoLr(record.lrNumber) && (
+        <p className="border-signal-red/40 text-ink-2 inline-flex items-center gap-2 self-start rounded-xs border px-3 py-1.5 font-mono text-[11px] tracking-[0.14em] uppercase">
+          <span aria-hidden="true" className="bg-signal-red size-2 rounded-full" />
+          {track.live.direct.demoBadge}
+        </p>
+      )}
+
       {/* ——— Header ——— */}
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">

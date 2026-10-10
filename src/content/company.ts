@@ -7,9 +7,20 @@ export const company: Company = {
   legalName: null,
   tagline: "Hum sirf shipments nahi, bharosa move karte hain.",
   headquarters: { city: "Surat", state: "Gujarat", addressLines: null, mapsUrl: null },
+  contactAddress: {
+    city: "Sandila",
+    state: "Uttar Pradesh",
+    lines: [
+      "Sandila-Bangarmau Road, near Best Furniture",
+      "Hardoi district, Uttar Pradesh - 241204",
+    ],
+    /* A Maps search for the printed address — a link, not a pinned location. */
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Sandila-Bangarmau%20Road%20near%20Best%20Furniture%20Sandila%20Hardoi%20Uttar%20Pradesh%20241204",
+  },
   branches: [],
-  phone: null,
-  whatsapp: null,
+  phone: "+919807829071",
+  whatsapp: "+919807829071",
   email: "admin@dharmashreegroup.com",
   website: "https://dharmashreegroup.in",
   givingPercent: 2.5,

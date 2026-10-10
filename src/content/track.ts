@@ -179,6 +179,12 @@ export const track = {
       submitting: "Looking up…",
       askDeskLabel: "Ask the desk",
       askDeskHref: "/contact",
+      /** Shown only on a prototype build (`NEXT_PUBLIC_TRACK_DEMO=1`). */
+      demoHint:
+        "Want to see a result? Use the sample booking: LR DEMO - 1001 with mobile 98765 43210.",
+      demoFill: "Fill in the sample",
+      /** On a result that came from a sample booking. */
+      demoBadge: "Sample booking · for demonstration only",
     },
 
     details: {

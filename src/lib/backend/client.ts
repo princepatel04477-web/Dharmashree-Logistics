@@ -26,7 +26,8 @@ import {
   parseVerifiedSession,
   type ApiRequest,
 } from "./adapter";
-import { apiBase, backendMode } from "./config";
+import { apiBase, backendMode, trackDemo } from "./config";
+import { demoLookupLr, isDemoLr } from "./demo";
 import type {
   BackendOperation,
   BackendResult,
@@ -161,6 +162,9 @@ export async function fetchLr(
     stranger whether an LR exists. */
 export async function lookupLr(lr: string, mobile: string): Promise<BackendResult<LrRecord>> {
   const lrNumber = normalizeLr(lr);
+
+  /* The prototype's sample bookings, answered here and labelled as samples. */
+  if (trackDemo && isDemoLr(lrNumber)) return demoLookupLr(lrNumber, mobile);
 
   if (backendMode === "mock-direct") {
     const mock = await loadMock();

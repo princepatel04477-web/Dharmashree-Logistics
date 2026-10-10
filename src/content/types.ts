@@ -8,6 +8,15 @@ export interface Headquarters {
   mapsUrl: string | null;
 }
 
+export interface ContactAddress {
+  city: string;
+  state: string;
+  /** One printed line each, in order. */
+  lines: string[];
+  /** A Maps link for the whole address, or null for plain text. */
+  mapsUrl: string | null;
+}
+
 export interface Branch {
   city: string;
   state: string;
@@ -34,6 +43,10 @@ export interface Company {
   legalName: string | null;
   tagline: string | null;
   headquarters: Headquarters;
+  /** The address printed under "Reach us" and on /contact. It is the
+     company's postal address and is independent of `headquarters`, which is
+     where the network's corridors start. `null` hides it. */
+  contactAddress: ContactAddress | null;
   branches: Branch[];
   /** E.164, e.g. "+919876543210". */
   phone: string | null;

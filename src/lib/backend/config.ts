@@ -69,3 +69,10 @@ export const backendMode: BackendMode = resolved.mode;
 
 /** The API base for "live" and "direct" modes; `null` in every other mode. */
 export const apiBase: string | null = resolved.base;
+
+/** Prototype demonstration (`NEXT_PUBLIC_TRACK_DEMO=1`, "direct" mode only): the
+    sample bookings in `demo.ts` answer locally and are labelled as samples;
+    every other number still goes to the server. Off unless asked for. The
+    read is written out in full so the bundler inlines it. */
+export const trackDemo: boolean =
+  backendMode === "direct" && process.env.NEXT_PUBLIC_TRACK_DEMO === "1";

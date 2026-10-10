@@ -85,7 +85,7 @@ export function Header() {
         </Link>
 
         <nav aria-label="Primary" className="hidden lg:block">
-          <ul className="flex items-center gap-4 min-[1120px]:gap-6 xl:gap-9">
+          <ul className="flex items-center gap-2 min-[1120px]:gap-5 min-[1440px]:gap-8">
             {primaryNav.map((item) => {
               const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
               return (
@@ -94,7 +94,7 @@ export function Header() {
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "group/nav nav-link relative inline-flex py-1 transition-colors duration-200",
+                      "group/nav nav-link relative inline-flex py-1 whitespace-nowrap transition-colors duration-200",
                       active ? "text-brand" : "text-brand-deep hover:text-brand",
                     )}
                   >
@@ -120,7 +120,7 @@ export function Header() {
           </ul>
         </nav>
 
-        <div className="flex shrink-0 items-center gap-2 xl:gap-3">
+        <div className="flex shrink-0 items-center gap-2 min-[1440px]:gap-3">
           {/* Portal sign-ins: outline, so "Enquire now" stays the only filled
               button. A null portal URL never reaches this list. */}
           {portalNav.links.length > 0 && (
@@ -130,8 +130,8 @@ export function Header() {
                   <li key={link.id}>
                     <Button asChild variant="outline" size="sm">
                       <a href={link.href} target="_blank" rel="noopener noreferrer">
-                        <span className="xl:hidden">{link.compactLabel}</span>
-                        <span className="hidden xl:inline">{link.label}</span>
+                        <span className="min-[1440px]:hidden">{link.compactLabel}</span>
+                        <span className="hidden min-[1440px]:inline">{link.label}</span>
                         <span className="sr-only"> {portalNav.newTabHint}</span>
                       </a>
                     </Button>

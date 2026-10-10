@@ -61,16 +61,16 @@ export const primaryNav: readonly NavItem[] = [
   { href: "/services", label: "Services" },
   { href: "/network", label: "Network" },
   { href: "/track", label: "Track" },
+  { href: "/attach-truck", label: "Attach truck" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ];
 
 /** Pages the primary bar has no room for. The mobile menu lists them under the
-    five main links; the footer carries them in its own columns. */
+    main links; the footer carries them in its own columns. */
 export const secondaryNav: readonly NavItem[] = [
   { href: "/support", label: "Support & FAQ" },
   { href: "/partners", label: "Delivery partners" },
-  { href: "/attach-truck", label: "Attach your truck" },
 ];
 
 /* ——— The one filled CTA on every page ——— */
@@ -205,9 +205,15 @@ export function contactLinks(): FooterLink[] {
    optional Maps link wraps the whole address instead of just its first row. */
 export function contactLines(): FooterLine[] {
   const lines: FooterLine[] = [];
-  const address = company.headquarters.addressLines ?? [];
+  /* The contact address first; the headquarters' own lines only when no
+     contact address is set. */
+  const contact = company.contactAddress;
+  const address = contact?.lines ?? company.headquarters.addressLines ?? [];
   if (address.length > 0) {
-    lines.push({ text: address.join(", "), href: company.headquarters.mapsUrl });
+    lines.push({
+      text: address.join(", "),
+      href: contact === null ? company.headquarters.mapsUrl : contact.mapsUrl,
+    });
   }
   if (company.gstin !== null) {
     lines.push({ text: `GSTIN ${company.gstin}`, href: null });

@@ -6,7 +6,6 @@ import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { PartnerForm } from "@/components/partners/PartnerForm";
 import { PartnersNetwork } from "@/components/partners/PartnersNetwork";
-import { MicroLift } from "@/components/motion/MicroLift";
 import { QuoteStepper } from "@/components/vendor/origin";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { partners, partnersPage } from "@/content/partners";
@@ -64,7 +63,7 @@ export default function PartnersPage() {
             {benefits.items.map((item, index) => (
               <li key={item.title} className="flex flex-col">
                 {index > 0 && <DrawLine className="my-8" />}
-                <MicroLift className="grid grid-cols-1 gap-3 sm:grid-cols-[3rem_1fr] sm:gap-6">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-[3rem_1fr] sm:gap-6">
                   <span className="section-index sm:pt-2">
                     {String(index + 1).padStart(2, "0")}
                   </span>
@@ -76,7 +75,7 @@ export default function PartnersPage() {
                       {item.body}
                     </p>
                   </div>
-                </MicroLift>
+                </div>
               </li>
             ))}
           </ol>
@@ -138,7 +137,7 @@ export default function PartnersPage() {
           </div>
           <PartnersNetwork />
         </div>
-        <div aria-hidden="true" className="border-line mt-14 border-y py-4">
+        <div aria-hidden="true" className="border-line mt-14 overflow-x-clip border-y py-4">
           <LogoLoop
             items={bandItems}
             speed={40}

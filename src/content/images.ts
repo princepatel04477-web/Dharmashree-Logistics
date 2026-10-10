@@ -23,17 +23,10 @@ export interface ImageSlot {
 }
 
 export type ServiceImageSlug =
-  | "express-parcel"
-  | "full-truckload"
-  | "local-on-demand"
-  | "warehousing-fulfilment";
+  "express-parcel" | "full-truckload" | "local-on-demand" | "warehousing-fulfilment";
 
 export type IndustryImageId =
-  | "textiles"
-  | "diamonds-jewellery"
-  | "fmcg-retail"
-  | "pharma"
-  | "engineering";
+  "textiles" | "diamonds-jewellery" | "fmcg-retail" | "pharma" | "engineering";
 
 export type ProcessImageStep = "enquiry" | "pickup" | "in-transit" | "delivered";
 
@@ -182,7 +175,11 @@ const industryIdByLeadingWord: Readonly<Record<string, IndustryImageId>> = {
 /** The photo for an industry name from `company.industries`, or `null` when
    the name has no photo (the card then renders name-only). */
 export function industryImage(name: string): ImageSlot | null {
-  const leadingWord = name.trim().toLowerCase().split(/[^a-z]+/)[0] ?? "";
+  const leadingWord =
+    name
+      .trim()
+      .toLowerCase()
+      .split(/[^a-z]+/)[0] ?? "";
   const id = industryIdByLeadingWord[leadingWord];
   return id === undefined ? null : images.industries[id];
 }

@@ -11,7 +11,8 @@ import type { FleetVehicle, Service } from "./types";
    `content/industries.ts`. */
 
 const notes: Readonly<Record<string, string>> = {
-  "12 ft pickup": "Cartons and business supplies inside the city, and any lane a truck cannot turn into.",
+  "12 ft pickup":
+    "Cartons and business supplies inside the city, and any lane a truck cannot turn into.",
   "Two-wheeler": "Documents and small parcels across the city, picked up and delivered directly.",
   "19 ft mxl": "The workhorse on the shorter corridors — dedicated body, tail loading.",
   "32 ft multi-axle": "Full loads on the long lanes: Delhi NCR, Lucknow, Kanpur, Kolkata.",
