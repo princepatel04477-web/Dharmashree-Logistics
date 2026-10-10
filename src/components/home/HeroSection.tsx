@@ -1,11 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useRef } from "react";
 import ResponsiveImage, { hasImage, type ArtDirection } from "@/components/media/ResponsiveImage";
 import { Reveal } from "@/components/motion/Reveal";
-import { Button } from "@/components/ui/button";
-import { Magnet } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
 import { hero } from "@/content/home";
 import { images } from "@/content/images";
@@ -15,8 +12,9 @@ import { GSAP_EASES, MOTION_DURATIONS } from "@/lib/motion-tokens";
 import { HeroTabs } from "./HeroTabs";
 
 /* H0 · Hero. A full-bleed photograph under a single-hue `--brand-deep` overlay
-   (85% at the left edge, 10% at the right), the headline and the one filled
-   "Enquire now" button on the left, and the track / quote card below the
+   (85% at the left edge, 10% at the right), the headline on the left — the
+   header's "Enquire now" is the page's one quote button up here, so the hero
+   carries no second copy of it — and the track / quote card below the
    text. From `lg` the card is a wide bar that straddles the foot of the hero
    (about 80px of it hangs below the edge), so the photo's truck on the right
    stays clear; the photo is anchored to the bottom there so the truck sits
@@ -127,22 +125,6 @@ export function HeroSection() {
             className="text-on-deep-text max-w-xl text-base font-light sm:text-lg"
           >
             {hero.body}
-          </Reveal>
-
-          <Reveal
-            delay={HERO_LINE_STAGGER * 3}
-            className="flex flex-wrap items-center gap-x-7 gap-y-3 pt-1"
-          >
-            <Magnet strength={10}>
-              <Button
-                asChild
-                variant="default"
-                size="lg"
-                className="ring-paper focus-visible:outline-paper ring-2"
-              >
-                <Link href={hero.cta.href}>{hero.cta.label}</Link>
-              </Button>
-            </Magnet>
           </Reveal>
 
           {firstBranch !== undefined && (

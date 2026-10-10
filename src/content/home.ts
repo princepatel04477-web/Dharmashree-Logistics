@@ -1,5 +1,7 @@
+import { formatNumberIN } from "@/lib/format";
 import { about } from "./about";
 import { company } from "./company";
+import { HUBS, ORIGIN } from "./hubs";
 import type { ProcessImageStep } from "./images";
 import { quoteCta, whatsapp } from "./navigation";
 
@@ -14,7 +16,6 @@ export const hero = {
   eyebrow: company.tagline ?? "Freight & transport across India",
   title: "Freight that moves the way India trades.",
   body: "Express parcels, full truckloads, local delivery and warehousing across India's busiest trade lanes — booked by people who answer the phone.",
-  cta: quoteCta,
   /** Rendered only when `company.branches` has an entry. */
   branchPrefix: "Now also dispatching from",
 };
@@ -116,6 +117,128 @@ export function homeStats(): StatCell[] {
   }
 
   return cells.length >= 2 ? cells : [];
+}
+
+/* ——— H1b · Scale trail ———
+   "Flexibility, reliability and reach": a row of figures joined by one line
+   that winds over and under them. Every figure is a fact — from `company.ts`
+   when it has one, otherwise counted from the content files themselves (the hub
+   list, the services, the industries) — so the trail can never state a number
+   the site doesn't hold (house rule 4). A null fact drops its stop; fewer than
+   three stops drop the section. */
+export const scaleSection = {
+  lead: "Flexibility, reliability and reach",
+  title: `The answer is ${company.name.replace(/ Logistics$/, "")}.`,
+  listLabel: `${company.name} in figures`,
+};
+
+export type ScaleIcon =
+  "hub" | "map" | "layers" | "factory" | "giving" | "truck" | "package" | "calendar";
+
+export interface ScaleStop {
+  readonly id: string;
+  readonly icon: ScaleIcon;
+  /** Counted up on entry (en-IN), or null when the stop shows `staticText`. */
+  readonly count: number | null;
+  /** A figure that is not counted: a year, a percentage with a decimal. */
+  readonly staticText: string | null;
+  readonly suffix: string;
+  readonly label: string;
+}
+
+const MAX_SCALE_STOPS = 5;
+
+export function scaleStops(): ScaleStop[] {
+  const stops: ScaleStop[] = [];
+  const hubCount = company.hubsServed ?? HUBS.length;
+  const states = new Set([ORIGIN, ...HUBS].map((hub) => hub.stateId)).size;
+
+  if (company.foundedYear !== null) {
+    stops.push({
+      id: "since",
+      icon: "calendar",
+      count: null,
+      staticText: String(company.foundedYear),
+      suffix: "",
+      label: "Moving freight since",
+    });
+  }
+  if (company.fleetSize !== null) {
+    stops.push({
+      id: "fleet",
+      icon: "truck",
+      count: company.fleetSize,
+      staticText: null,
+      suffix: "+",
+      label: "Vehicles on contract",
+    });
+  }
+  if (company.monthlyConsignments !== null) {
+    stops.push({
+      id: "consignments",
+      icon: "package",
+      count: company.monthlyConsignments,
+      staticText: null,
+      suffix: "+",
+      label: "Consignments every month",
+    });
+  }
+  stops.push({
+    id: "hubs",
+    icon: "hub",
+    count: hubCount,
+    staticText: null,
+    suffix: "",
+    label: `Hubs on corridors from ${ORIGIN.name}`,
+  });
+  stops.push({
+    id: "states",
+    icon: "map",
+    count: states,
+    staticText: null,
+    suffix: "",
+    label: "States and union territories reached",
+  });
+  if (company.services.length > 0) {
+    stops.push({
+      id: "services",
+      icon: "layers",
+      count: company.services.length,
+      staticText: null,
+      suffix: "",
+      label: "Services booked through one desk",
+    });
+  }
+  if (company.industries.length > 0) {
+    stops.push({
+      id: "industries",
+      icon: "factory",
+      count: company.industries.length,
+      staticText: null,
+      suffix: "",
+      label: "Industries we move for",
+    });
+  }
+  if (company.givingPercent !== null) {
+    stops.push({
+      id: "giving",
+      icon: "giving",
+      count: null,
+      staticText: `${formatNumberIN(company.givingPercent)}%`,
+      suffix: "",
+      label: "Of our earnings set aside for good causes",
+    });
+  }
+
+  /* The trail holds five stops. Company facts come first, so once they are
+     filled in they push the counted ones off the end, the giving line last. */
+  const giving = stops.find((stop) => stop.id === "giving");
+  const rest = stops.filter((stop) => stop.id !== "giving");
+  const kept =
+    giving === undefined
+      ? rest.slice(0, MAX_SCALE_STOPS)
+      : [...rest.slice(0, MAX_SCALE_STOPS - 1), giving];
+  return kept.length >= 3 ? kept : [];
 }
 
 /* ——— H4 · Pinned process ——— */
