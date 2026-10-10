@@ -424,7 +424,7 @@ export const services: Service[] = [
 /* ——— Index page (/services) ——— */
 export const servicesIndex = {
   eyebrow: "Services",
-  title: "What we move out of Surat.",
+  title: "What we move across India.",
   lede: "Four services, one desk. Whichever you book, the same team coordinates pickup, movement and delivery — the difference is the shape of the shipment: a parcel, a whole vehicle, a run across the city, or stock on a shelf.",
   /** Derived from the catalogue, so it cannot disagree with it. */
   countLine: (count: number, hubCount: number): string =>

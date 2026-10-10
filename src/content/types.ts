@@ -40,6 +40,12 @@ export interface Company {
   /** E.164, used for wa.me links. */
   whatsapp: string | null;
   email: string | null;
+  /** Public website, full origin without a trailing slash, e.g.
+     "https://example.in". Used for `metadataBase` and shown as a contact row. */
+  website: string | null;
+  /** Share of earnings the company sets aside for charitable causes, in
+     percent (e.g. 2.5). `null` hides every giving line. */
+  givingPercent: number | null;
   /** Support desk hours as the company publishes them, e.g. "Mon–Sat, 9:30–7".
      `null` hides the row on `/support` and `/contact`. */
   supportHours: string | null;

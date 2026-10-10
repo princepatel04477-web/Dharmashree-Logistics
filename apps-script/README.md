@@ -1,7 +1,8 @@
 # Quote intake — Google Apps Script
 
-`Code.gs` is the whole backend for `/quote`. It appends one row per submission to
-a Google Sheet and emails the desk. There is no server to run and nothing to
+`Code.gs` is the whole backend for `/quote`, the `/partners` application and the
+"Send us a message" box. It appends one row per submission to a Google Sheet
+(`Quotes`, `Partners` or `Messages` tab) and emails the desk. There is no server to run and nothing to
 deploy besides the script itself.
 
 ## Setup
@@ -37,6 +38,27 @@ environment: **Deploy › Manage deployments › Edit (pencil) › Version: New
 version › Deploy**. The URL stays, the code updates.
 
 Delivery-partner applications from `/partners` arrive at the same URL with `kind: "partner"`; they are appended to a `Partners` tab (created on the first application, with its own header row) and mailed to `NOTIFY_EMAIL` with a `DSP-` reference.
+
+### The message box (`kind: "message"`) needs a redeploy
+
+The "Send us a message" box on `/contact` and in the footer posts to the same
+URL with `kind: "message"`. A script deployed **before** that change does not know
+the kind and would file the message as a quote that fails with `Missing service`.
+So after pulling this change: paste the new `Code.gs` into the editor, save, then
+**Deploy › Manage deployments › Edit (pencil) › Version: New version › Deploy**.
+Do **not** use *New deployment* — that mints a new `/exec` URL and the site's
+`NEXT_PUBLIC_QUOTE_ENDPOINT` would have to change and be rebuilt. The first time
+a script change adds a service the editor may ask you to re-authorise (the
+message handler uses `LockService`); accept it, then redeploy.
+
+Messages are appended to a `Messages` tab (created on the first message, with its
+own frozen header row: `Received at`, `Reference`, `Name`, `Phone`, `Email`,
+`Message`, `Source page`) and mailed to `NOTIFY_EMAIL` with the subject
+`Website message DSM-<yyMMdd>-<4 digits> — <name>`; `replyTo` is the visitor's
+email when they gave one. The phone arrives as E.164 (`+91XXXXXXXXXX`) and is
+stored as plain text; the script refuses anything else with `Invalid phone`.
+Required: `name`, `phone`, `message`. The honeypot and `clean_()` apply as for
+the other kinds.
 
 The first submission after a fresh sheet creates the `Quotes` tab with its
 header row and freezes it. Re-running with an existing sheet appends only.

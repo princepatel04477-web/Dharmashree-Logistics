@@ -6,8 +6,16 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import { contactLinks, contactLines, primaryNav, secondaryNav } from "@/content/navigation";
+import {
+  contactLinks,
+  contactLines,
+  portalNav,
+  primaryNav,
+  secondaryNav,
+  type FooterLinkKind,
+} from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { ScrollTrigger } from "@/lib/gsap";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -19,8 +27,12 @@ import { cn } from "@/lib/utils";
    stays non-modal for AT — `aria-modal` would hide the header that holds it.
    Focus is trapped by hand and returned to the trigger on close.
 
-   The panel is portaled to <body>: the header is translated by GSAP, and a
-   transformed ancestor would capture this `position: fixed` sheet. */
+   Under the five main links sit the two portal sign-ins, full-width outline
+   buttons that open in a new tab (house rule 10: plain <a>). A null portal URL
+   drops its button.
+
+   The panel is portaled to <body> so its z-40 layer sits beneath the z-50
+   header: the trigger, which lives in the header, stays clickable. */
 
 /** Width at which the desktop nav takes over (Tailwind `lg`). */
 const MENU_BREAKPOINT = "(min-width: 64rem)";
@@ -39,6 +51,11 @@ function neverChanges(): () => void {
 }
 const mountedOnClient = (): boolean => true;
 const prerendered = (): boolean => false;
+
+/** WhatsApp and the website leave the page; tel: and mailto: hand off to apps. */
+function opensNewTab(kind: FooterLinkKind): boolean {
+  return kind === "whatsapp" || kind === "website";
+}
 
 interface CircleOrigin {
   x: number;
@@ -324,6 +341,23 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                     </ul>
                   </nav>
 
+                  {portalNav.links.length > 0 && (
+                    <motion.nav
+                      variants={itemVariants}
+                      aria-label={`${portalNav.ariaLabel}, mobile`}
+                      className="flex flex-col gap-3"
+                    >
+                      {portalNav.links.map((link) => (
+                        <Button key={link.id} asChild variant="outline" className="w-full">
+                          <a href={link.href} target="_blank" rel="noopener noreferrer">
+                            {link.label}
+                            <span className="sr-only"> {portalNav.newTabHint}</span>
+                          </a>
+                        </Button>
+                      ))}
+                    </motion.nav>
+                  )}
+
                   <motion.nav
                     variants={itemVariants}
                     aria-label="More, mobile"
@@ -369,8 +403,8 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                       <a
                         key={link.href}
                         href={link.href}
-                        target={link.kind === "whatsapp" ? "_blank" : undefined}
-                        rel={link.kind === "whatsapp" ? "noopener" : undefined}
+                        target={opensNewTab(link.kind) ? "_blank" : undefined}
+                        rel={opensNewTab(link.kind) ? "noopener" : undefined}
                         className="font-display text-ink hover:text-brand-deep text-lg transition-colors duration-200"
                       >
                         {link.label}

@@ -9,7 +9,8 @@ import { commitmentIcon, HomeIcon, SECTION_TITLE_CLASS } from "./shared";
    with a lucide icon in a `--brand-tint` circle, a `--brand` number and its
    title. The titles are the content; the full text lives on `/about`, which
    this section links to. Every commitment in `about.ts` is shown (the page
-   never trims the profile), and with none the section is absent. */
+   never trims the profile), followed by the giving line while
+   `company.givingPercent` is set; with none the section is absent. */
 export function CommitmentsSection() {
   if (commitments.length === 0) return null;
 

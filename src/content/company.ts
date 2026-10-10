@@ -11,6 +11,8 @@ export const company: Company = {
   phone: null,
   whatsapp: null,
   email: "admin@dharmashreegroup.com",
+  website: "https://dharmashreegroup.in",
+  givingPercent: 2.5,
   supportHours: null,
   gstin: null,
   foundedYear: null,

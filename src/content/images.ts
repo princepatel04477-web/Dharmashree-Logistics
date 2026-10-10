@@ -9,6 +9,8 @@
    Alt text says what is in the picture. It never names DharmaShree as the
    owner of the vehicle, the premises or the people shown: the photographs are
    illustrative, not records of the company's own fleet or sites (house rule 7).
+   The one exception is the home hero: at the client's request its truck carries
+   the DHARMASHREE name, painted on by `scripts/paint-hero-wordmark.py`.
 
    A slot whose original has not been produced yet renders a quiet branded
    ground from `ResponsiveImage` (never a label); `hasImage(key)` lets a section
@@ -57,11 +59,11 @@ export const images: ImageLibrary = {
   hero: {
     desktop: {
       key: "hero/highway-golden-hour",
-      alt: "A cobalt-blue closed-container truck driving along a wide expressway at golden hour, with open farmland and a low sun behind it.",
+      alt: "A cobalt-blue DharmaShree container truck, the name painted in white on its container, driving along a wide expressway at golden hour.",
     },
     mobile: {
       key: "hero/highway-portrait",
-      alt: "A cobalt-blue container truck coming towards the camera on an expressway at sunset, under a wide warm sky.",
+      alt: "A cobalt-blue DharmaShree truck, the name in white across its cab roof, coming towards the camera on an expressway at sunset.",
     },
   },
 

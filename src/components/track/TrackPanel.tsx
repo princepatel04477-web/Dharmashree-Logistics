@@ -6,9 +6,20 @@ import { Button } from "@/components/ui/button";
 import { TrackingInput } from "@/components/vendor/origin";
 import { company } from "@/content/company";
 import { track } from "@/content/track";
+import { backendMode } from "@/lib/backend/config";
 import { normalizeLr, validateLr } from "@/lib/validate";
+import { LiveTrackFlow } from "./LiveTrackFlow";
 
-/* The LR handoff (Prompt 08).
+/* The track card, in one of two modes fixed at build time (`backendMode`,
+   src/lib/backend/config.ts).
+
+   Backend off (the default): the LR handoff below, untouched. With the client's
+   backend connected (or its local mock): the LR + SMS-code flow in
+   `LiveTrackFlow`. The portal sign-in buttons stay under the card in both, and
+   the card's root is a `div` whose last child is the portal block in both —
+   `HeroTabs` lays the home card out by that shape.
+
+   The LR handoff (Prompt 08)
 
    Nothing behind this page claims to know where a consignment is: the number is
    validated and passed to a channel the desk actually answers — WhatsApp first,
@@ -35,6 +46,16 @@ function whatsappDigits(number: string): string {
 }
 
 export function TrackPanel() {
+  if (backendMode === "off") return <HandoffPanel />;
+  return (
+    <div className="flex flex-col gap-4">
+      <LiveTrackFlow />
+      <PortalLogins />
+    </div>
+  );
+}
+
+function HandoffPanel() {
   const [error, setError] = useState<string | undefined>(undefined);
   const destination = destinationFor();
 

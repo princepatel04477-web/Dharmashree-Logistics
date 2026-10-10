@@ -476,6 +476,16 @@
   .map-pin[data-dim="true"] {
     opacity: 0.14;
   }
+  /* Surat's pin: the same 22px footprint and the same dot as every hub, but
+     not a control, so no cursor and no pointer events. */
+  .map-origin {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    pointer-events: none;
+  }
   .map-pin:focus-visible {
     outline-offset: 1px;
   }
@@ -494,7 +504,7 @@
     height: 5px;
     border-radius: 9999px;
     background: var(--brand);
-    box-shadow: 0 0 0 1.5px var(--map-halo);
+    box-shadow: 0 0 0 2px var(--map-halo);
   }
   .map-dot[data-primary="true"] {
     width: 7px;
@@ -508,6 +518,7 @@
     height: 17px;
     border-radius: 9999px;
     border: 1px solid var(--brand);
+    box-shadow: 0 0 0 1.5px var(--map-halo);
     pointer-events: none;
   }
 

@@ -4,6 +4,7 @@ import { QuoteBand } from "@/components/home/QuoteBand";
 import { StatsStrip } from "@/components/home/StatsStrip";
 import { ArrowLink } from "@/components/layout/ArrowLink";
 import { BusinessSelector } from "@/components/about/BusinessSelector";
+import { GivingSection } from "@/components/about/GivingSection";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { MapCanvas } from "@/components/map/MapCanvas";
 import { DrawLine } from "@/components/motion/DrawLine";
@@ -19,7 +20,8 @@ import { timeline } from "@/content/timeline";
 
 /* `/about`. The company profile's own story (Prompt 10): the tagline as the
    H1, the three things logistics is about, the four commitments as a pinned
-   scrub (GSAP), a business-type selector (Origin UI cards, Motion swap), then
+   scrub (GSAP), a short "Giving back" section (data-gated on
+   `company.givingPercent`; the sections after it renumber in `about.ts`), a business-type selector (Origin UI cards, Motion swap), then
    the service and industry lists from `company.ts` and the network from
    `hubs.ts`. The stats strip and the timeline are data-gated — with every
    company figure null and no timeline entries, both render nothing, and
@@ -91,7 +93,10 @@ export default function AboutPage() {
         steps={about.drives.commitments}
       />
 
-      {/* ——— 03 · Which business are you? ——— */}
+      {/* ——— 03 · Giving back (data-gated; later sections renumber) ——— */}
+      <GivingSection />
+
+      {/* ——— Which business are you? ——— */}
       <section className="border-line border-t py-14 sm:py-16 lg:py-20">
         <div className="wrap flex flex-col gap-10">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-10">
@@ -113,7 +118,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ——— 04 · What we move ——— */}
+      {/* ——— What we move ——— */}
       {services.length > 0 && (
         <section className="border-line border-t py-14 sm:py-16 lg:py-20">
           <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-12">
@@ -147,7 +152,7 @@ export default function AboutPage() {
         </section>
       )}
 
-      {/* ——— 05 · Who we carry for ——— */}
+      {/* ——— Who we carry for ——— */}
       <section className="border-line border-t py-14 sm:py-16 lg:py-20">
         <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
@@ -173,7 +178,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ——— 06 · The network ——— */}
+      {/* ——— The network ——— */}
       <section className="border-line border-t py-14 sm:py-16 lg:py-20">
         <div className="wrap grid grid-cols-1 items-center gap-10 lg:grid-cols-12">
           <div className="flex flex-col items-start gap-6 lg:col-span-5">
@@ -193,7 +198,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ——— 07 · Timeline (data-gated) ——— */}
+      {/* ——— Timeline (data-gated) ——— */}
       {timeline.length > 0 && (
         <section className="border-line border-t py-14 sm:py-16 lg:py-20">
           <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-12">

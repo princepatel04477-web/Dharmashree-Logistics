@@ -15,10 +15,13 @@
      a looping shuttle, the side panel (search + regions, or the corridor
      card), arrow-key travel between hubs (one tab stop for the whole map).
 
+   Surat is drawn like any other hub (same dot, same label) and is not a
+   control; it is only where every corridor starts.
+
    Animation ownership: GSAP draws the outline, ghost corridors and active
-   corridor, runs the shuttle, the origin breath and the zoom tween. Motion
-   owns the pin rings, the callout, the region pill and the panel. CSS only
-   transitions dimming and label visibility. */
+   corridor, runs the shuttle and the zoom tween. Motion owns the pin rings,
+   the callout, the region pill and the panel. CSS only transitions dimming
+   and label visibility. */
 
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -240,7 +243,7 @@ export function IndiaNetworkMap({
     return ordered.find((hub) => visibleIds.has(hub.id))?.id ?? null;
   }, [focusId, selected, visibleIds, ordered]);
 
-  /* States: tinted where a hub sits, deeper inside the focused region. */
+  /* States: mid-blue where a hub sits, deeper inside the focused region. */
   const servedStates = useMemo(
     () => new Set([ORIGIN.stateId, ...hubsList.map((hub) => hub.stateId)]),
     [hubsList],
@@ -251,8 +254,8 @@ export function IndiaNetworkMap({
   );
 
   /* Surat's label sits left of its pin unless the stage is too narrow for
-     it there (small phones), then it drops below. The "dispatch desk" tag
-     and the tropic label only appear where there is room for them. */
+     it there (small phones), then it drops below. The tropic label only
+     appears where there is room for it. */
   const roomy = stagePx >= WIDE_STAGE_PX;
   const originPlacement = useMemo(() => {
     const roomLeft = ((ORIGIN.x - targetView.x) / targetView.w) * stagePx;
@@ -267,7 +270,7 @@ export function IndiaNetworkMap({
     const reserved = [
       originLabelRect(ORIGIN, networkMap.originLabel, targetView, stagePx, originPlacement.below),
     ];
-    const placed = placeLabels(priority, targetView, stagePx, reserved, regionHubs);
+    const placed = placeLabels(priority, targetView, stagePx, reserved, [...regionHubs, ORIGIN]);
     return new Map<string, LabelPlacement["side"]>(placed.map((p) => [p.id, p.side]));
   }, [activeRegion, hubsList, regionHubs, targetView, stagePx, originPlacement]);
 
@@ -276,7 +279,6 @@ export function IndiaNetworkMap({
   const svgRef = useRef<SVGSVGElement>(null);
   const activePathRef = useRef<SVGPathElement>(null);
   const shuttleRef = useRef<SVGCircleElement>(null);
-  const breathRef = useRef<HTMLSpanElement>(null);
   const pinEls = useRef(new Map<string, HTMLButtonElement>());
   const corridorTl = useRef<{ kill: () => void } | null>(null);
   const viewRef = useRef<ViewBox>({ ...FULL_VIEW });
@@ -319,8 +321,8 @@ export function IndiaNetworkMap({
   }, []);
 
   /* Entrance: the border inks in, the state wash follows, corridors draw out
-     from Surat, pins pop in distance order, labels settle, Surat breathes.
-     ~2.2s in all. Reduced motion: the final frame, no breath. */
+     from Surat, pins pop in distance order, labels settle. ~2.2s in all.
+     Reduced motion: the final frame. */
   useGSAP(
     () => {
       const stage = stageRef.current;
@@ -332,7 +334,6 @@ export function IndiaNetworkMap({
       const fades = stage.querySelectorAll<HTMLElement>("[data-fade-in]");
       const washes: Element[] = [...fades];
       if (states !== null) washes.push(states);
-      const breath = breathRef.current;
       if (reduced) {
         gsap.set(washes, { opacity: 1 });
         gsap.set(dots, { scale: 1, opacity: 1 });
@@ -369,15 +370,6 @@ export function IndiaNetworkMap({
           0.95,
         )
         .add(clearDash, 2.1);
-      /* Nested (not fired from a callback) so the context reverts it. */
-      if (breath !== null) {
-        timeline.fromTo(
-          breath,
-          { scale: 1, opacity: 0.55 },
-          { scale: 2.6, opacity: 0, duration: 2.8, repeat: -1, ease: "sine.out" },
-          1.2,
-        );
-      }
     },
     { scope: stageRef, dependencies: [reduced, hubsList] },
   );
@@ -725,11 +717,18 @@ export function IndiaNetworkMap({
             data-active-corridor
             className="map-active"
             fill="none"
-            stroke="var(--brand)"
+            stroke="var(--map-corridor-active)"
             strokeLinecap="round"
             opacity={0}
           />
-          <circle ref={shuttleRef} cx={0} cy={0} r={SHUTTLE_R} fill="var(--brand)" opacity={0} />
+          <circle
+            ref={shuttleRef}
+            cx={0}
+            cy={0}
+            r={SHUTTLE_R}
+            fill="var(--map-corridor-active)"
+            opacity={0}
+          />
         </g>
       </svg>
 
@@ -767,32 +766,22 @@ export function IndiaNetworkMap({
         })}
       </div>
 
-      {/* Surat: the origin is information, not a control. */}
-      <div
-        data-fade-in
-        aria-hidden="true"
-        className="map-at pointer-events-none"
-        style={at(ORIGIN.x, ORIGIN.y)}
-      >
+      {/* Surat: where every corridor starts. Drawn like any hub, but it is
+          information, not a control. */}
+      <div data-fade-in aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <span className="map-at map-origin" style={at(ORIGIN.x, ORIGIN.y)}>
+          <span data-hub-dot className="map-dot" data-primary={ORIGIN.primary ? "true" : "false"} />
+        </span>
         <span
-          ref={breathRef}
-          className="border-signal-red absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border opacity-0"
-        />
-        <span className="border-signal-red bg-paper absolute -top-[9px] -left-[9px] block size-[18px] rounded-full border" />
-        <span className="bg-signal-red absolute -top-[3px] -left-[3px] block size-[6px] rounded-full" />
-        <span
-          className={
-            originPlacement.below
-              ? "absolute top-[13px] -left-[4px] flex flex-col items-start"
-              : "absolute top-0 right-[15px] flex -translate-y-1/2 flex-col items-end text-right"
-          }
+          className="map-at map-label"
+          style={{
+            ...at(ORIGIN.x, ORIGIN.y),
+            transform: originPlacement.below
+              ? "translate(-4px, 10px)"
+              : "translate(calc(-100% - 9px), -50%)",
+          }}
         >
-          <span className="map-label text-ink relative font-medium">{networkMap.originLabel}</span>
-          {isFull && roomy && (
-            <span className="map-label relative mt-[3px] text-[9px] tracking-[0.18em]">
-              {networkMap.originTag}
-            </span>
-          )}
+          {networkMap.originLabel}
         </span>
       </div>
 

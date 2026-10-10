@@ -19,7 +19,7 @@ import { hero } from "@/content/home";
    being empty drops the services section. */
 
 export const metadata: Metadata = {
-  title: "Freight & Transport from Surat",
+  title: "Freight & Transport across India",
   description: hero.body,
 };
 

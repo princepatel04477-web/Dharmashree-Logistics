@@ -13,7 +13,6 @@ export const networkMap = {
   instruction: `Tap any hub to see its corridor from ${ORIGIN.name}.`,
   filterLabel: "Filter hubs by region",
   originLabel: ORIGIN.name,
-  originTag: "Dispatch desk",
   tropicLabel: "Tropic of Cancer",
   readoutIdle: `${ORIGIN.name} · dispatch desk`,
   readoutDistance: (km: string): string => `${km} km straight-line`,
@@ -29,6 +28,18 @@ export const networkMap = {
     noMatchAction: "Ask about this lane",
     regionsTitle: "By region",
     regionCount: (count: number): string => `${String(count)} hubs`,
+  },
+
+  /* The hub directory: one collapsible panel per state. */
+  directory: {
+    title: (count: string): string => `Active Network (${count} hubs)`,
+    filterLabel: "Filter directory by region",
+    statesLabel: "Hubs by state",
+    stateCount: (formatted: string, count: number): string =>
+      `${formatted} ${count === 1 ? "hub" : "hubs"}`,
+    expandAll: "Expand all states",
+    collapseAll: "Collapse all states",
+    verified: "Verified",
   },
 
   panel: {
@@ -54,10 +65,10 @@ export const networkPage = {
   metaTitle: "Network",
   metaDescription: `Every hub ${company.name} dispatches to from ${ORIGIN.name}, by region, with the corridor from the desk.`,
   eyebrow: "Network",
-  title: "Where Surat’s freight goes.",
-  lede: `One dispatch desk in ${ORIGIN.name}, corridors into the markets that buy what Surat makes. Select a hub to see its lane, or search for your city.`,
+  title: "Where our freight goes.",
+  lede: `One dispatch desk in ${ORIGIN.name}, corridors into the markets we serve across India. Select a hub to see its lane, or search for your city.`,
   countLine: (hubs: number, regions: number): string =>
     `${String(hubs)} hubs across ${String(regions)} regions`,
   directoryIndex: "Directory",
-  directoryTitle: "Every hub, by region",
+  directoryTitle: "Every hub, by state",
 };

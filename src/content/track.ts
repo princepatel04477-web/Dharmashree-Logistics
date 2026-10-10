@@ -1,15 +1,25 @@
-/* `/track` copy (Prompts 08 and 12). The page is honest by design: there is no live
-   tracking behind it, and nothing here says otherwise. The AWB, LR or tracking
-   number — one field, one rule, whichever the visitor holds — is checked
-   and handed to the desk through a channel that actually exists — WhatsApp when
-   `company.whatsapp` is set, otherwise email, otherwise phone, otherwise a line
-   saying the numbers are not published yet (house rule 4).
+/* `/track` copy (Prompts 08 and 12). Two modes, chosen at build time by
+   `backendMode` (src/lib/backend/config.ts).
+
+   Without a backend — the default — the page is honest by design: there is no
+   live tracking behind it, and nothing in the top-level keys below says
+   otherwise. The AWB, LR or tracking number — one field, one rule, whichever
+   the visitor holds — is checked and handed to the desk through a channel that
+   actually exists — WhatsApp when `company.whatsapp` is set, otherwise email,
+   otherwise phone, otherwise a line saying the numbers are not published yet
+   (house rule 4).
+
+   With the client's backend connected, the copy under `live` replaces the
+   off-mode lines that describe the handoff, and the panel runs the LR + SMS-code
+   flow. `live` is read only on that branch, so the off-mode text stays exactly
+   as it was.
 
    `lineChannelNote` names WhatsApp, so it is only used when that number exists;
    `lineChannelFallback` carries the same sentence without the promise. Same
    pattern as `responseNote` in `quote.ts`. */
 
-import type { LrCode } from "@/lib/validate";
+import type { BackendErrorCode } from "@/lib/backend/types";
+import type { LrCode, MobileCode, OtpCode } from "@/lib/validate";
 
 export const track = {
   eyebrow: "Track",
@@ -79,30 +89,37 @@ export const track = {
     items: [
       {
         question: "Booked",
+        key: "booked",
         answer: "The consignment has been booked and is waiting to be collected.",
       },
       {
         question: "Picked up",
+        key: "picked-up",
         answer: "The shipment has been collected from the sender.",
       },
       {
         question: "In transit",
+        key: "in-transit",
         answer: "The shipment is moving between pickup and delivery.",
       },
       {
         question: "Arrived at a facility",
+        key: "at-facility",
         answer: "The shipment has reached a facility on its journey.",
       },
       {
         question: "Out for delivery",
+        key: "out-for-delivery",
         answer: "The shipment is on its way to the receiver.",
       },
       {
         question: "Delivered",
+        key: "delivered",
         answer: "The shipment has reached the receiver.",
       },
       {
         question: "Requires attention",
+        key: "attention",
         /** Marked with --signal-red on the ladder; every other status is --brand. */
         attention: true,
         answer:
@@ -127,5 +144,91 @@ export const track = {
     body: "Sometimes you need more than a tracking update. If a status is unclear, you need to correct delivery information, have a booking query or need help with a delayed consignment, share your number along with your query so the team can give more relevant guidance.",
     linkLabel: "Support & FAQ",
     linkHref: "/support",
+  },
+
+  /* The LR + SMS-code flow (src/components/track/LiveTrackFlow.tsx). Read only
+     when a backend is connected; see the header comment. */
+  live: {
+    line: "Enter your LR number and the mobile number on the booking. We send a one-time code to that number, then show where the consignment is.",
+    metadataDescription:
+      "Enter your LR number and the mobile number on the booking. A one-time code confirms it is you, then the status and history of the consignment are shown.",
+
+    details: {
+      lrLabel: "LR number",
+      mobileLabel: "Mobile number on the booking",
+      mobilePlaceholder: "98765 43210",
+      mobileHelper: "10-digit mobile number. We send a 6-digit code by SMS.",
+      submit: "Send OTP",
+      submitting: "Sending code…",
+    },
+
+    otp: {
+      label: "One-time code",
+      placeholder: "6-digit code",
+      /** `masked` is already in +91 ••••• •1234 form. */
+      sentTo: (masked: string, lr: string): string => `Code sent to ${masked} for LR ${lr}.`,
+      /** Without a maskable number, the sentence still tells the visitor where to look. */
+      sentToFallback: (lr: string): string => `Code sent by SMS for LR ${lr}.`,
+      helper: "Enter the 6-digit code from the SMS. You can paste it.",
+      submit: "Verify & track",
+      verifying: "Verifying…",
+      fetching: "Fetching status…",
+      resendIn: (seconds: number): string => `Resend code in ${String(seconds)}s`,
+      resend: "Resend code",
+      resending: "Sending code…",
+      changeNumber: "Change number",
+    },
+
+    result: {
+      lrLabel: "LR number",
+      statusLabel: "Current status",
+      progressLabel: "Journey progress",
+      progressCurrent: "current step",
+      routeLabel: "Route",
+      /** Read between origin and destination by screen readers (the arrow is decorative). */
+      routeTo: "to",
+      consignorLabel: "Consignor",
+      consigneeLabel: "Consignee",
+      packagesLabel: "Packages",
+      weightLabel: "Weight",
+      weightValue: (formatted: string): string => `${formatted} kg`,
+      bookedLabel: "Booked on",
+      expectedLabel: "Expected delivery",
+      deliveredLabel: "Delivered on",
+      locationLabel: "Last known location",
+      historyTitle: "Shipment history",
+      noEvents: "No movement has been recorded for this consignment yet.",
+      /** The history opens on the newest few movements; the rest sit behind this. */
+      showAllEvents: (count: number): string => `Show all ${String(count)} movements`,
+      showFewerEvents: "Show fewer",
+      trackAnother: "Track another",
+    },
+
+    /** One sentence per failure, keyed by the code `src/lib/backend` returns. */
+    errors: {
+      Network: "We could not reach the tracking service. Check your connection and try again.",
+      Timeout: "The tracking service took too long to answer. Please try again.",
+      NotFound:
+        "We could not find that LR number. Check it against the slip from pickup and try again.",
+      MobileMismatch:
+        "That mobile number is not the one on this booking. Use the number given at booking.",
+      OtpInvalid: "That code is not correct. Check the SMS and try again.",
+      OtpExpired: "That code has expired. Request a new code.",
+      TooManyAttempts: "Too many incorrect codes. Start again to get a new code.",
+      RateLimited: "Too many requests just now. Wait a few minutes and try again.",
+      SessionExpired: "Your verification has timed out. Start again to get a new code.",
+      Server: "The tracking service had a problem. Please try again shortly, or contact the desk.",
+      Unconfigured: "Live tracking is not available on this site yet.",
+      BadResponse:
+        "The tracking service sent a reply we could not read. Please try again, or contact the desk.",
+    } satisfies Record<BackendErrorCode, string>,
+
+    /** Field messages for the two new inputs, keyed like `errors` above. */
+    fieldErrors: {
+      MobileRequired: "Enter the mobile number on the booking.",
+      MobileFormat: "That is not a 10-digit Indian mobile number.",
+      OtpRequired: "Enter the 6-digit code from the SMS.",
+      OtpFormat: "The code is 6 digits.",
+    } satisfies Record<MobileCode | OtpCode, string>,
   },
 } as const;

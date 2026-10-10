@@ -36,13 +36,20 @@
   /* Scrollbar thumb: a cool grey, --brand on hover (see globals.css). */
   --scrollbar-thumb: color-mix(in srgb, var(--ink) 22%, var(--paper));
 
-  /* Network map, light ground */
+  /* Network map, light ground. Served states are a clear mid-blue and the
+     focused region a deeper one, both mixed from --brand over --paper so
+     --ink labels keep AA on them: --ink on served 9.3:1, on focus 5.9:1
+     (the mix is capped near 66% brand; past ~75% ink drops under 4.5:1).
+     Pins stay --brand and are rimmed with --map-halo so they separate from
+     the fills; the active corridor is drawn in --brand-deep, which holds
+     5.8:1 on served and 3.9:1 on focus where --brand alone would not. */
   --map-border: rgba(20, 23, 31, 0.35);
-  --map-state-line: rgba(20, 23, 31, 0.1);
+  --map-state-line: rgba(20, 23, 31, 0.14);
   --map-land-quiet: var(--paper-2);
-  --map-land-served: var(--brand-tint);
-  --map-land-focus: color-mix(in srgb, var(--brand) 16%, var(--paper));
-  --map-corridor: color-mix(in srgb, var(--brand) 35%, transparent);
+  --map-land-served: color-mix(in srgb, var(--brand) 42%, var(--paper));
+  --map-land-focus: color-mix(in srgb, var(--brand) 66%, var(--paper));
+  --map-corridor: color-mix(in srgb, var(--brand-deep) 32%, transparent);
+  --map-corridor-active: var(--brand-deep);
   --map-halo: var(--paper);
 
   /* ——— Typography ———

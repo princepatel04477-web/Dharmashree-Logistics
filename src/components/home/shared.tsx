@@ -5,6 +5,7 @@ import {
   CogIcon,
   GemIcon,
   HandshakeIcon,
+  HeartHandshakeIcon,
   LayersIcon,
   MessagesSquareIcon,
   PackageCheckIcon,
@@ -45,7 +46,8 @@ export type HomeIconName =
   | "shield"
   | "messages"
   | "handshake"
-  | "layers";
+  | "layers"
+  | "giving";
 
 export function HomeIcon({ name, ...props }: { name: HomeIconName } & LucideProps) {
   switch (name) {
@@ -79,6 +81,8 @@ export function HomeIcon({ name, ...props }: { name: HomeIconName } & LucideProp
       return <HandshakeIcon {...props} />;
     case "layers":
       return <LayersIcon {...props} />;
+    case "giving":
+      return <HeartHandshakeIcon {...props} />;
     case "package":
       return <PackageIcon {...props} />;
   }
@@ -120,8 +124,14 @@ export function processIcon(step: ProcessImageStep): HomeIconName {
   return processIcons[step];
 }
 
-/* The four commitments in `about.ts`, in order. */
-const commitmentIcons: readonly HomeIconName[] = ["shield", "messages", "handshake", "layers"];
+/* The four commitments in `about.ts`, in order, then the giving line. */
+const commitmentIcons: readonly HomeIconName[] = [
+  "shield",
+  "messages",
+  "handshake",
+  "layers",
+  "giving",
+];
 
 export function commitmentIcon(index: number): HomeIconName {
   return commitmentIcons[index] ?? "shield";

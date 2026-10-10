@@ -99,6 +99,8 @@ export default function SupportPage() {
                     <dd>
                       <a
                         href={link.href}
+                        target={link.kind === "website" ? "_blank" : undefined}
+                        rel={link.kind === "website" ? "noopener" : undefined}
                         className="font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
                       >
                         {link.label}

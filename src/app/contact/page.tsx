@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { BranchList } from "@/components/contact/BranchList";
+import { MessageForm } from "@/components/contact/MessageForm";
 import { ArrowLink } from "@/components/layout/ArrowLink";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { SectionHeading } from "@/components/motion/SectionHeading";
@@ -6,13 +8,17 @@ import { FaqAccordion } from "@/components/vendor/origin";
 import { company } from "@/content/company";
 import { contact } from "@/content/contact";
 import { faqs } from "@/content/faq";
-import { contactLines, contactLinks, quoteCta } from "@/content/navigation";
+import { contactLines, contactLinks, quoteCta, type FooterLink } from "@/content/navigation";
 
-/* `/contact` — channels, the quote route, and the general FAQ (#faq, linked
-   from the footer). Every channel row is a fact from `company.ts` via
-   `contactLinks()` / `contactLines()`; a null fact is simply not a row, and
-   the lede changes so the page never points at a number it cannot show.
-   Contact actions are plain <a> tags (house rule 10). */
+/* `/contact` — channels, the message box, the branches and delivery partners,
+   the quote route, and the general FAQ (#faq, linked from the footer). Every
+   channel row is a fact from `company.ts` via `contactLinks()` /
+   `contactLines()`; a null fact is simply not a row, and the lede changes so
+   the page never points at a number it cannot show. Contact actions are plain
+   <a> tags (house rule 10); the website row leaves the site, so it opens in a
+   new tab like WhatsApp. */
+
+const NEW_TAB_KINDS: readonly FooterLink["kind"][] = ["whatsapp", "website"];
 
 export const metadata: Metadata = {
   title: contact.metaTitle,
@@ -41,22 +47,27 @@ export default function ContactPage() {
             />
           </div>
           <dl className="divide-line border-line divide-y border-y lg:col-span-8">
-            {links.map((link) => (
-              <div
-                key={link.href}
-                className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between"
-              >
-                <dt className="label-caps">{contact.channelLabels[link.kind]}</dt>
-                <dd>
-                  <a
-                    href={link.href}
-                    className="font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
-                  >
-                    {link.label}
-                  </a>
-                </dd>
-              </div>
-            ))}
+            {links.map((link) => {
+              const newTab = NEW_TAB_KINDS.includes(link.kind);
+              return (
+                <div
+                  key={link.href}
+                  className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between"
+                >
+                  <dt className="label-caps">{contact.channelLabels[link.kind]}</dt>
+                  <dd>
+                    <a
+                      href={link.href}
+                      target={newTab ? "_blank" : undefined}
+                      rel={newTab ? "noopener" : undefined}
+                      className="font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                    >
+                      {link.label}
+                    </a>
+                  </dd>
+                </div>
+              );
+            })}
             <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">
               <dt className="label-caps">{contact.officeLabel}</dt>
               <dd className="sm:text-right">
@@ -100,8 +111,47 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ——— The quote route ——— */}
+      {/* ——— Message box ——— */}
       <section className="border-line border-t py-14 sm:py-16 lg:py-20">
+        <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-12">
+          <div className="space-y-4 lg:col-span-4">
+            <SectionHeading
+              index={contact.messageIndex}
+              title={contact.messageTitle}
+              titleClassName={SECTION_TITLE}
+            />
+            <p className="text-ink-2 max-w-measure leading-body text-base font-light">
+              {contact.messageBody}
+            </p>
+          </div>
+          <div className="lg:col-span-8">
+            <MessageForm variant="page" />
+          </div>
+        </div>
+      </section>
+
+      {/* ——— Branches and delivery partners ——— */}
+      <section className="bg-brand-tint py-14 sm:py-16 lg:py-20">
+        <div className="wrap flex flex-col gap-10">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <SectionHeading
+                index={contact.branches.index}
+                title={contact.branches.title}
+                titleClassName={SECTION_TITLE}
+              />
+            </div>
+            <p className="text-ink-2 max-w-measure leading-body text-base font-light lg:col-span-8">
+              {contact.branches.body}
+            </p>
+          </div>
+          <BranchList />
+          <ArrowLink href="/partners" label={contact.branches.partnersLink} />
+        </div>
+      </section>
+
+      {/* ——— The quote route ——— */}
+      <section className="py-14 sm:py-16 lg:py-20">
         <div className="wrap grid grid-cols-1 gap-10 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <SectionHeading

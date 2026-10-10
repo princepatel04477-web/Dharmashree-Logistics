@@ -1,4 +1,4 @@
-import { formatPhoneIN } from "@/lib/format";
+import { formatNumberIN, formatPhoneIN } from "@/lib/format";
 import { company } from "./company";
 import { HUBS, ORIGIN } from "./hubs";
 import { services } from "./services";
@@ -15,7 +15,7 @@ export interface NavItem {
 }
 
 /** `route` → next/link · the rest are plain `<a>` (house rule 10). */
-export type FooterLinkKind = "route" | "phone" | "email" | "whatsapp";
+export type FooterLinkKind = "route" | "phone" | "email" | "whatsapp" | "website";
 
 export interface FooterLink {
   readonly label: string;
@@ -80,6 +80,53 @@ export const quoteCta = {
   compactLabel: "Enquire",
 };
 
+/* ——— Portal sign-ins (header on lg+, mobile sheet below) ———
+   Outline buttons beside the filled "Enquire now" (house rule 6). The labels are
+   the ones /track already uses, so the same portal has one name everywhere; a
+   `null` portal URL drops its button (house rule 4). The portals live on another
+   host, so they open in a new tab. `compactLabel` is the shorter wording the
+   header uses between 1024px and 1279px, where the full labels would not fit. */
+export interface PortalLink {
+  readonly id: "customer" | "consignee";
+  readonly label: string;
+  readonly compactLabel: string;
+  readonly href: string;
+}
+
+export interface PortalNav {
+  readonly links: readonly PortalLink[];
+  /** Read after each label by screen readers: the link leaves this site. */
+  readonly newTabHint: string;
+  readonly ariaLabel: string;
+}
+
+function buildPortalNav(): PortalNav {
+  const links: PortalLink[] = [];
+  if (company.portals.customer !== null) {
+    links.push({
+      id: "customer",
+      label: track.portals.customerLabel,
+      compactLabel: "Customer login",
+      href: company.portals.customer,
+    });
+  }
+  if (company.portals.consignee !== null) {
+    links.push({
+      id: "consignee",
+      label: track.portals.consigneeLabel,
+      compactLabel: track.portals.consigneeLabel,
+      href: company.portals.consignee,
+    });
+  }
+  return {
+    links,
+    newTabHint: track.portals.newTabHint,
+    ariaLabel: "Portal sign-in",
+  };
+}
+
+export const portalNav: PortalNav = buildPortalNav();
+
 export const skipLink = {
   href: "#main",
   label: "Skip to main content",
@@ -113,6 +160,22 @@ export function whatsappLink(message: string = whatsapp.defaultMessage): string 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+/* ——— Website ———
+   Shown as the bare domain ("dharmashreegroup.in"), linked to the full URL.
+   `null` when the fact is `null`. */
+export function websiteDomain(): string | null {
+  if (company.website === null) return null;
+  const domain = company.website.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  return domain === "" ? null : domain;
+}
+
+/* ——— Giving ———
+   The percentage is deliberately not tied to a base ("profits", "revenue"): the
+   source fact only says what share of earnings is set aside. `null` hides it. */
+function givingPercentText(): string | null {
+  return company.givingPercent === null ? null : `${formatNumberIN(company.givingPercent)}%`;
+}
+
 /* ——— Contact rows shared by the mobile menu and the footer ——— */
 export function contactLinks(): FooterLink[] {
   const links: FooterLink[] = [];
@@ -129,6 +192,10 @@ export function contactLinks(): FooterLink[] {
   const wa = whatsappLink();
   if (wa !== null) {
     links.push({ label: whatsapp.label, href: wa, kind: "whatsapp" });
+  }
+  const domain = websiteDomain();
+  if (company.website !== null && domain !== null) {
+    links.push({ label: domain, href: company.website, kind: "website" });
   }
   return links;
 }
@@ -195,21 +262,20 @@ function footerColumns(): FooterColumn[] {
 }
 
 /* ——— Utility bar (lg+, above the header) ———
-   Contact facts on the left, billing-portal sign-ins on the right. Every item
-   is dropped when its fact is `null` (house rule 4); the portal labels are the
-   ones /track already uses, so the same portal has one name everywhere. */
+   Contact facts on the left, the giving line on the right. The portal sign-ins
+   moved into the header itself (`portalNav`). Every item is dropped when its
+   fact is `null` (house rule 4). */
 export interface UtilityLink {
   readonly id: string;
   readonly label: string;
   readonly href: string;
-  readonly kind: "email" | "phone" | "portal";
+  readonly kind: "email" | "phone";
 }
 
 export interface UtilityBar {
   readonly contact: readonly UtilityLink[];
-  readonly portals: readonly UtilityLink[];
-  /** Read after each portal label by screen readers: the link leaves this site. */
-  readonly newTabHint: string;
+  /** Plain text, not a link. `null` when `company.givingPercent` is `null`. */
+  readonly giving: string | null;
   readonly ariaLabel: string;
 }
 
@@ -231,39 +297,32 @@ function buildUtilityBar(): UtilityBar {
       kind: "phone",
     });
   }
-  const portals: UtilityLink[] = [];
-  if (company.portals.customer !== null) {
-    portals.push({
-      id: "customer",
-      label: track.portals.customerLabel,
-      href: company.portals.customer,
-      kind: "portal",
-    });
-  }
-  if (company.portals.consignee !== null) {
-    portals.push({
-      id: "consignee",
-      label: track.portals.consigneeLabel,
-      href: company.portals.consignee,
-      kind: "portal",
-    });
-  }
+  const percent = givingPercentText();
   return {
     contact,
-    portals,
-    newTabHint: track.portals.newTabHint,
-    ariaLabel: "Contact and portal sign-in",
+    giving: percent === null ? null : `${percent} of our earnings are set aside for good causes`,
+    ariaLabel: "Contact details",
   };
 }
 
 export const utilityBar: UtilityBar = buildUtilityBar();
-export const hasUtilityBar: boolean =
-  utilityBar.contact.length > 0 || utilityBar.portals.length > 0;
+export const hasUtilityBar: boolean = utilityBar.contact.length > 0 || utilityBar.giving !== null;
+
+/** Used when `company.tagline` is `null`. Brand-level: no city, no numbers. */
+const FALLBACK_SLOGAN = "Freight you can trust, across India.";
+
+function buildGiving(): string | null {
+  const percent = givingPercentText();
+  return percent === null
+    ? null
+    : `${company.name} sets aside ${percent} of its earnings for good causes.`;
+}
 
 export const footer = {
-  /** The single display line in the top band — a fact, not a slogan. */
-  slogan: `Move it from ${company.headquarters.city}.`,
-  ctaLabel: quoteCta.label,
+  /** The single display line in the top band: the company's own tagline. */
+  slogan: company.tagline ?? FALLBACK_SLOGAN,
+  /** The giving statement; `null` when the fact is `null`. */
+  giving: buildGiving(),
   columns: footerColumns(),
   /** Decorative band; the real, keyboard-reachable list lives on /network. */
   hubBand: [ORIGIN.name, ...HUBS.map((hub) => hub.name)],

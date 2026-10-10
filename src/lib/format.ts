@@ -35,3 +35,29 @@ export function formatDateIN(iso: string): string {
     year: "numeric",
   }).format(date);
 }
+
+/** "2026-10-09T09:00:00.000Z" → "9 Oct 2026, 2:30 pm". An instant, shown in India
+    time whatever the visitor's own clock says. Returns input unchanged if
+    unparseable. */
+export function formatDateTimeIN(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return iso;
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+    timeZone: "Asia/Kolkata",
+  }).format(date);
+}
+
+/** A masked mobile as the backend sends it ("XXXXXX1234", "******1234") →
+    "+91 ••••• •1234", the house +91 XXXXX XXXXX grouping with only the last four
+    digits shown. `null` when there are no four trailing digits to show. */
+export function formatMaskedMobileIN(masked: string): string | null {
+  const match = /(\d{4})\s*$/.exec(masked);
+  if (match === null) return null;
+  return `+91 ••••• •${match[1] ?? ""}`;
+}

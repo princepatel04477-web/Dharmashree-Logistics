@@ -90,7 +90,7 @@ export function PartnerMap({ className }: { className?: string }) {
           <path
             key={state.id}
             d={state.d}
-            fill={state.id === FOCUS_STATE ? "var(--map-land-focus)" : "var(--map-land-quiet)"}
+            fill={state.id === FOCUS_STATE ? "var(--map-land-served)" : "var(--map-land-quiet)"}
             stroke="var(--map-state-line)"
             strokeLinejoin="round"
           />

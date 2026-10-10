@@ -150,8 +150,8 @@ export function placeLabels(
   return out;
 }
 
-/* Rect the origin label occupies (left of the dot, or below it on narrow
-   stages), so hub labels avoid it. */
+/* Rect the origin label occupies (left of the dot like any hub label, or
+   below it on narrow stages), so hub labels avoid it. */
 export function originLabelRect(
   origin: Hub,
   text: string,
@@ -162,9 +162,9 @@ export function originLabelRect(
   const scale = stagePx / view.w;
   const px = (origin.x - view.x) * scale;
   const py = (origin.y - view.y) * scale;
-  const w = labelWidth(text) + 12;
-  if (below) return { x: px - 6, y: py + 8, w, h: LABEL_H + 18 };
-  return { x: px - LABEL_GAP - w, y: py - LABEL_H / 2 - 2, w, h: LABEL_H + 16 };
+  const w = labelWidth(text);
+  if (below) return { x: px - 4, y: py + 10, w, h: LABEL_H };
+  return { x: px - LABEL_GAP - w, y: py - LABEL_H / 2, w, h: LABEL_H };
 }
 
 /* ——— Keyboard travel ——— */

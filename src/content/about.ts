@@ -1,5 +1,6 @@
 import { company } from "./company";
 import { HUBS, ORIGIN, REGIONS, type RegionId } from "./hubs";
+import { formatNumberIN } from "@/lib/format";
 
 /* `/about` copy (Prompts 05 and 10). The words are the company profile's
    (`Company_Profile/ABOUT DHARMASHREE.md`); the only derived lines are the
@@ -11,6 +12,18 @@ const regionCount = REGIONS.filter((entry) => entry.id !== "all").length;
 
 function countIn(region: RegionId): number {
   return HUBS.filter((hub) => hub.region === region).length;
+}
+
+/* The giving section sits straight after the commitments (section 02), so with
+   it present every later section moves down one place. Its figure is the only
+   number it states, and it comes from `company.ts`: a null removes the whole
+   section and the numbering closes over it (house rule 4). */
+const givingShare =
+  company.givingPercent === null ? null : `${formatNumberIN(company.givingPercent)}%`;
+
+function sectionIndex(position: number): string {
+  const shift = givingShare !== null && position > 2 ? 1 : 0;
+  return String(position + shift).padStart(2, "0");
 }
 
 /** The slug of a service in `services.ts`; `verify:services` fails on a typo. */
@@ -81,8 +94,23 @@ export const about = {
     ],
   },
 
+  /** Deliberately silent on what the share is of, and on who receives it. */
+  giving:
+    givingShare === null
+      ? null
+      : {
+          index: "03",
+          title: "Giving back",
+          body: [
+            `${company.name} sets aside ${givingShare} of its earnings for good causes.`,
+            "It is a standing commitment, not a campaign — part of how we run the business.",
+          ],
+          /** The one-line form of the same commitment, for the home page list. */
+          commitmentTitle: `${givingShare} of earnings set aside for good causes`,
+        },
+
   kinds: {
-    index: "03",
+    index: sectionIndex(3),
     title: "Which business are you?",
     note: "Every business has different logistics needs. Pick yours and see which services the profile pairs with it.",
     label: "Type of business",
@@ -120,25 +148,25 @@ export const about = {
   },
 
   moves: {
-    index: "04",
+    index: sectionIndex(4),
     title: "What we move",
     linkLabel: "All services",
   },
 
   carries: {
-    index: "05",
+    index: sectionIndex(5),
     title: "Who we carry for",
   },
 
   reach: {
-    index: "06",
+    index: sectionIndex(6),
     title: "Where it goes",
     body: `${String(HUBS.length)} hubs across ${String(regionCount)} regions, every one of them a corridor from the ${ORIGIN.name} desk. Most of the network sits north and east: ${String(countIn("uttar-pradesh"))} hubs in Uttar Pradesh alone, and ${String(countIn("bihar-jharkhand"))} across Bihar and Jharkhand.`,
     linkLabel: "Open the network map",
   },
 
   timeline: {
-    index: "07",
+    index: sectionIndex(7),
     title: "Along the way",
   },
 };

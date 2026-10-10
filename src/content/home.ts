@@ -10,12 +10,10 @@ import { quoteCta, whatsapp } from "./navigation";
 
 /* ——— H0 · Hero ——— */
 export const hero = {
-  /** The company's own line when it has one; the place otherwise. */
-  eyebrow:
-    company.tagline ??
-    `Freight & transport · ${company.headquarters.city}, ${company.headquarters.state}`,
-  title: "Freight that moves the way Surat trades.",
-  body: "Express parcels, full truckloads, local delivery and warehousing from Surat to the markets that matter — booked by people who answer the phone.",
+  /** The company's own line when it has one; the plain claim otherwise. */
+  eyebrow: company.tagline ?? "Freight & transport across India",
+  title: "Freight that moves the way India trades.",
+  body: "Express parcels, full truckloads, local delivery and warehousing across India's busiest trade lanes — booked by people who answer the phone.",
   cta: quoteCta,
   /** Rendered only when `company.branches` has an entry. */
   branchPrefix: "Now also dispatching from",
@@ -153,14 +151,17 @@ export const processSteps: readonly ProcessStep[] = [
 
 /* ——— H6 · Commitments ——— */
 /* The commitments from the company profile, by title; the full text lives on
-   `/about`, which owns it, so the two pages cannot say different things. */
-export const commitments: readonly string[] = about.drives.commitments.map(
-  (commitment) => commitment.title,
-);
+   `/about`, which owns it, so the two pages cannot say different things. The
+   giving line is one more item, present only while `company.givingPercent` is
+   set (`about.giving` is null otherwise). */
+export const commitments: readonly string[] = [
+  ...about.drives.commitments.map((commitment) => commitment.title),
+  ...(about.giving === null ? [] : [about.giving.commitmentTitle]),
+];
 
 /* ——— H7 · Quote band ——— */
 export const quoteBand = {
-  line: `Have a load leaving ${company.headquarters.city}?`,
+  line: "Have a load ready to move?",
   ctaLabel: quoteCta.label,
   ctaHref: quoteCta.href,
   whatsappLabel: `Message the desk on ${whatsapp.label}`,

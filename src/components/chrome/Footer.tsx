@@ -1,16 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import { LogoLoop } from "@/components/vendor/reactbits";
-import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import { footer, footerLogo, quoteCta, type FooterLink } from "@/content/navigation";
+import { footer, footerLogo, type FooterLink } from "@/content/navigation";
+import { FooterMessage } from "./FooterMessage";
 
 /* Site footer (Prompt 04), on the --brand-deep ground: headings full white,
    links and small text white at 0.85, hairlines white at 0.12. The focus ring
-   turns white here so it stays visible on the blue. Top band = one display line plus the outline quote
-   button; then the link columns; then the decorative hub band; then the legal
-   row. Every row is built from `navigation.ts`, which already dropped the
-   `null` facts, so nothing here renders an empty line (house rule 4). */
+   turns white here so it stays visible on the blue. Top band = the logo and the
+   company's tagline beside the compact "Send us a message" box (`FooterMessage`, absent on
+   /contact, which has the full form) (the footer no
+   longer carries an "Enquire now" button); then the link columns; then the
+   decorative hub band; then the legal row, with the giving line when there is
+   one. Every row is built from `navigation.ts`, which already dropped the
+   `null` facts, so nothing here renders an empty line (house rule 4). External
+   links (WhatsApp, the website) open in a new tab. */
+
+const NEW_TAB_KINDS: readonly FooterLink["kind"][] = ["whatsapp", "website"];
 
 function FooterLinkRow({ link }: { link: FooterLink }) {
   const base =
@@ -22,11 +28,12 @@ function FooterLinkRow({ link }: { link: FooterLink }) {
       </Link>
     );
   }
+  const newTab = NEW_TAB_KINDS.includes(link.kind);
   return (
     <a
       href={link.href}
-      target={link.kind === "whatsapp" ? "_blank" : undefined}
-      rel={link.kind === "whatsapp" ? "noopener" : undefined}
+      target={newTab ? "_blank" : undefined}
+      rel={newTab ? "noopener" : undefined}
       className={base}
     >
       {link.label}
@@ -41,8 +48,8 @@ export function Footer() {
   return (
     <footer className="bg-brand-deep text-on-deep [&_:focus-visible]:outline-on-deep mt-24">
       {/* ——— Top band ——— */}
-      <div className="wrap flex flex-col items-start gap-8 py-14 sm:py-16 lg:flex-row lg:items-end lg:justify-between lg:gap-16 lg:py-20">
-        <div className="flex flex-col items-start gap-6">
+      <div className="wrap grid grid-cols-1 gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:gap-16 lg:py-20">
+        <div className="flex flex-col items-start gap-6 lg:col-span-5">
           <Image
             src={footerLogo.lightSrc}
             alt={company.name}
@@ -54,14 +61,7 @@ export function Footer() {
             {footer.slogan}
           </p>
         </div>
-        <Button
-          asChild
-          variant="outline"
-          size="lg"
-          className="border-on-deep text-on-deep hover:bg-on-deep hover:text-brand-deep focus-visible:outline-on-deep shrink-0"
-        >
-          <Link href={quoteCta.href}>{footer.ctaLabel}</Link>
-        </Button>
+        <FooterMessage />
       </div>
 
       {/* ——— Columns ——— */}
@@ -125,6 +125,9 @@ export function Footer() {
         <p className="label-caps text-on-deep-text">
           © {year} {holder}
         </p>
+        {footer.giving !== null && (
+          <p className="text-on-deep-text text-xs font-light">{footer.giving}</p>
+        )}
       </div>
     </footer>
   );

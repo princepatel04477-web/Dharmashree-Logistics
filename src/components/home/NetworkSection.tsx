@@ -10,8 +10,8 @@ import { SECTION_TITLE_CLASS } from "./shared";
 /* H3 · The network, on `--brand-tint`. The count line is derived from
    `hubs.ts`, never from `company.hubsServed`: the map and the directory are the
    truth, so the number can't disagree with them. The map keeps its own
-   animation (GSAP draws the outline and corridors and pulses the Surat pin,
-   which is a static ring under reduced motion). Under it sits the compact
+   animation (GSAP draws the outline and corridors and pops the pins in,
+   all at their final state under reduced motion). Under it sits the compact
    directory, the real rows clipped to a short scroll box at `lg`, with the full
    page one click away. */
 

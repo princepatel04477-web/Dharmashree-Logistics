@@ -10,27 +10,37 @@ import { TrackPanel } from "@/components/track/TrackPanel";
 import { company } from "@/content/company";
 import { images } from "@/content/images";
 import { track } from "@/content/track";
+import { backendMode } from "@/lib/backend/config";
 
-/* `/track` — the AWB / LR handoff (Prompts 08 and 12).
+/* `/track` — the AWB / LR handoff (Prompts 08 and 12), or the live LR lookup
+   once the client's backend is connected (`backendMode`, fixed at build time).
 
-   Honest by design: there is no live tracking behind this page and nothing here
-   says otherwise. The visitor's AWB, LR or tracking number is validated and passed to the desk's
-   own channel, and the page says exactly that much — no status table, no
-   progress rail, no "in transit" badge that nothing could keep true.
+   Without a backend — the default — the page is honest by design: there is no
+   live tracking behind it and nothing here says otherwise. The visitor's AWB, LR
+   or tracking number is validated and passed to the desk's own channel, and the
+   page says exactly that much — no status table, no progress rail, no "in
+   transit" badge that nothing could keep true.
 
    The line under the H1 names a channel, so it is built from the facts: with the
    WhatsApp number set it promises WhatsApp, and until then it says the desk will
    share status on request. `company.ts` can make that sentence true without this
-   file changing. */
+   file changing.
+
+   With a backend, the card runs the LR + SMS-code flow and shows the real status,
+   so the lede and the meta description switch to `track.live`. The sections
+   below (where the number comes from, what each status means) hold true in both
+   modes and are not touched. */
 
 const lineChannelNote =
   company.whatsapp === null
     ? track.lineChannelFallback
     : (track.lineChannelNote ?? track.lineChannelFallback);
 
+const live = backendMode !== "off";
+
 export const metadata: Metadata = {
   title: track.metadata.title,
-  description: track.metadata.description,
+  description: live ? track.live.metadataDescription : track.metadata.description,
   alternates: { canonical: "/track/" },
 };
 
@@ -40,7 +50,7 @@ export default function TrackPage() {
       <PageIntro
         eyebrow={track.eyebrow}
         title={track.title}
-        lede={`${track.line} ${lineChannelNote}`}
+        lede={live ? track.live.line : `${track.line} ${lineChannelNote}`}
         imageKey={images.pages.track.key}
         imageAlt={images.pages.track.alt}
         overlap
