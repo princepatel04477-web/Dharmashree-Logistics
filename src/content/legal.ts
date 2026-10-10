@@ -35,8 +35,8 @@ export const privacy: LegalDoc = {
   metaDescription: `What ${company.name}'s website collects, where it goes and what it is used for.`,
   eyebrow: "Privacy",
   title: "What this site keeps, and why.",
-  lede: "Short version: the only personal details this site handles are the ones you type into the quote form, and they go to the desk so it can answer you. No analytics, no advertising trackers, no cookies.",
-  updated: "2026-10-08",
+  lede: "Short version: the only personal details this site handles are the ones you type into its forms, and they go to the desk so it can answer you. No analytics, no advertising trackers, no cookies.",
+  updated: "2026-10-10",
   updatedLabel: "Last updated",
   sections: [
     {
@@ -50,9 +50,23 @@ export const privacy: LegalDoc = {
       ],
     },
     {
+      title: "The truck attachment form",
+      paragraphs: [
+        "When you apply to attach a truck, the form sends these details to the desk so the team can verify the vehicle and pay settlements for its trips:",
+      ],
+      items: [
+        "the owner’s name, owner type, phone number, address and operating city, and the email and GSTIN if you give them",
+        "the vehicle’s registration number, make and model, year, body type, payload, chassis number if you give it, permit and insurance dates, and whether GPS is fitted",
+        "the primary driver’s name, phone number, driving licence number and its expiry date, and police verification status",
+        "the settlement bank account: holder name, bank, account number and IFSC",
+        "which document copies you have ready, and which page of the site you started from",
+      ],
+    },
+    {
       title: "Where it goes",
       paragraphs: [
         `The request is delivered to the desk’s spreadsheet through a Google Apps Script web app, so it is stored with Google on the desk’s behalf. ${owner} uses it to reply to you about the load and the booking that follows, and for nothing else. It is not sold, shared for marketing or added to a mailing list.`,
+        `A truck attachment application goes the same way, to its own tab of that spreadsheet. ${owner} uses it to verify the vehicle, the driver and the papers, and to pay settlements into the account you give. The email that tells the desk about a new application shows only the last four digits of the account number.`,
       ],
     },
     {
@@ -78,7 +92,7 @@ export const privacy: LegalDoc = {
       title: "Your details, your call",
       paragraphs: [
         contactLinks().length > 0
-          ? `To see, correct or remove what you sent through the quote form, ask the ${ORIGIN.name} desk using any channel on the contact page, quoting the phone number you used.`
+          ? `To see, correct or remove what you sent through the quote form or the truck attachment form, ask the ${ORIGIN.name} desk using any channel on the contact page, quoting the phone number you used.`
           : `To see, correct or remove what you sent through the quote form, send a new request with your request in the notes and the same phone number — the ${ORIGIN.name} desk will act on it and reply on that number.`,
       ],
     },

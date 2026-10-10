@@ -16,6 +16,7 @@
     "verify:services": "tsx scripts/verify-services.mts",
     "verify:quote": "tsx scripts/verify-quote.tsx",
     "verify:partners": "tsx scripts/verify-partners.tsx",
+    "verify:truck": "tsx scripts/verify-truck.tsx",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -157,6 +157,8 @@ export default function PartnersPage() {
             <Reveal as="p" className="text-ink-2 max-w-measure leading-body text-base font-light">
               {join.body}
             </Reveal>
+            <p className="text-muted text-sm font-light">{join.truckNote}</p>
+            <ArrowLink href={join.truckHref} label={join.truckLabel} />
             <p className="text-muted text-sm font-light">{join.quoteNote}</p>
             <ArrowLink href={join.quoteHref} label={join.quoteLabel} />
           </div>

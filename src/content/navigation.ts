@@ -70,6 +70,7 @@ export const primaryNav: readonly NavItem[] = [
 export const secondaryNav: readonly NavItem[] = [
   { href: "/support", label: "Support & FAQ" },
   { href: "/partners", label: "Delivery partners" },
+  { href: "/attach-truck", label: "Attach your truck" },
 ];
 
 /* ——— The one filled CTA on every page ——— */
@@ -228,6 +229,7 @@ function footerColumns(): FooterColumn[] {
         route("/about", "About"),
         route("/network", "Network"),
         route("/partners", "Delivery partners"),
+        route("/attach-truck", "Attach your truck"),
         route("/contact", "Contact"),
       ],
       lines: [],

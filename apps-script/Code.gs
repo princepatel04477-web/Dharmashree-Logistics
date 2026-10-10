@@ -16,8 +16,14 @@
 
    Messages from the contact page and the footer arrive the same way with
    kind === 'message': appended to the 'Messages' tab (created with its header
-   row on the first message) and mailed as a "Website message". A body with no
-   kind is a quote, exactly as before.
+   row on the first message) and mailed as a "Website message".
+
+   Truck attachment applications from /attach-truck arrive with kind === 'truck':
+   appended to the 'Truck attachments' tab and mailed as a "Truck attachment"
+   with a DST- reference. The sheet keeps the full bank account number (as text,
+   so a leading zero survives); the email shows only its last four digits.
+
+   A body with no kind is a quote, exactly as before.
 
    Everything written to the sheet goes through clean_() (length-capped, and
    prefixed when it would otherwise start a formula), and the honeypot field
@@ -29,6 +35,9 @@ const PARTNER_SHEET_NAME = 'Partners';
 const PARTNER_HEADERS = ['Received at','Reference','Name','Phone','City','Vehicle','Availability','Source page'];
 const MESSAGE_SHEET_NAME = 'Messages';
 const MESSAGE_HEADERS = ['Received at','Reference','Name','Phone','Email','Message','Source page'];
+const TRUCK_SHEET_NAME = 'Truck attachments';
+const TRUCK_FIELDS = ['ownerName','entityType','phone','email','gstin','address','operatingCity','vehicleNumber','makeModel','yearOfMfg','bodyType','payloadTons','chassisNumber','permitValidUntil','insuranceValidUntil','gps','driverName','driverPhone','driverLicence','licenceValidUntil','policeVerification','accountHolder','bankName','accountNumber','ifsc','documents','sourcePage'];
+const TRUCK_HEADERS = ['Received at','Reference','Owner / business','Owner type','Phone','Email','GSTIN','Registered address','Operating city','Vehicle number','Make and model','Year of manufacture','Body type','Payload (tonnes)','Chassis number','Permit valid until','Insurance valid until','GPS fitted','Driver name','Driver phone','Driving licence','Licence valid until','Police verification','Account holder','Bank','Account number','IFSC','Documents ready','Source page'];
 const HEADERS = ['Received at','Reference','Name','Company','Phone','Email','Service','From','To','Load type','Approx weight (kg)','Vehicle','Pickup date','Notes','Source page'];
 
 function doPost(e) {
@@ -37,6 +46,7 @@ function doPost(e) {
     if (body.website) return json_({ ok: true }); // honeypot
     if (body.kind === 'partner') return savePartner_(body);
     if (body.kind === 'message') return saveMessage_(body);
+    if (body.kind === 'truck') return saveTruck_(body);
     const required = ['name','phone','service','from','to'];
     for (const k of required) { if (!body[k] || String(body[k]).trim() === '') return json_({ ok: false, error: 'Missing ' + k }); }
     const sheet = getSheet_();
@@ -114,6 +124,50 @@ function saveMessage_(body) {
       to: NOTIFY_EMAIL,
       subject: 'Website message ' + ref + ' — ' + clean_(body.name),
       body: MESSAGE_HEADERS.map(function (h, i) { return h + ': ' + row[i]; }).join('\n'),
+      replyTo: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? email : undefined
+    });
+  }
+  return json_({ ok: true, reference: ref });
+}
+
+function saveTruck_(body) {
+  const truckRequired = ['ownerName','entityType','phone','address','operatingCity','vehicleNumber','makeModel','yearOfMfg','bodyType','payloadTons','permitValidUntil','insuranceValidUntil','driverName','driverPhone','driverLicence','licenceValidUntil','accountHolder','bankName','accountNumber','ifsc'];
+  for (const k of truckRequired) { if (!body[k] || String(body[k]).trim() === '') return json_({ ok: false, error: 'Missing ' + k }); }
+  // The client sends E.164 phones, a bare-digit account number and an upper-case IFSC. Checking the shapes here also makes them safe to write as they are.
+  const mobile = /^\+91[6-9]\d{9}$/;
+  const phone = String(body.phone).trim();
+  const driverPhone = String(body.driverPhone).trim();
+  const account = String(body.accountNumber).trim();
+  if (!mobile.test(phone) || !mobile.test(driverPhone)) return json_({ ok: false, error: 'Invalid phone' });
+  if (!/^\d{9,18}$/.test(account)) return json_({ ok: false, error: 'Invalid account' });
+  if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(String(body.ifsc).trim())) return json_({ ok: false, error: 'Invalid IFSC' });
+  const ref = 'DST-' + Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyMMdd') + '-' + Math.floor(1000 + Math.random() * 9000);
+  const row = [Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyyy-MM-dd HH:mm'), ref].concat(
+    TRUCK_FIELDS.map(function (k) { return clean_(body[k]); })
+  );
+  // Plain-text columns: phones (a leading + reads as a formula) and the account number (a leading zero would be dropped).
+  const textColumns = [TRUCK_FIELDS.indexOf('phone'), TRUCK_FIELDS.indexOf('driverPhone'), TRUCK_FIELDS.indexOf('accountNumber')];
+  const textValues = [phone, driverPhone, account];
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    let sheet = ss.getSheetByName(TRUCK_SHEET_NAME);
+    if (!sheet) { sheet = ss.insertSheet(TRUCK_SHEET_NAME); sheet.appendRow(TRUCK_HEADERS); sheet.setFrozenRows(1); }
+    sheet.appendRow(row);
+    const last = sheet.getLastRow();
+    textColumns.forEach(function (index, i) { sheet.getRange(last, index + 3).setNumberFormat('@').setValue(textValues[i]); });
+  } finally {
+    lock.releaseLock();
+  }
+  if (NOTIFY_EMAIL) {
+    const mailed = row.slice();
+    mailed[TRUCK_FIELDS.indexOf('accountNumber') + 2] = 'ending ' + account.slice(-4);
+    const email = body.email ? String(body.email).trim() : '';
+    MailApp.sendEmail({
+      to: NOTIFY_EMAIL,
+      subject: 'Truck attachment ' + ref + ' — ' + clean_(body.vehicleNumber) + ', ' + clean_(body.operatingCity),
+      body: TRUCK_HEADERS.map(function (h, i) { return h + ': ' + mailed[i]; }).join('\n'),
       replyTo: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) ? email : undefined
     });
   }

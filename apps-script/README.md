@@ -1,8 +1,9 @@
 # Quote intake — Google Apps Script
 
-`Code.gs` is the whole backend for `/quote`, the `/partners` application and the
-"Send us a message" box. It appends one row per submission to a Google Sheet
-(`Quotes`, `Partners` or `Messages` tab) and emails the desk. There is no server to run and nothing to
+`Code.gs` is the whole backend for `/quote`, the `/partners` application, the
+`/attach-truck` application and the "Send us a message" box. It appends one row
+per submission to a Google Sheet (`Quotes`, `Partners`, `Truck attachments` or
+`Messages` tab) and emails the desk. There is no server to run and nothing to
 deploy besides the script itself.
 
 ## Setup
@@ -38,6 +39,18 @@ environment: **Deploy › Manage deployments › Edit (pencil) › Version: New
 version › Deploy**. The URL stays, the code updates.
 
 Delivery-partner applications from `/partners` arrive at the same URL with `kind: "partner"`; they are appended to a `Partners` tab (created on the first application, with its own header row) and mailed to `NOTIFY_EMAIL` with a `DSP-` reference.
+
+### Truck attachments (`kind: "truck"`) need a redeploy
+
+The truck attachment form on `/attach-truck` posts to the same URL with
+`kind: "truck"`. Until the updated `Code.gs` is pasted in and deployed as a **new
+version** (Deploy › Manage deployments › edit › New version), the live script
+treats those posts as quotes and refuses them, and the form reports "The desk's
+sheet refused the application." After the redeploy each application is appended
+to a `Truck attachments` tab (created with its header row on the first one) and
+mailed to `NOTIFY_EMAIL` with a `DST-` reference. The sheet holds the full bank
+account number as text; the email shows only its last four digits, so restrict
+who the workbook is shared with.
 
 ### The message box (`kind: "message"`) needs a redeploy
 
