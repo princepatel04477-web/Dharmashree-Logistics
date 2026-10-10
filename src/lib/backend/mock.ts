@@ -28,13 +28,15 @@
    Direct lookup (`mock-direct`, no SMS code) — answered by running a sample
    E-Transport record through `vendor-lr.ts`, the same reader the Pages Function
    uses, so the whole chain is exercised:
-     SRT-1001   in transit, every slip section filled
-     SRT-1002   delivered, a sparse record (only what booking requires)
+     SRT-1001   in transit, every slip section filled — mobile 9876543210
+     SRT-1002   delivered, a sparse record (only what booking requires) — 9812345670
      SRT-1003   a network failure
-     anything else  NotFound (a number without its branch code never gets here:
-     the form asks for the whole number) */
+     anything else, or the wrong mobile for 1001 / 1002
+                NotVerified — the same answer for an unknown LR and a wrong
+                mobile, as on the server (a number without its branch code never
+                gets here: the form asks for the whole number) */
 
-import { parseLrQuery, readVendorLr } from "./vendor-lr";
+import { mobileMatchesBooking, parseLrQuery, readVendorLr } from "./vendor-lr";
 import {
   mapErrorResponse,
   parseLrRecord,
@@ -263,6 +265,7 @@ function vendorSample(lrno: string): Record<string, unknown> | null {
       FromStation: "SURAT",
       Station: "KANPUR",
       ConsignorName: "SAMPLE FABRICS",
+      ConsignorMobile: "9812345670",
       ConsigneeName: "SAMPLE STORES",
       Package: 4,
       GrossWeight: 210,
@@ -276,7 +279,7 @@ function vendorSample(lrno: string): Record<string, unknown> | null {
   return null;
 }
 
-export async function lookupLr(lr: string): Promise<BackendResult<LrRecord>> {
+export async function lookupLr(lr: string, mobile: string): Promise<BackendResult<LrRecord>> {
   await pause();
   const query = parseLrQuery(lr);
   if (query === null) return fail("lookupLr", { status: 400, body: null });
@@ -292,6 +295,12 @@ export async function lookupLr(lr: string): Promise<BackendResult<LrRecord>> {
     return fail("lookupLr", { status: 404, body: { code: "LR_NOT_FOUND" } });
   }
   if (reading.kind === "unreadable") return { ok: false, error: "BadResponse" };
+
+  /* The same rule as the Pages Function: only a mobile the booking carries. LR
+     SRT-1001 carries 9876543210; SRT-1002 carries none and so never verifies. */
+  if (!mobileMatchesBooking(reading.record.details, mobile)) {
+    return fail("lookupLr", { status: 404, body: { code: "NOT_VERIFIED" } });
+  }
 
   /* Through JSON and the adapter, exactly as the browser would receive it. */
   const record = parseLrRecord(JSON.parse(JSON.stringify(reading.record)) as unknown, lr);

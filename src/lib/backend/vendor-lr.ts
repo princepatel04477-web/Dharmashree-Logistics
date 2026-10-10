@@ -325,6 +325,58 @@ function phoneList(...values: (string | null)[]): string[] {
   return [...found];
 }
 
+/** A typed mobile as the bare 10 digits: `+91 98765 43210`, `098765 43210` and
+    `9876543210` are one number. Anything else comes back as the digits it has. */
+export function bareMobile(value: string): string {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
+  if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
+  return digits;
+}
+
+/** The mobiles the booking itself carries for the people on it — the consignor
+    and the consignee. The delivery station's numbers (`deliveryContacts`, from
+    the "Delivery at" address) are the branch's own and are published on the
+    site, so they are never part of this set: if they were, anyone could pass
+    the check by typing one of them. */
+export function customerMobiles(
+  details: Pick<WireDetails, "consignorContact" | "consigneeContact">,
+): string[] {
+  const found = new Set<string>();
+  for (const value of [details.consignorContact, details.consigneeContact]) {
+    if (value === null) continue;
+    /* Numbers are written `98765 43210`, `+91-98765-43210` or `9424092450 |
+       9838838676`: split on anything that is not a digit, space, plus or hyphen,
+       then read each piece as one number or as several run together. */
+    for (const piece of value.split(/[^\d\s+-]+/)) {
+      const digits = piece.replace(/\D/g, "");
+      if (digits.length === 0) continue;
+      const numbers: string[] = [];
+      if (digits.length === 12 && digits.startsWith("91")) numbers.push(digits.slice(2));
+      else if (digits.length === 11 && digits.startsWith("0")) numbers.push(digits.slice(1));
+      else if (digits.length >= 10 && digits.length % 10 === 0) {
+        for (let at = 0; at < digits.length; at += 10) numbers.push(digits.slice(at, at + 10));
+      }
+      for (const number of numbers) {
+        if (/^[6-9]\d{9}$/.test(number)) found.add(number);
+      }
+    }
+  }
+  return [...found];
+}
+
+/** True only when the booking carries a customer mobile and `mobile` is one of
+    them. A booking with no customer mobile on file can never be verified — it
+    answers the same as a wrong number. */
+export function mobileMatchesBooking(
+  details: Pick<WireDetails, "consignorContact" | "consigneeContact">,
+  mobile: string,
+): boolean {
+  const wanted = bareMobile(mobile);
+  if (!/^[6-9]\d{9}$/.test(wanted)) return false;
+  return customerMobiles(details).includes(wanted);
+}
+
 /** `DOOR DELIVERY` → `Door delivery`; codes such as `GSTIN` stay as written. */
 function sentenceCase(value: string | null): string | null {
   if (value === null) return null;

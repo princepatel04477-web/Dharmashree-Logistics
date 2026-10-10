@@ -11,11 +11,12 @@ keep validating the AWB / LR number and handing it to WhatsApp / email / phone.
 ## Direct LR lookup (no SMS) — the client's E-Transport API
 
 The client's own software (E-Transport, at `dharmashreegroup.in`) publishes an LR
-inquiry API. Until SMS codes are set up, `/track` can look an LR up by its number
-alone:
+inquiry API. `/track` looks an LR up by its number **and the mobile number on the
+booking**:
 
 ```
-browser ──▶ /api/lr?no=SRT-3230          functions/api/lr.ts (Cloudflare Pages Function)
+browser ──▶ POST /api/lr  { no: "SRT-3230", mobile: "9876543210" }
+               │            functions/api/lr.ts (Cloudflare Pages Function)
                │  parses SRT-3230 → code=SRT, lrno=3230 (the whole number only: a bare 3230 is refused)
                ▼
    https://dharmashreegroup.in/api/LRInquiry.ashx?apiname=lrinquiry&code=SRT&lrno=3230
@@ -26,6 +27,30 @@ browser ──▶ /api/lr?no=SRT-3230          functions/api/lr.ts (Cloudflare P
          deliveredOn, events[], details{…} }     → parseLrRecord (adapter.ts)
 ```
 
+- **Privacy — a number alone never opens a booking.** LR numbers run in sequence
+  (3230, 3231, …), so anyone could read a stranger's consignment. The function
+  returns the record only when `mobile` is one of the consignor's / consignee's
+  mobiles in the LR itself (`customerMobiles` in `vendor-lr.ts`, read from
+  `ConsignorMobile` / `ConsigneeMobile` and their `…MobileNo` / `…Contact`
+  variants). Rules:
+  - The delivery station's numbers (in `StationAddress`) are **never** accepted —
+    they are the branch's own and are public on the site.
+  - An unknown LR, a wrong mobile and a booking with no customer mobile on file all
+    get the **same** answer, `404 { "code": "NOT_VERIFIED" }`, so the reply can't be
+    used to discover which LRs exist.
+  - The mobile travels in the POST body, not the URL.
+  - Misses are limited harder than lookups: 8 misses per address per 15 minutes
+    (then `429`), on top of 30 lookups per 5 minutes.
+  - `GET /api/lr` is `405`.
+- **Blocked on the vendor's data (2026-10-10):** the LR record E-Transport returns
+  carries **no consignor or consignee mobile** — the only phone numbers in it are the
+  delivery station's (checked across several LRs). Until it does, every lookup is
+  `NOT_VERIFIED` and `/track` points the visitor to the desk. To switch verification
+  on, ask the vendor to include the consignor and consignee mobile in
+  `LRInquiry.ashx`'s record, then confirm the field names against
+  `vendorDetails()` (`ConsignorMobile` / `ConsigneeMobile` are assumed) and adjust
+  that one function. Local QA: `NEXT_PUBLIC_DSL_API_BASE=mock-direct` — SRT-1001
+  with `9876543210`, SRT-1002 with `9812345670`; anything else is `NotVerified`.
 - **Switch it on:** `NEXT_PUBLIC_DSL_API_BASE=direct` at build time, then redeploy.
   Local QA: `NEXT_PUBLIC_DSL_API_BASE=mock-direct npm run dev` (LRs `SRT-1001`,
   `SRT-1002`, `SRT-1003` → network error; anything else → not found).
@@ -59,7 +84,7 @@ deployment, so redeploy after setting it. If the vendor rotates the key, repeat 
 command above and redeploy. A `503 UPSTREAM_LOCKED` from `/api/lr` means the key is
 missing, wrong or revoked.
 
-Checking the live function: `curl "https://dharmashree-logistics.pages.dev/api/lr?no=<a real LR, e.g. SRT-1234>"`.
+Checking the live function: `curl -s -X POST https://dharmashree-logistics.pages.dev/api/lr -d '{"no":"SRT-1234","mobile":"<10 digits>"}'`.
 
 ## What the visitor gets
 

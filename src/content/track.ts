@@ -153,11 +153,12 @@ export const track = {
     metadataDescription:
       "Enter your LR number and the mobile number on the booking. A one-time code confirms it is you, then the status and history of the consignment are shown.",
 
-    /* The direct lookup (`direct` mode): the LR number alone, no SMS code. */
+    /* The direct lookup (`direct` mode): the LR number and the mobile number on
+       the booking, no SMS code. The mobile is what keeps a booking private. */
     direct: {
-      line: "Enter the LR number printed on your slip to see where the consignment is, along with the booking details on the LR.",
+      line: "Enter the LR number printed on your slip and the mobile number on the booking to see where the consignment is, along with the booking details on the LR.",
       metadataDescription:
-        "Enter your LR number to see the consignment's status, route, invoice and freight details, and its movement history.",
+        "Enter your LR number and the mobile number on the booking to see the consignment's status, route, invoice and freight details, and its movement history.",
       lrLabel: "LR number",
       placeholder: "SRT - 3230",
       helper:
@@ -165,8 +166,19 @@ export const track = {
       /** A number without its branch code, or not an LR number at all. */
       wholeNumber:
         "Enter the whole LR number with its branch code, for example SRT - 3230. The number alone is not enough.",
+      mobileLabel: "Mobile number on the booking",
+      mobilePlaceholder: "98765 43210",
+      mobileHelper: "The consignor's or consignee's mobile number given at booking.",
+      /** Said once, under the fields — why a second number is asked for. */
+      privacyNote:
+        "A consignment's details are shown only to the mobile number on its booking, so other people's bookings stay private.",
+      /** The hero card asks for the LR only and carries it to /track. */
       submit: "Track",
+      /** On /track, where both numbers are given. */
+      submitVerified: "Track shipment",
       submitting: "Looking up…",
+      askDeskLabel: "Ask the desk",
+      askDeskHref: "/contact",
     },
 
     details: {
@@ -258,6 +270,11 @@ export const track = {
       Timeout: "The tracking service took too long to answer. Please try again.",
       NotFound:
         "We could not find that LR number. Check it against the slip from pickup and try again.",
+      /* Unknown LR, wrong mobile and a booking with no number on file all read
+         the same, on purpose: the screen must not tell a stranger which LR
+         numbers exist. */
+      NotVerified:
+        "We could not match that LR number with that mobile number. Check both against your slip and the booking, or ask the desk to help.",
       MobileMismatch:
         "That mobile number is not the one on this booking. Use the number given at booking.",
       OtpInvalid: "That code is not correct. Check the SMS and try again.",

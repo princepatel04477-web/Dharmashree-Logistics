@@ -160,6 +160,7 @@ export const BACKEND_ERROR_CODES = [
   "Network",
   "Timeout",
   "NotFound",
+  "NotVerified",
   "MobileMismatch",
   "OtpInvalid",
   "OtpExpired",

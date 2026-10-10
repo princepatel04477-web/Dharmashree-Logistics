@@ -4,6 +4,9 @@
 
 import { parseLrRecord } from "../src/lib/backend/adapter";
 import {
+  bareMobile,
+  customerMobiles,
+  mobileMatchesBooking,
   parseLrQuery,
   readVendorInstant,
   readVendorLr,
@@ -140,6 +143,34 @@ check(record.details.paymentMode === "To pay", "payment mode");
 check(record.details.total === 520 && record.packages === 1, "totals and packages");
 check(record.events.length === 1 && record.events[0]?.status === "booked", "history");
 
+/* ——— Privacy: a number alone never opens a booking ——— */
+const stationOnly = wire.details; // the sample above carries only the station's numbers
+check(customerMobiles(stationOnly).length === 0, "the station's numbers became customer mobiles");
+check(
+  !mobileMatchesBooking(stationOnly, "8090408899") &&
+    !mobileMatchesBooking(stationOnly, "9628180992"),
+  "a delivery-station number (public on the site) opened a booking",
+);
+check(
+  !mobileMatchesBooking(stationOnly, "9876543210"),
+  "a booking with no customer mobile verified",
+);
+
+const withCustomers = {
+  consignorContact: "9424092450 | 9838838676",
+  consigneeContact: "+91 98765 43210",
+};
+check(customerMobiles(withCustomers).length === 3, "consignor and consignee mobiles are read");
+for (const typed of ["9876543210", "+919876543210", "098765 43210", "91 98765-43210"]) {
+  check(mobileMatchesBooking(withCustomers, typed), `"${typed}" should match the consignee`);
+}
+check(mobileMatchesBooking(withCustomers, "9424092450"), "the consignor's own number matches");
+for (const typed of ["9876543211", "", "12345", "98765432100", "abcdefghij"]) {
+  check(!mobileMatchesBooking(withCustomers, typed), `"${typed}" should not match`);
+}
+check(bareMobile("+91 98765 43210") === "9876543210", "+91 stripped");
+check(bareMobile("09876543210") === "9876543210", "leading 0 stripped");
+
 console.log(
-  "verify:lr OK — whole LR numbers only, vendor dates, status rules, not-found shapes, a full record through the adapter",
+  "verify:lr OK — whole LR numbers only, vendor dates, status rules, not-found shapes, a full record through the adapter, mobile verification (customer numbers only, never the station's)",
 );

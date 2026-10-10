@@ -154,15 +154,21 @@ export async function fetchLr(
   );
 }
 
-/** The direct lookup: the LR number alone, no SMS code ("direct" mode). */
-export async function lookupLr(lr: string): Promise<BackendResult<LrRecord>> {
+/** The direct lookup ("direct" mode): the LR number and the mobile number on the
+    booking. The server answers with the LR only when the mobile is one the
+    booking carries; for a wrong number, an unknown LR and a booking with no
+    number on file alike it answers `NotVerified`, so the reply never tells a
+    stranger whether an LR exists. */
+export async function lookupLr(lr: string, mobile: string): Promise<BackendResult<LrRecord>> {
   const lrNumber = normalizeLr(lr);
 
   if (backendMode === "mock-direct") {
     const mock = await loadMock();
-    return mock === null ? UNCONFIGURED : mock.lookupLr(lrNumber);
+    return mock === null ? UNCONFIGURED : mock.lookupLr(lrNumber, mobile);
   }
   if (backendMode !== "direct") return UNCONFIGURED;
 
-  return send("lookupLr", buildLookupLrRequest(lrNumber), (body) => parseLrRecord(body, lrNumber));
+  return send("lookupLr", buildLookupLrRequest(lrNumber, mobile), (body) =>
+    parseLrRecord(body, lrNumber),
+  );
 }

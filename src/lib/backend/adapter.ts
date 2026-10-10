@@ -112,9 +112,10 @@ export function buildFetchLrRequest(lrNumber: string, session: VerifiedSession):
   };
 }
 
-/** The direct lookup: same-origin, no token. */
-export function buildLookupLrRequest(lrNumber: string): ApiRequest {
-  return { method: "GET", path: `/lr?no=${encodeURIComponent(lrNumber)}` };
+/** The direct lookup: same-origin, no token. The mobile travels in the body,
+    never in the address, so it is not left in a log or the browser history. */
+export function buildLookupLrRequest(lrNumber: string, mobile: string): ApiRequest {
+  return { method: "POST", path: "/lr", body: { no: lrNumber, mobile } };
 }
 
 /* ——— Responses ——— */
@@ -312,6 +313,7 @@ export function parseLrRecord(raw: unknown, requestedLr: string): LrRecord | nul
 const ERROR_CODE_BY_KEY: ReadonlyMap<string, BackendErrorCode> = new Map<string, BackendErrorCode>([
   ["LRNOTFOUND", "NotFound"],
   ["NOTFOUND", "NotFound"],
+  ["NOTVERIFIED", "NotVerified"],
   ["MOBILEMISMATCH", "MobileMismatch"],
   ["OTPINVALID", "OtpInvalid"],
   ["INVALIDOTP", "OtpInvalid"],
