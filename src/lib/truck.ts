@@ -1,9 +1,9 @@
 /* The truck attachment application (`/attach-truck`): an owner attaching a
    vehicle to the network, with its papers, its primary driver and the bank
    account settlements are paid into. It travels the same road as the quote form
-   and the partner application — `postToDesk` in `./quote`, the same Apps Script
-   endpoint and workbook — and lands on the `Truck attachments` tab
-   (`kind: "truck"` is what tells `apps-script/Code.gs` which tab).
+   and the partner application — `postToDesk` in `./quote`, the site's own
+   /api/desk (functions/api/desk.ts) — and is stored as a `truck` row the admin
+   panel lists and exports.
 
    The field rules are short and typed; every sentence the UI shows lives in
    `src/content/truck.ts`, keyed by the code returned here. */
@@ -25,6 +25,8 @@ export interface TruckPayload {
   gstin: string;
   address: string;
   operatingCity: string;
+  /** One of `INDIAN_STATES`; filled from the operating city when it is known. */
+  state: string;
   /* ——— 02 · Vehicle ——— */
   vehicleNumber: string;
   makeModel: string;
@@ -67,6 +69,7 @@ export const EMPTY_TRUCK: TruckPayload = {
   gstin: "",
   address: "",
   operatingCity: "",
+  state: "",
   vehicleNumber: "",
   makeModel: "",
   yearOfMfg: "",
@@ -122,9 +125,10 @@ export const TRUCK_FIELD_ORDER: readonly TruckFieldName[] = [
   "entityType",
   "phone",
   "email",
+  "operatingCity",
+  "state",
   "gstin",
   "address",
-  "operatingCity",
   "vehicleNumber",
   "makeModel",
   "yearOfMfg",
@@ -147,13 +151,14 @@ export const TRUCK_FIELD_ORDER: readonly TruckFieldName[] = [
   "declaration",
 ];
 
-/** Mirrors the `truckRequired` list in `apps-script/Code.gs`. */
+/** Mirrors the truck form's `required` list in `src/lib/desk/forms.ts`. */
 export const REQUIRED_TRUCK_FIELDS: readonly (keyof TruckPayload)[] = [
   "ownerName",
   "entityType",
   "phone",
   "address",
   "operatingCity",
+  "state",
   "vehicleNumber",
   "makeModel",
   "yearOfMfg",
@@ -283,6 +288,7 @@ export function validateTruck(
   if (values.gstin.trim() !== "" && !isGstin(values.gstin)) errors.gstin = "Gstin";
   required("address");
   required("operatingCity");
+  required("state");
 
   /* Vehicle */
   if (required("vehicleNumber") && !isVehicleNumber(values.vehicleNumber)) {
@@ -350,6 +356,7 @@ export function normalizeTruck(values: Readonly<TruckPayload>): TruckPayload {
     email: values.email.trim(),
     address: values.address.trim(),
     operatingCity: values.operatingCity.trim(),
+    state: values.state,
     makeModel: values.makeModel.trim(),
     yearOfMfg: values.yearOfMfg.trim(),
     bodyType: values.bodyType,

@@ -15,6 +15,7 @@ import {
   type RadioCardOption,
 } from "@/components/vendor/origin";
 import { toast } from "@/components/vendor/lightswind";
+import { INDIAN_STATES } from "@/content/india-places";
 import { operatingCities, truckPage } from "@/content/truck";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { useTodayISODate } from "@/hooks/useTodayISODate";
@@ -31,6 +32,7 @@ import {
   type TruckFieldName,
   type TruckPayload,
 } from "@/lib/truck";
+import { stateForCity } from "@/lib/places";
 import { normalizePhone } from "@/lib/validate";
 
 /* The truck attachment application (`/attach-truck`), laid out like the paper
@@ -40,8 +42,10 @@ import { normalizePhone } from "@/lib/validate";
    sending.
 
    Origin UI fields, validated on send (never per keystroke); the first field
-   with a problem takes focus. Posted to the desk's Apps Script through
-   `submitTruck` — the quote form's endpoint, on the `Truck attachments` tab.
+   with a problem takes focus. The State field fills itself from the operating
+   city when the city is a known one (`stateForCity`); the owner can still change
+   it. Posted through `submitTruck` to the site's /api/desk, stored for the
+   admin panel.
    Lightswind's toast reports the outcome; the form is replaced by the
    confirmation on success and stays put, with every answer kept, on failure.
 
@@ -98,6 +102,9 @@ export function TruckForm() {
   const [accountConfirm, setAccountConfirm] = useState("");
   const [declaration, setDeclaration] = useState(false);
   const [selfDriven, setSelfDriven] = useState(false);
+  /** The city the State field was last filled in from, or null once the owner
+      picks a state themselves. */
+  const [stateFrom, setStateFrom] = useState<string | null>(null);
   const [documents, setDocuments] = useState<readonly string[]>([]);
   const [errors, setErrors] = useState<TruckFieldErrors>({});
   const [status, setStatus] = useState<Status>("idle");
@@ -121,6 +128,15 @@ export function TruckForm() {
   function update<K extends keyof TruckPayload & TruckFieldName>(field: K, value: string): void {
     setValues((current) => ({ ...current, [field]: value }));
     clearError(field);
+  }
+
+  /* Typing a known city fills the state; an unknown one leaves it as it was. */
+  function updateCity(city: string): void {
+    update("operatingCity", city);
+    const state = stateForCity(city);
+    if (state === null) return;
+    update("state", state);
+    setStateFrom(city.trim());
   }
 
   function errorText(field: TruckFieldName): string | undefined {
@@ -191,6 +207,7 @@ export function TruckForm() {
     setAccountConfirm("");
     setDeclaration(false);
     setSelfDriven(false);
+    setStateFrom(null);
     setDocuments([]);
     setErrors({});
     setStatus("idle");
@@ -289,15 +306,8 @@ export function TruckForm() {
                 autoComplete="email"
               />
               <TextField
-                {...bind("gstin")}
-                label={copy.owner.gstinLabel}
-                helper={copy.owner.gstinHelper}
-                autoCapitalize="characters"
-                spellCheck={false}
-                maxLength={20}
-              />
-              <TextField
                 {...bind("operatingCity")}
+                onChange={(event) => updateCity(event.target.value)}
                 label={copy.owner.operatingCityLabel}
                 helper={copy.owner.operatingCityHelper}
                 list={CITY_LIST_ID}
@@ -308,6 +318,37 @@ export function TruckForm() {
                   <option key={city} value={city} />
                 ))}
               </datalist>
+              <SelectField
+                {...bind("state")}
+                onChange={(event) => {
+                  update("state", event.target.value);
+                  setStateFrom(null);
+                }}
+                label={copy.owner.stateLabel}
+                helper={
+                  stateFrom !== null && values.state !== ""
+                    ? copy.owner.stateFromCity(stateFrom)
+                    : copy.owner.stateHelper
+                }
+                autoComplete="address-level1"
+              >
+                <option value="" disabled>
+                  {copy.owner.statePlaceholder}
+                </option>
+                {INDIAN_STATES.map((state) => (
+                  <option key={state} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </SelectField>
+              <TextField
+                {...bind("gstin")}
+                label={copy.owner.gstinLabel}
+                helper={copy.owner.gstinHelper}
+                autoCapitalize="characters"
+                spellCheck={false}
+                maxLength={20}
+              />
               <div className="sm:col-span-2">
                 <TextField
                   {...bind("address")}

@@ -25,6 +25,8 @@ export const hero = {
    two-field lane form that hands its values to `/quote/` as `?from=` and `?to=`. */
 export const heroTabs = {
   ariaLabel: "Track a shipment or start a quote",
+  /** The accessible name of the announcement bar the admin panel sets. */
+  announcementLabel: "Announcement",
   track: { id: "track", label: "Track shipment" },
   quote: {
     id: "quote",

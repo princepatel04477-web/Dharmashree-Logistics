@@ -18,6 +18,7 @@
     "verify:partners": "tsx scripts/verify-partners.tsx",
     "verify:truck": "tsx scripts/verify-truck.tsx",
     "verify:lr": "tsx scripts/verify-lr.mts",
+    "verify:desk": "tsx scripts/verify-desk.mts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

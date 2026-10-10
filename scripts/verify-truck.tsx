@@ -1,10 +1,10 @@
 /* Unit check for the truck attachment application (`/attach-truck`): the form's
-   rules, the payload against the Apps Script that receives it (required list,
-   field order, header count) and the text/plain post. Run with
-   `npm run verify:truck`. */
+   rules, the payload against the /api/desk definition that stores it (required
+   list, field order, the server's own acceptance) and the text/plain post. Run
+   with `npm run verify:truck`. */
 
-import { readFileSync } from "node:fs";
 import { truckPage } from "../src/content/truck";
+import { DESK_FORMS, readDeskBody } from "../src/lib/desk/forms";
 import {
   EMPTY_TRUCK,
   REQUIRED_TRUCK_FIELDS,
@@ -19,7 +19,6 @@ import {
   type TruckPayload,
 } from "../src/lib/truck";
 
-const codeGs = readFileSync(new URL("../apps-script/Code.gs", import.meta.url), "utf8");
 const TODAY = "2026-10-10";
 
 function fail(message: string): never {
@@ -31,15 +30,6 @@ function check(condition: boolean, message: string): void {
   if (!condition) fail(message);
 }
 
-function readList(name: string): string[] {
-  const match = new RegExp(`const ${name} = \\[([^\\]]*)\\]`).exec(codeGs);
-  if (match === null || match[1] === undefined) fail(`could not read ${name} out of Code.gs`);
-  return match[1]
-    .split(",")
-    .map((cell) => cell.trim().replace(/^'|'$/g, ""))
-    .filter((cell) => cell !== "");
-}
-
 const GOOD: TruckPayload = {
   ...EMPTY_TRUCK,
   ownerName: "Ramesh Patel",
@@ -47,6 +37,7 @@ const GOOD: TruckPayload = {
   phone: "98765 43210",
   address: "Ring Road, Surat, Gujarat 395002",
   operatingCity: "Surat",
+  state: "Gujarat",
   vehicleNumber: "gj 05 ab-1234",
   makeModel: "Tata Signa 4825.T",
   yearOfMfg: "2021",
@@ -126,24 +117,23 @@ async function main(): Promise<void> {
     check(truckPage.errors[code].trim() !== "", `errors.${code} is empty`);
   }
 
-  /* ——— Client ↔ Apps Script ——— */
-  const requiredInScript = readList("truckRequired");
+  /* ——— Client ↔ /api/desk (src/lib/desk/forms.ts) ——— */
+  const server = DESK_FORMS.truck;
   check(
-    requiredInScript.length === REQUIRED_TRUCK_FIELDS.length &&
-      requiredInScript.every((field) => REQUIRED_TRUCK_FIELDS.some((c) => c === field)),
-    "truckRequired in Code.gs and REQUIRED_TRUCK_FIELDS differ",
+    server.required.length === REQUIRED_TRUCK_FIELDS.length &&
+      server.required.every((field) => REQUIRED_TRUCK_FIELDS.some((c) => c === field)),
+    "the server's required list and REQUIRED_TRUCK_FIELDS differ",
   );
-  check(/body\.kind === 'truck'/.test(codeGs), "Code.gs no longer routes kind === 'truck'");
   const sent = Object.keys(EMPTY_TRUCK).filter((field) => field !== "kind" && field !== "website");
-  const scriptFields = readList("TRUCK_FIELDS");
+  const columns = server.columns.map((column) => column.key);
   check(
-    JSON.stringify(scriptFields) === JSON.stringify(sent),
-    `TRUCK_FIELDS in Code.gs is not the payload order:\n  ${scriptFields.join(",")}\n  ${sent.join(",")}`,
+    JSON.stringify(columns) === JSON.stringify(sent),
+    `the server's columns are not the payload order:\n  ${columns.join(",")}\n  ${sent.join(",")}`,
   );
-  const headers = readList("TRUCK_HEADERS");
+  const accepted = readDeskBody({ ...normalizeTruck(GOOD), sourcePage: "/attach-truck/" });
   check(
-    headers.length === 2 + sent.length,
-    `${String(headers.length)} truck columns vs ${String(2 + sent.length)} expected`,
+    accepted.ok && !("bot" in accepted),
+    `the server refused a valid application: ${JSON.stringify(accepted)}`,
   );
 
   /* ——— Normalised payload: what the script's own checks accept ——— */
@@ -180,7 +170,7 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `verify:truck OK — format rules, ${String(REQUIRED_TRUCK_FIELDS.length)} required fields ↔ Code.gs, ${String(headers.length)} sheet columns, normalised text/plain post`,
+    `verify:truck OK — format rules, ${String(REQUIRED_TRUCK_FIELDS.length)} required fields ↔ /api/desk, ${String(columns.length)} stored columns, normalised text/plain post`,
   );
 }
 

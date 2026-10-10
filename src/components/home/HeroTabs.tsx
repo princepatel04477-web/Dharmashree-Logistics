@@ -10,6 +10,7 @@ import {
   type ReactElement,
 } from "react";
 import { TrackPanel } from "@/components/track/TrackPanel";
+import { AnnouncementBar } from "./AnnouncementBar";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/vendor/origin";
 import { company } from "@/content/company";
@@ -33,7 +34,10 @@ import { cn } from "@/lib/utils";
    panel runs horizontally, and both panels share one grid cell so the bar keeps
    the same height on either tab. Motion owns the active-tab marker (`layoutId`):
    an underline on phones, a bar on the column's inner edge from `lg`; under
-   reduced motion it moves instantly. */
+   reduced motion it moves instantly.
+
+   Above both, when the client has one switched on in the admin panel, the
+   announcement bar spans the card's full width (`AnnouncementBar`). */
 
 type TabId = "track" | "quote";
 
@@ -76,7 +80,11 @@ function QuoteLaneForm() {
           <option key={name} value={name} />
         ))}
       </datalist>
-      <Button type="submit" variant="outline" className="w-full sm:w-auto sm:self-start lg:self-end">
+      <Button
+        type="submit"
+        variant="outline"
+        className="w-full sm:w-auto sm:self-start lg:self-end"
+      >
         {heroTabs.quote.submitLabel}
         <ArrowRightIcon aria-hidden="true" />
       </Button>
@@ -114,6 +122,7 @@ export function HeroTabs(): ReactElement {
 
   return (
     <div className="bg-paper shadow-card-lift overflow-hidden rounded-md lg:grid lg:grid-cols-[13rem_minmax(0,1fr)]">
+      <AnnouncementBar className="overflow-hidden lg:col-span-2" />
       <div
         role="tablist"
         aria-label={heroTabs.ariaLabel}
@@ -174,7 +183,7 @@ export function HeroTabs(): ReactElement {
              hairline). TrackPanel itself is unchanged; the layout is applied
              from here. */
           className={cn(
-            "p-5 sm:p-6 [&_ul]:grid-cols-1 lg:block lg:p-7 lg:[grid-area:1/1]",
+            "p-5 sm:p-6 lg:block lg:p-7 lg:[grid-area:1/1] [&_ul]:grid-cols-1",
             "lg:[&>div]:grid lg:[&>div]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:[&>div]:gap-x-8 lg:[&>div]:gap-y-4",
             "lg:[&>div>div:last-child]:col-start-2 lg:[&>div>div:last-child]:row-span-3 lg:[&>div>div:last-child]:row-start-1 lg:[&>div>div:last-child]:mt-0 lg:[&>div>div:last-child]:border-t-0 lg:[&>div>div:last-child]:border-l lg:[&>div>div:last-child]:pt-0 lg:[&>div>div:last-child]:pl-8",
             active !== "track" && "lg:invisible",

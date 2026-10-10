@@ -49,7 +49,9 @@
   --map-land-served: color-mix(in srgb, var(--brand) 42%, var(--paper));
   --map-land-focus: color-mix(in srgb, var(--brand) 66%, var(--paper));
   --map-corridor: color-mix(in srgb, var(--brand-deep) 32%, transparent);
-  --map-corridor-active: var(--brand-deep);
+  /* The drawn route from Surat to the chosen hub — red by the client's request
+     (2026-10-10); the map's ground, borders and other routes keep their blues. */
+  --map-corridor-active: var(--signal-red);
   --map-halo: var(--paper);
 
   /* ——— Typography ———

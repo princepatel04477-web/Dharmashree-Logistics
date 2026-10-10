@@ -71,6 +71,11 @@ export const truckPage = {
     addressHelper: "Street, area, city, state and PIN code.",
     operatingCityLabel: "Primary operating city *",
     operatingCityHelper: "Start typing — any city in India.",
+    stateLabel: "State *",
+    statePlaceholder: "Choose a state",
+    stateHelper: "Filled in from the city when we know it.",
+    /** Shown once the state was filled in from the city. */
+    stateFromCity: (city: string): string => `Filled in from ${city} — change it if that is wrong.`,
   },
 
   vehicle: {
