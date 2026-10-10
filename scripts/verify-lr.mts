@@ -21,17 +21,16 @@ function check(condition: boolean, message: string): void {
 }
 
 /* ——— LR numbers ——— */
-for (const [input, code, lrno] of [
-  ["SRT-3230", "SRT", "3230"],
-  ["srt - 3230", "SRT", "3230"],
-  ["SRT/3230", "SRT", "3230"],
-  ["SRT3230", "SRT", "3230"],
-  ["3230", "0", "3230"],
-] as const) {
-  const query = parseLrQuery(input);
-  check(query?.code === code && query.lrno === lrno, `"${input}" → ${JSON.stringify(query)}`);
+for (const input of ["SRT-3230", "srt - 3230", "SRT/3230", "SRT3230", "SRT - 3230"]) {
+  const parsed = parseLrQuery(input);
+  check(
+    parsed?.code === "SRT" && parsed.lrno === "3230" && parsed.display === "SRT - 3230",
+    `"${input}" → ${JSON.stringify(parsed)}`,
+  );
 }
-check(parseLrQuery("SRT-") === null && parseLrQuery("12-AB") === null, "bad LR accepted");
+for (const input of ["3230", "SRT-", "12-AB", ""]) {
+  check(parseLrQuery(input) === null, `"${input}" accepted, but it is not a whole LR number`);
+}
 const query = parseLrQuery("SRT-3230");
 if (query === null) fail("SRT-3230 not parsed");
 check(
@@ -120,7 +119,7 @@ const reading = readVendorLr(
 );
 if (reading.kind !== "found") fail(`full record → ${reading.kind}`);
 const wire = reading.record;
-check(wire.lrNumber === "SRT-3230", "the SRT row is chosen over the IND one");
+check(wire.lrNumber === "SRT - 3230", "the SRT row is chosen over the IND one, shown as printed");
 check(wire.origin === "Surat" && wire.destination === "Lucknow", "places in title case");
 check(wire.status === "IN_TRANSIT" && wire.statusText === "Dispatched", "status and words");
 check(wire.details.deliveryAddress === "AISHBAGH, LUCKNOW", "address without its numbers");
@@ -131,7 +130,7 @@ check(
 check(wire.details.charges.length === 4, "freight, st. charge, loading, unloading");
 check(!JSON.stringify(wire).includes("Freightx"), "unknown vendor fields are not passed on");
 
-const record = parseLrRecord(JSON.parse(JSON.stringify(wire)) as unknown, "SRT-3230");
+const record = parseLrRecord(JSON.parse(JSON.stringify(wire)) as unknown, "SRT - 3230");
 if (record === null) fail("the adapter refused the function's reply");
 check(record.bookedOn === "2026-10-09", "booked date");
 check(record.details.invoiceDate === "2026-10-07", "invoice date");
@@ -142,5 +141,5 @@ check(record.details.total === 520 && record.packages === 1, "totals and package
 check(record.events.length === 1 && record.events[0]?.status === "booked", "history");
 
 console.log(
-  "verify:lr OK — LR numbers, vendor dates, status rules, not-found shapes, a full record through the adapter",
+  "verify:lr OK — whole LR numbers only, vendor dates, status rules, not-found shapes, a full record through the adapter",
 );

@@ -31,7 +31,8 @@
      SRT-1001   in transit, every slip section filled
      SRT-1002   delivered, a sparse record (only what booking requires)
      SRT-1003   a network failure
-     anything else  NotFound */
+     anything else  NotFound (a number without its branch code never gets here:
+     the form asks for the whole number) */
 
 import { parseLrQuery, readVendorLr } from "./vendor-lr";
 import {

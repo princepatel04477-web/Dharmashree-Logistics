@@ -16,7 +16,7 @@ alone:
 
 ```
 browser ──▶ /api/lr?no=SRT-3230          functions/api/lr.ts (Cloudflare Pages Function)
-               │  parses SRT-3230 → code=SRT, lrno=3230 (a bare number → code=0, every branch)
+               │  parses SRT-3230 → code=SRT, lrno=3230 (the whole number only: a bare 3230 is refused)
                ▼
    https://dharmashreegroup.in/api/LRInquiry.ashx?apiname=lrinquiry&code=SRT&lrno=3230
                │  src/lib/backend/vendor-lr.ts maps the record to the contract below

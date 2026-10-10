@@ -159,8 +159,12 @@ export const track = {
       metadataDescription:
         "Enter your LR number to see the consignment's status, route, invoice and freight details, and its movement history.",
       lrLabel: "LR number",
-      placeholder: "SRT-3230",
-      helper: "As printed on your LR slip, for example SRT-3230.",
+      placeholder: "SRT - 3230",
+      helper:
+        "The whole LR number as printed on your slip: branch code and number, for example SRT - 3230.",
+      /** A number without its branch code, or not an LR number at all. */
+      wholeNumber:
+        "Enter the whole LR number with its branch code, for example SRT - 3230. The number alone is not enough.",
       submit: "Track",
       submitting: "Looking up…",
     },

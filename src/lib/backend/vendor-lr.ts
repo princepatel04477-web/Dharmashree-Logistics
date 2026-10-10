@@ -5,7 +5,7 @@
 
      {base}/LRInquiry.ashx?apiname=lrinquiry&code=BRANCHCODE&lrno=LRNO
 
-   (`code=0` searches every branch) and answers the browser with the JSON
+   (always with the branch code: customers enter the whole LR number) and answers the browser with the JSON
    `parseLrRecord` in `adapter.ts` already reads — so the UI needs no second
    reader, and the vendor's full record (freight, amounts, vehicle and phone
    numbers, internal remarks) never leaves the server.
@@ -36,23 +36,27 @@
 /* ——— The query ——— */
 
 export interface LrQuery {
-  /** Branch code (`SRT`), or `"0"` for every branch. */
+  /** Branch code (`SRT`). */
   code: string;
   /** The number part, digits only. */
   lrno: string;
-  /** How the LR is shown back: `SRT-3230`, or `3230` with no branch. */
+  /** How the LR is shown back, as the slip prints it: `SRT - 3230`. */
   display: string;
 }
 
-/** `SRT-3230`, `srt 3230`, `SRT/3230`, `SRT3230` or a bare `3230`. */
+/** The whole LR number: branch code and number — `SRT - 3230`, `SRT-3230`,
+    `srt 3230`, `SRT/3230` or `SRT3230`. A bare number is refused: the same
+    number exists at every branch, so without its code it is not one LR. */
 export function parseLrQuery(input: string): LrQuery | null {
   const value = input.trim().toUpperCase().replace(/\s+/g, "");
   const branched = /^([A-Z]{2,6})[-/]?(\d{1,10})$/.exec(value);
-  if (branched !== null && branched[1] !== undefined && branched[2] !== undefined) {
-    return { code: branched[1], lrno: branched[2], display: `${branched[1]}-${branched[2]}` };
-  }
-  if (/^\d{1,10}$/.test(value)) return { code: "0", lrno: value, display: value };
-  return null;
+  if (branched === null || branched[1] === undefined || branched[2] === undefined) return null;
+  return { code: branched[1], lrno: branched[2], display: lrDisplay(branched[1], branched[2]) };
+}
+
+/** `SRT`, `3230` → `SRT - 3230`, the LR number as the slip prints it. */
+export function lrDisplay(code: string, lrno: string): string {
+  return `${code} - ${lrno}`;
 }
 
 export function vendorLrUrl(base: string, query: LrQuery): string {
@@ -386,13 +390,12 @@ export function readVendorLr(body: unknown, query: LrQuery): VendorReading {
       : { kind: "unreadable" };
   }
 
-  /* With a branch given, the LR booked there; otherwise the first match. */
+  /* The LR booked at the requested branch. A row that does not name its branch
+     is taken as the answer to the branch it was asked for; a row naming
+     another branch never is. */
   const row =
-    rows.find(
-      (candidate) =>
-        query.code !== "0" && text(candidate, "FromBranchCode")?.toUpperCase() === query.code,
-    ) ??
-    rows.find(() => query.code === "0") ??
+    rows.find((candidate) => text(candidate, "FromBranchCode")?.toUpperCase() === query.code) ??
+    rows.find((candidate) => text(candidate, "FromBranchCode") === null) ??
     null;
   if (row === null) return { kind: "not-found" };
 
@@ -432,7 +435,7 @@ export function readVendorLr(body: unknown, query: LrQuery): VendorReading {
   return {
     kind: "found",
     record: {
-      lrNumber: branch === null ? query.display : `${branch}-${query.lrno}`,
+      lrNumber: branch === null ? query.display : lrDisplay(branch, query.lrno),
       bookedOn: bookedAt,
       origin,
       destination,

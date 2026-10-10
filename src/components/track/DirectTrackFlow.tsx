@@ -8,6 +8,7 @@ import { TextField } from "@/components/vendor/origin";
 import { track } from "@/content/track";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { lookupLr } from "@/lib/backend/client";
+import { parseLrQuery } from "@/lib/backend/vendor-lr";
 import type { LrRecord } from "@/lib/backend/types";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
 import { normalizeLr, validateLr } from "@/lib/validate";
@@ -77,7 +78,7 @@ export function DirectTrackFlow({
   useEffect(() => {
     if (openOnTrackPage) return;
     const fromUrl = new URLSearchParams(window.location.search).get(LR_PARAM);
-    if (fromUrl === null || validateLr(fromUrl) !== null) return;
+    if (fromUrl === null || parseLrQuery(fromUrl) === null) return;
     const value = normalizeLr(fromUrl);
     queueMicrotask(() => {
       setLr(value);
@@ -92,8 +93,16 @@ export function DirectTrackFlow({
     if (busy) return;
 
     const code = validateLr(lr);
-    setFieldError(code === null ? undefined : track.errors[code]);
-    if (code !== null) return;
+    if (code !== null) {
+      setFieldError(track.errors[code]);
+      return;
+    }
+    /* The whole number: a branch code and the number, never the number alone. */
+    if (parseLrQuery(lr) === null) {
+      setFieldError(copy.wholeNumber);
+      return;
+    }
+    setFieldError(undefined);
 
     if (openOnTrackPage) {
       router.push(`/track/?${LR_PARAM}=${encodeURIComponent(normalizeLr(lr))}`);
