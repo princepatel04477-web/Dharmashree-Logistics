@@ -5,28 +5,17 @@ import { whatsapp, whatsappLink } from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { motion } from "motion/react";
 
-/* WhatsApp affordances (Prompt 04). Both variants vanish entirely when
-   `company.whatsapp` is null — no disabled button, no empty href.
-   Plain `<a target="_blank" rel="noopener">` per house rule 10. */
-
-/** Floating variant reveals past this much page scroll. */
-const FLOATING_AFTER_PX = 600;
-/** The quote form already is a request for a rate — no duplicate nudge. */
-const QUOTE_ROUTE = "/quote";
-
-function isQuoteRoute(pathname: string): boolean {
-  return pathname === QUOTE_ROUTE || pathname.startsWith(`${QUOTE_ROUTE}/`);
-}
+/* WhatsApp affordances. Both variants vanish entirely when `company.whatsapp` is
+   null — no disabled button, no empty href. Plain `<a target="_blank"
+   rel="noopener">` per house rule 10. */
 
 interface GlyphProps {
   className?: string;
 }
 
-/** The mark drawn as stroke only (house rule 6: accent lives in strokes). */
+/** The mark drawn as stroke only. */
 function WhatsAppGlyph({ className = "" }: GlyphProps) {
   return (
     <svg
@@ -46,7 +35,8 @@ function WhatsAppGlyph({ className = "" }: GlyphProps) {
 }
 
 interface WhatsAppButtonProps {
-  /** `header` = outlined chip in the header cluster · `floating` = mobile FAB. */
+  /** `header` = outlined chip in the header cluster · `floating` = the button
+      fixed to the corner of every page. */
   variant?: "header" | "floating";
   className?: string;
 }
@@ -66,7 +56,7 @@ function HeaderButton({ href, className }: { href: string; className: string }) 
       rel="noopener"
       aria-label={`Chat with ${company.name} on WhatsApp`}
       className={cn(
-        "border-line text-ink hover:border-accent hover:text-accent-ink inline-flex h-11 items-center gap-2 rounded-xs border px-3 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
+        "border-line text-ink hover:border-brand hover:text-brand-deep inline-flex h-11 items-center gap-2 rounded-xs border px-3 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200",
         className,
       )}
     >
@@ -76,44 +66,31 @@ function HeaderButton({ href, className }: { href: string; className: string }) 
   );
 }
 
+/* On screen from the first paint, bottom right, on every page and at every
+   width: a floating button that waits for a scroll, or exists only on phones,
+   is one people do not find. It sits above the page (z-30) and clear of the
+   home indicator (safe-area inset). */
 function FloatingButton({ href, className }: { href: string; className: string }) {
-  const pathname = usePathname();
   const reduced = useReducedMotionSafe();
-  const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
-
-  useMotionValueEvent(scrollY, "change", (latest: number) => {
-    setScrolled(latest > FLOATING_AFTER_PX);
-  });
-
-  const shown = scrolled && !isQuoteRoute(pathname);
 
   return (
-    <AnimatePresence>
-      {shown && (
-        <motion.a
-          key="whatsapp-floating"
-          href={href}
-          target="_blank"
-          rel="noopener"
-          aria-label={`Chat with ${company.name} on WhatsApp`}
-          className={cn(
-            "border-line bg-paper text-accent hover:border-accent-ink hover:text-accent-ink",
-            "fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30",
-            "flex size-14 items-center justify-center rounded-full border shadow-xs lg:hidden",
-            className,
-          )}
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.85 }}
-          transition={{
-            duration: reduced ? 0 : MOTION_DURATIONS.xs,
-            ease: MOTION_EASES.out,
-          }}
-        >
-          <WhatsAppGlyph className="size-6" />
-        </motion.a>
+    <motion.a
+      href={href}
+      target="_blank"
+      rel="noopener"
+      aria-label={`Chat with ${company.name} on WhatsApp`}
+      className={cn(
+        "border-line bg-paper text-brand hover:border-brand-deep hover:text-brand-deep",
+        "fixed right-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-30",
+        "flex size-14 items-center justify-center rounded-full border shadow-sm",
+        "transition-colors duration-200 sm:right-6 sm:bottom-[calc(1.5rem+env(safe-area-inset-bottom))]",
+        className,
       )}
-    </AnimatePresence>
+      initial={reduced ? false : { opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: reduced ? 0 : MOTION_DURATIONS.sm, ease: MOTION_EASES.out }}
+    >
+      <WhatsAppGlyph className="size-6" />
+    </motion.a>
   );
 }

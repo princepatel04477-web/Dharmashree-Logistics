@@ -8,6 +8,15 @@ export interface Headquarters {
   mapsUrl: string | null;
 }
 
+export interface ContactAddress {
+  city: string;
+  state: string;
+  /** One printed line each, in order. */
+  lines: string[];
+  /** A Maps link for the whole address, or null for plain text. */
+  mapsUrl: string | null;
+}
+
 export interface Branch {
   city: string;
   state: string;
@@ -20,11 +29,13 @@ export interface SocialLinks {
   linkedin: string | null;
 }
 
-/** Builder credit in the footer bottom row. With no `url` set the credit
-   renders as plain text — never as a dead link. */
-export interface Credit {
-  name: string;
-  url: string | null;
+/** Sign-in pages of the company's billing portal. A `null` URL hides that
+   button on `/track`. */
+export interface Portals {
+  /** Customers and suppliers (the consignor side). */
+  customer: string | null;
+  /** Consignees (the receiving side). */
+  consignee: string | null;
 }
 
 export interface Company {
@@ -32,12 +43,25 @@ export interface Company {
   legalName: string | null;
   tagline: string | null;
   headquarters: Headquarters;
+  /** The address printed under "Reach us" and on /contact. It is the
+     company's postal address and is independent of `headquarters`, which is
+     where the network's corridors start. `null` hides it. */
+  contactAddress: ContactAddress | null;
   branches: Branch[];
   /** E.164, e.g. "+919876543210". */
   phone: string | null;
   /** E.164, used for wa.me links. */
   whatsapp: string | null;
   email: string | null;
+  /** Public website, full origin without a trailing slash, e.g.
+     "https://example.in". Used for `metadataBase` and shown as a contact row. */
+  website: string | null;
+  /** Share of earnings the company sets aside for charitable causes, in
+     percent (e.g. 2.5). `null` hides every giving line. */
+  givingPercent: number | null;
+  /** Support desk hours as the company publishes them, e.g. "Mon–Sat, 9:30–7".
+     `null` hides the row on `/support` and `/contact`. */
+  supportHours: string | null;
   gstin: string | null;
   foundedYear: number | null;
   fleetSize: number | null;
@@ -46,7 +70,7 @@ export interface Company {
   services: string[];
   industries: string[];
   social: SocialLinks;
-  credit: Credit;
+  portals: Portals;
 }
 
 /* One service in the catalogue (Prompt 06). `name` is the fact — it mirrors an
@@ -69,8 +93,104 @@ export interface Service {
   readonly vehicles: readonly string[];
   /** Per-service questions for the detail page's accordion. */
   readonly questions: readonly Faq[];
-  /** Manifest key for the photo, or null for the `services/<slug>` default. */
-  readonly image: string | null;
+  /** The display line under the H1 — the service's own promise, verbatim from
+     the company profile. */
+  readonly headline: string;
+  /** Longer-form sections from the company profile that the signature block
+     does not already carry. `[]` drops the "In detail" block. */
+  readonly sections: readonly ServiceSection[];
+  /** Whether the "Lanes from Surat" map block belongs on this page. Intra-city
+     and storage services have no corridor to show, so they leave it out. */
+  readonly showLanes: boolean;
+  /** The one interactive block the detail page puts between the hero and the
+     numbered blocks (Prompt 11). The template switches on `kind`. */
+  readonly signature: ServiceSignature;
+}
+
+export interface ServiceSection {
+  readonly title: string;
+  readonly body: readonly string[];
+}
+
+/** One stop, stage or leg inside a signature block. */
+export interface SignatureStep {
+  readonly title: string;
+  readonly body: string;
+}
+
+/** One choice inside a signature block's switch or selector. */
+export interface SignatureOption {
+  readonly id: string;
+  readonly label: string;
+  readonly title: string;
+  readonly body: string;
+}
+
+/** Express parcel: a scroll-drawn pickup-to-door journey, then a B2B / B2C /
+   bulk switch. */
+export interface JourneySignature {
+  readonly kind: "journey";
+  readonly title: string;
+  readonly lede: string;
+  readonly stops: readonly SignatureStep[];
+  readonly segmentsLabel: string;
+  readonly segments: readonly SignatureOption[];
+}
+
+/** Full truckload: dedicated-versus-shared toggle over a drawn truck body,
+   then the supply-chain legs on a pinned horizontal band. */
+export interface DedicatedSignature {
+  readonly kind: "dedicated";
+  readonly title: string;
+  readonly lede: string;
+  readonly toggleLabel: string;
+  readonly dedicated: SignatureOption;
+  readonly shared: SignatureOption;
+  /** Accessible description of the truck drawing. */
+  readonly figureCaption: string;
+  readonly flowTitle: string;
+  readonly flow: readonly SignatureStep[];
+}
+
+/** Local on-demand: "what are you sending?" picks a vehicle class, and a
+   scheduled / urgent switch. */
+export interface SelectorSignature {
+  readonly kind: "selector";
+  readonly title: string;
+  readonly lede: string;
+  readonly questionLabel: string;
+  readonly options: readonly (SignatureOption & { readonly vehicle: string })[];
+  readonly vehicleLabel: string;
+  readonly modesLabel: string;
+  readonly modes: readonly SignatureOption[];
+}
+
+/** Warehousing: a pinned walk through the fulfilment stages with the returns
+   arc drawn back into stock, then the four capabilities as cards. */
+export interface LoopSignature {
+  readonly kind: "loop";
+  readonly title: string;
+  readonly lede: string;
+  readonly stages: readonly SignatureStep[];
+  readonly returnLabel: string;
+  readonly capabilitiesTitle: string;
+  readonly capabilities: readonly SignatureStep[];
+}
+
+export type ServiceSignature =
+  JourneySignature | DedicatedSignature | SelectorSignature | LoopSignature;
+
+/** A transport partner from the company profile (Prompt 13). Phones are E.164;
+   `hubId` names the network hub in the same city, or null when the city is not
+   a hub — the pin then sits at `latLng`, which is geography, not a claim. */
+export interface Partner {
+  readonly id: string;
+  readonly name: string;
+  readonly city: string;
+  readonly addressLines: readonly string[];
+  readonly phones: readonly string[];
+  readonly hubId: string | null;
+  readonly latLng: readonly [number, number];
 }
 
 /** One vehicle on the fleet grid. The name comes from a service's `vehicles`

@@ -1,39 +1,66 @@
-/* DharmaShree Logistics — design tokens, ported 1:1 from Maa Sheetla.
-   Provenance for every value: docs/token-map.md.
+/* DharmaShree Logistics — design tokens ("DharmaShree Blue").
+   The palette is sampled from public/brand/dharmashree-logo.png; the type and
+   spacing scale come from the Maa Sheetla port. Provenance: docs/token-map.md.
    House rule 5: components reference these tokens (directly or via Tailwind
    utilities) and never hard-code a colour or font stack. */
 
 :root {
   /* ——— Colour roles ——— */
-  --paper: #fcfbf7;
-  --paper-2: #ffffff;
-  --paper-3: #f6f2ec;
+  --paper: #ffffff;
+  --paper-2: #f5f7fa;
+  --paper-3: #eef2f7;
 
-  --ink: #1c1917;
-  --ink-2: #665e59;
-  --muted: #665e59;
+  --ink: #14171f;
+  /* Cool slate greys. Contrast on --paper / --brand-tint / --paper-3:
+     --ink-2 7.69 / 6.76 / 6.84, --muted 5.81 / 5.11 / 5.16 (AA text >= 4.5). */
+  --ink-2: #475467;
+  --muted: #5b6678;
 
-  --line: rgba(28, 25, 23, 0.08);
-  --line-strong: rgba(28, 25, 23, 0.18);
+  --line: rgba(20, 23, 31, 0.1);
+  --line-strong: rgba(20, 23, 31, 0.2);
 
-  --accent: #8b2628;
-  --accent-ink: #6d1b1d;
-  --signal: #a67c26;
-  --gold-deep: #8a6715;
+  /* Brand (sampled from the logo) */
+  --brand: #2860b0;
+  --brand-deep: #123a73;
+  --brand-tint: #eaf1fb;
+  --signal-red: #ff3131;
+  --highway: #f5a623;
 
-  --scrollbar-thumb: #e5dfc8;
+  /* Text, hairlines and bands on a --brand-deep ground (footer, utility bar).
+     Built from --paper so no raw colour is repeated. */
+  --on-deep: var(--paper);
+  --on-deep-text: color-mix(in srgb, var(--paper) 85%, transparent);
+  --on-deep-line: color-mix(in srgb, var(--paper) 12%, transparent);
+  --on-deep-band: color-mix(in srgb, var(--paper) 6%, transparent);
 
-  /* Map panel (Prompt 03) */
-  --map-ground: #111016;
-  --map-land: #29232a;
-  --map-land-stroke: #665154;
+  /* Scrollbar thumb: a cool grey, --brand on hover (see globals.css). */
+  --scrollbar-thumb: color-mix(in srgb, var(--ink) 22%, var(--paper));
+
+  /* Network map, light ground. Served states are a clear mid-blue and the
+     focused region a deeper one, both mixed from --brand over --paper so
+     --ink labels keep AA on them: --ink on served 9.3:1, on focus 5.9:1
+     (the mix is capped near 66% brand; past ~75% ink drops under 4.5:1).
+     Pins stay --brand and are rimmed with --map-halo so they separate from
+     the fills; the active corridor is drawn in --brand-deep, which holds
+     5.8:1 on served and 3.9:1 on focus where --brand alone would not. */
+  --map-border: rgba(20, 23, 31, 0.35);
+  --map-state-line: rgba(20, 23, 31, 0.14);
+  --map-land-quiet: var(--paper-2);
+  --map-land-served: color-mix(in srgb, var(--brand) 42%, var(--paper));
+  --map-land-focus: color-mix(in srgb, var(--brand) 66%, var(--paper));
+  --map-corridor: color-mix(in srgb, var(--brand-deep) 32%, transparent);
+  /* The drawn route from Surat to the chosen hub — red by the client's request
+     (2026-10-10); the map's ground, borders and other routes keep their blues. */
+  --map-corridor-active: var(--signal-red);
+  --map-halo: var(--paper);
 
   /* ——— Typography ———
-     --font-display-face / --font-body / --font-mono-face /
-     --font-display-accent are set by next/font/local (see src/app/fonts.ts).
-     They resolve at computed-value time; the stacks below preserve Maa
-     Sheetla's fallback order verbatim. */
-  --font-display: var(--font-display-face), var(--font-display-accent), Georgia, serif;
+     --font-display-face / --font-body / --font-mono-face are set by
+     next/font/local (see src/app/fonts.ts). They resolve at computed-value
+     time. The display face is Archivo (weight 700, width 88% for headings,
+     see .font-display in globals.css); body and mono keep the Maa Sheetla
+     fallback order. */
+  --font-display: var(--font-display-face), "Archivo", system-ui, sans-serif;
   --font-sans: var(--font-body), "DM Sans", system-ui, sans-serif;
   --font-mono: var(--font-mono-face), "JetBrains Mono", "DM Mono", ui-monospace, monospace;
 
@@ -46,12 +73,12 @@
   --step-5: clamp(2.625rem, 5vw, 4.375rem);
   --step-6: clamp(3.25rem, 8vw, 7.5rem);
 
-  --leading-display: 0.88;
-  --leading-headline: 0.95;
+  --leading-display: 1;
+  --leading-headline: 1.05;
   --leading-body: 1.65;
 
   --tracking-caps: 0.24em;
-  --tracking-display: -0.04em;
+  --tracking-display: -0.02em;
 
   --measure: 28rem;
 
@@ -64,14 +91,13 @@
 
   /* ——— Radius ——— */
   --radius-2xs: 1px;
-  --radius-xs: 2px;
-  --radius-sm: 2px;
+  --radius-xs: 6px;
+  --radius-sm: 6px;
+  --radius-md: 12px;
 
   /* ——— Shadows ——— */
-  --shadow-2xs: 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-xs: 0 1px 3px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04);
-  --shadow-accent-glow: 0 0 30px rgba(139, 38, 40, 0.18);
-  --shadow-signal-glow: 0 0 30px rgba(166, 124, 38, 0.18);
-  --shadow-card: 0 4px 20px -2px rgba(28, 25, 23, 0.06), 0 2px 6px -1px rgba(28, 25, 23, 0.04);
-  --shadow-card-lift: 0 4px 20px -2px rgba(28, 25, 23, 0.1), 0 2px 6px -1px rgba(28, 25, 23, 0.06);
+  --shadow-2xs: 0 1px 2px rgba(20, 23, 31, 0.04);
+  --shadow-xs: 0 1px 3px rgba(20, 23, 31, 0.07), 0 1px 2px rgba(20, 23, 31, 0.04);
+  --shadow-card: 0 4px 20px -2px rgba(20, 23, 31, 0.06), 0 2px 6px -1px rgba(20, 23, 31, 0.04);
+  --shadow-card-lift: 0 4px 20px -2px rgba(20, 23, 31, 0.1), 0 2px 6px -1px rgba(20, 23, 31, 0.06);
 }

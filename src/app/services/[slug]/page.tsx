@@ -4,26 +4,21 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import { ArrowRightIcon } from "lucide-react";
 import { MapCanvas } from "@/components/map/MapCanvas";
-import { DrawLine } from "@/components/motion/DrawLine";
-import { ImageCurtain } from "@/components/motion/ImageCurtain";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
-import ResponsiveImage, { hasImage } from "@/components/media/ResponsiveImage";
+import { PageIntro } from "@/components/layout/PageIntro";
+import { IncludedList } from "@/components/services/IncludedList";
 import { FleetSection } from "@/components/services/FleetSection";
+import { ServiceSignature } from "@/components/services/ServiceSignature";
 import { Button } from "@/components/ui/button";
 import { FaqAccordion } from "@/components/vendor/origin";
 import { Magnet } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
 import { HUBS, ORIGIN } from "@/content/hubs";
 import { fleetForService } from "@/content/fleet";
+import { serviceImage } from "@/content/images";
 import { quoteCta, quoteHrefForService, whatsapp, whatsappLink } from "@/content/navigation";
-import {
-  findService,
-  serviceDetail,
-  serviceImageKey,
-  services,
-  servicesIndex,
-} from "@/content/services";
+import { findService, serviceDetail, services, servicesIndex } from "@/content/services";
 import { formatPhoneIN } from "@/lib/format";
 import { cn, numbered } from "@/lib/utils";
 import type { Service } from "@/content/types";
@@ -84,8 +79,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   if (service === undefined) notFound();
 
   const vehicles = fleetForService(service);
-  const imageKey = serviceImageKey(service);
-  const hasPhoto = hasImage(imageKey);
+  const slot = serviceImage(service.slug);
   const position = services.findIndex((entry) => entry.slug === service.slug);
   const previous = position > 0 ? services[position - 1] : undefined;
   const next = position >= 0 && position < services.length - 1 ? services[position + 1] : undefined;
@@ -96,22 +90,32 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     blocks.push({
       id: "included",
       title: serviceDetail.includedTitle,
+      body: <IncludedList service={service} />,
+    });
+  }
+
+  if (service.sections.length > 0) {
+    blocks.push({
+      id: "detail",
+      title: serviceDetail.detailTitle,
       body: (
-        <ul className="flex flex-col">
-          {service.bullets.map((bullet, index) => (
-            <li key={bullet}>
-              {/* DrawLine owns this hairline because it draws on entry, which a
-                  CSS border cannot. The first row needs no rule above it. No
-                  numeral per row either: a "01" under the block labelled "01"
-                  reads as a nested sequence, which is the same trap the fleet
-                  heading avoids. */}
-              {index > 0 && <DrawLine />}
-              <p className="text-ink-2 max-w-measure leading-body py-4 text-sm font-light">
-                {bullet}
-              </p>
-            </li>
+        <div className="flex flex-col gap-10">
+          {service.sections.map((section) => (
+            <div key={section.title} className="flex flex-col gap-4">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl">
+                {section.title}
+              </h3>
+              {section.body.map((paragraph) => (
+                <p
+                  key={paragraph}
+                  className="text-ink-2 max-w-measure leading-body text-sm font-light"
+                >
+                  {paragraph}
+                </p>
+              ))}
+            </div>
           ))}
-        </ul>
+        </div>
       ),
     });
   }
@@ -124,7 +128,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
         <ul className="flex flex-col gap-3">
           {service.bestFor.map((item) => (
             <li key={item} className="text-ink-2 leading-body flex items-start gap-3 text-sm">
-              <span aria-hidden="true" className="bg-accent mt-2 size-1 shrink-0 rounded-full" />
+              <span aria-hidden="true" className="bg-brand mt-2 size-1 shrink-0 rounded-full" />
               <span className="font-light">{item}</span>
             </li>
           ))}
@@ -141,18 +145,22 @@ export default async function ServiceDetailPage({ params }: PageProps) {
     });
   }
 
-  blocks.push({
-    id: "lanes",
-    title: serviceDetail.lanesTitle,
-    body: (
-      <div className="flex flex-col gap-6">
-        <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
-          {serviceDetail.lanesLine(HUBS.length, ORIGIN.name)} {serviceDetail.lanesNote}
-        </p>
-        <MapCanvas mode="hero" className="mx-auto w-full max-w-[26rem]" />
-      </div>
-    ),
-  });
+  /* Intra-city and storage services have no corridor to draw, so the map is
+     a per-service choice (`showLanes`), not a given. */
+  if (service.showLanes) {
+    blocks.push({
+      id: "lanes",
+      title: serviceDetail.lanesTitle,
+      body: (
+        <div className="flex flex-col gap-6">
+          <p className="text-ink-2 max-w-measure leading-body text-sm font-light">
+            {serviceDetail.lanesLine(HUBS.length, ORIGIN.name)} {serviceDetail.lanesNote}
+          </p>
+          <MapCanvas mode="hero" className="mx-auto w-full max-w-[26rem]" />
+        </div>
+      ),
+    });
+  }
 
   if (service.questions.length > 0) {
     blocks.push({
@@ -164,45 +172,34 @@ export default async function ServiceDetailPage({ params }: PageProps) {
 
   return (
     <>
-      {/* ——— Hero: the H1 is server-rendered, then split client-side ——— */}
-      <section className="border-line border-b">
-        <div className="wrap grid grid-cols-1 items-start gap-10 py-16 sm:py-20 lg:grid-cols-12 lg:gap-10 lg:py-24">
-          <div className={cn("flex flex-col gap-8", hasPhoto ? "lg:col-span-7" : "lg:col-span-8")}>
-            <SectionHeading
-              as="h1"
-              index={`${serviceDetail.eyebrow} ${numbered(position)}`}
-              title={service.name}
-              titleClassName="font-display text-ink text-display leading-display tracking-display font-light"
-            />
-            <div className="flex flex-col gap-4">
-              {service.body.map((paragraph) => (
-                <Reveal
-                  as="p"
-                  key={paragraph}
-                  className="text-ink-2 max-w-measure leading-body text-base font-light"
-                >
-                  {paragraph}
-                </Reveal>
-              ))}
-            </div>
-          </div>
+      {/* ——— Intro: the service's photo when the file exists, a solid
+              --brand-deep band until then. The H1 is server-rendered, then split
+              client-side. ——— */}
+      <PageIntro
+        eyebrow={`${serviceDetail.eyebrow} ${numbered(position)}`}
+        title={service.name}
+        lede={service.headline}
+        imageKey={slot?.key}
+        imageAlt={slot?.alt}
+      />
 
-          {/* No photo, no column: the text takes the space instead of leaving a
-              hole where a picture would have been. */}
-          {hasPhoto && (
-            <div className="lg:col-span-5">
-              <ImageCurtain className="aspect-[4/5] w-full rounded-xs">
-                <ResponsiveImage
-                  imageKey={imageKey}
-                  alt={service.name}
-                  sizes="(max-width: 64rem) 100vw, 33vw"
-                  priority
-                />
-              </ImageCurtain>
-            </div>
-          )}
+      {/* ——— The page's long-form introduction ——— */}
+      <section className="py-14 sm:py-16 lg:py-20">
+        <div className="wrap flex flex-col gap-4">
+          {service.body.map((paragraph) => (
+            <Reveal
+              as="p"
+              key={paragraph}
+              className="text-ink-2 max-w-measure leading-body text-base font-light"
+            >
+              {paragraph}
+            </Reveal>
+          ))}
         </div>
       </section>
+
+      {/* ——— The service's own interactive block (Prompt 11) ——— */}
+      <ServiceSignature service={service} />
 
       {/* ——— Blocks, numbered by position — with the aside alongside ——— */}
       <div className="wrap grid grid-cols-1 items-start gap-x-10 gap-y-10 lg:grid-cols-12">
@@ -218,7 +215,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               <SectionHeading
                 index={numbered(index)}
                 title={block.title}
-                titleClassName="font-display text-ink text-step-3 leading-headline tracking-display font-light"
+                titleClassName="font-display text-ink text-step-3 leading-headline tracking-display"
               />
               {block.body}
             </section>
@@ -233,11 +230,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
               an inline-flex span, so the button would otherwise shrink-wrap to
               its own label instead of filling the aside. */}
           <Magnet strength={10} className="w-full">
-            <Button
-              asChild
-              variant="default"
-              className="bg-ink text-paper hover:bg-accent-ink w-full"
-            >
+            <Button asChild variant="default" className="w-full">
               <Link href={quoteHrefForService(service.slug)}>{quoteCta.label}</Link>
             </Button>
           </Magnet>
@@ -356,14 +349,14 @@ function NeighbourLink({
         {!isNext && (
           <ArrowRightIcon
             aria-hidden="true"
-            className="text-accent size-4 rotate-180 transition-transform duration-200 group-hover/nb:-translate-x-0.5"
+            className="text-brand size-4 rotate-180 transition-transform duration-200 group-hover/nb:-translate-x-0.5"
           />
         )}
         {service.name}
         {isNext && (
           <ArrowRightIcon
             aria-hidden="true"
-            className="text-accent size-4 transition-transform duration-200 group-hover/nb:translate-x-0.5"
+            className="text-brand size-4 transition-transform duration-200 group-hover/nb:translate-x-0.5"
           />
         )}
       </span>

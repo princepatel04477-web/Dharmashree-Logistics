@@ -126,7 +126,11 @@ async function readJson(response: Response): Promise<unknown> {
   }
 }
 
-export async function submitQuote(payload: QuotePayload): Promise<QuoteResult> {
+/** Posts any JSON-serialisable record to the desk's Apps Script and reads the
+    `{ok,reference}` reply. The quote form and the partner application share it:
+    one endpoint, one sheet workbook, one set of transport rules (see the header
+    comment). The partner payload names its sheet with `kind: "partner"`. */
+export async function postToDesk(payload: Readonly<Record<string, string>>): Promise<QuoteResult> {
   const endpoint = process.env.NEXT_PUBLIC_QUOTE_ENDPOINT;
   if (endpoint === undefined || endpoint.trim() === "") {
     return { ok: false, error: "Unconfigured" };
@@ -174,7 +178,11 @@ export async function submitQuote(payload: QuotePayload): Promise<QuoteResult> {
   }
 }
 
-/** Which page the enquiry came from (`/quote/?service=part-load`), so the desk
+export function submitQuote(payload: QuotePayload): Promise<QuoteResult> {
+  return postToDesk({ ...payload });
+}
+
+/** Which page the enquiry came from (`/quote/?service=express-parcel`), so the desk
     can tell a service-page click from a direct visit. Client-only. */
 export function sourcePageFrom(location: Pick<Location, "pathname" | "search">): string {
   return `${location.pathname}${location.search}`.slice(0, 200);

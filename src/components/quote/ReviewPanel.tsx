@@ -128,7 +128,7 @@ export function ReviewPanel({
                 onClick={() => {
                   onEdit(group.step);
                 }}
-                className="text-accent-ink hover:text-ink cursor-pointer font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+                className="text-brand-deep hover:text-ink cursor-pointer font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
               >
                 {quote.review.editLabel}
               </button>
@@ -148,7 +148,7 @@ export function ReviewPanel({
       {failed && (
         <div
           role="alert"
-          className="border-accent/60 bg-paper-3 mt-4 flex flex-col gap-3 rounded-xs border p-4"
+          className="border-brand/60 bg-paper-3 mt-4 flex flex-col gap-3 rounded-xs border p-4"
         >
           <p className="text-ink text-sm font-medium">{quote.failure.title}</p>
           <p className="text-ink-2 leading-body text-sm font-light">
@@ -161,7 +161,7 @@ export function ReviewPanel({
               href={whatsappHref}
               target="_blank"
               rel="noopener"
-              className="text-accent-ink hover:text-ink self-start font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+              className="text-brand-deep hover:text-ink self-start font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
             >
               {quote.success.whatsappLabel}
             </a>

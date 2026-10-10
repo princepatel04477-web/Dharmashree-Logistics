@@ -1,240 +1,431 @@
 import type { Service } from "./types";
 
-/* The catalogue (Prompt 06). `company.services` owns the *names* — this file
-   owns everything a page says about them — so the two lists must stay
+/* The catalogue (Prompts 06 and 09). `company.services` owns the *names* — this
+   file owns everything a page says about them — so the two lists must stay
    one-for-one, in order (`npm run verify:services` fails if they drift). The
    footer column, the home tiles and the index rows are all built from this
    array, so a service added here appears in all three without a component
    changing.
 
-   Nothing here is a fact: no rates, no transit hours, no fleet counts. Where a
-   lane is named it is a hub from `src/content/hubs.ts`, and where a number
-   would belong the sentence says what the desk does instead. */
+   Copy follows the company profile (`Company_Profile/`): no rates, no transit
+   hours, no fleet counts. Where a lane is named it is a hub from
+   `src/content/hubs.ts`, and where a number would belong the sentence says what
+   the desk does instead. */
 
 export const services: Service[] = [
   {
-    slug: "full-truckload",
-    name: "Full truckload (FTL)",
-    summary: "A dedicated vehicle for the whole load, booked door to door.",
+    slug: "express-parcel",
+    name: "Express parcel",
+    summary: "Documents, e-commerce orders and business shipments, collected from your door.",
+    headline: "Every parcel. Right place. Right time.",
     body: [
-      "A full load means the vehicle is yours from the moment it is sealed: nothing is consolidated with another consignment, nothing waits for a second booking to fill the body, and the route is whatever the delivery needs.",
-      "The vehicle is assigned after the load is measured, not before it is quoted. If your bales fill a 19 footer with room to spare, you are not paying for a 32. Tell us the weight, the number of bales or rolls and the pickup point, and the desk comes back with a rate for that load alone.",
+      "Express parcel delivers your documents, e-commerce orders and business shipments safely, on time and with complete reliability. Whether you dispatch daily customer orders, send important documents or manage bulk parcel movement, the focus is simple: handle every shipment with care and make the delivery process easier for you.",
+      "Each consignment is managed according to its route, destination and service requirements, so a nearby city and a regional run are planned as what they are.",
     ],
     bullets: [
-      "One vehicle, one consignee, one booking",
-      "Loading and unloading windows agreed before the vehicle is assigned",
-      "LR and weighbridge slip issued at pickup",
-      "Driver contact with the despatch desk for the length of the trip",
-      "Proof of delivery returned once the consignee signs",
-      "We work from your invoice and e-way bill details, checked before the vehicle leaves",
+      "Doorstep pickup from your office, warehouse, store or fulfilment centre",
+      "Planned intercity and regional delivery",
+      "Tracking support to follow parcel movement and delivery status",
+      "B2B consignments to business locations, distributors and retail partners",
+      "B2C and e-commerce orders direct to the customer",
+      "Flexible support for bulk parcel requirements",
     ],
     bestFor: [
-      "Mill loads and job work that fill a vehicle",
-      "Bales and rolls straight to a wholesale market",
-      "A delivery with a time on it, for one consignee",
-      "Machinery and oversize on open-body vehicles",
-      "Any hub on the map, city to city",
+      "Important documents",
+      "E-commerce orders dispatched every day",
+      "Parcels to distributors and retail partners",
+      "Several shipments planned and moved together",
+      "Online businesses, retailers, manufacturers and distributors",
+    ],
+    vehicles: [],
+    sections: [
+      {
+        title: "Doorstep pickup for business shipments",
+        body: [
+          "You do not need to take your shipments to a drop-off point. Prepare parcels at your office, warehouse, store or fulfilment centre while the pickup coordination team supports the collection process.",
+          "This helps businesses manage regular dispatches, reduce operational effort and process customer orders more quickly.",
+        ],
+      },
+      {
+        title: "Shipment tracking for better visibility",
+        body: [
+          "Once a shipment is dispatched, tracking support helps you monitor parcel movement and understand its delivery status.",
+          "That makes it easier to respond to customer enquiries, keep internal teams informed and improve shipment planning.",
+        ],
+      },
+    ],
+    showLanes: true,
+    questions: [
+      {
+        question: "Do I have to bring parcels to a drop-off point?",
+        answer:
+          "No. Pickup is from your business location, whether that is an office, warehouse, store or fulfilment centre.",
+      },
+      {
+        question: "Can I send parcels in bulk?",
+        answer:
+          "Yes. Bulk parcel requirements are supported, so multiple shipments can be planned and managed together.",
+      },
+      {
+        question: "How do I follow a parcel after it leaves?",
+        answer:
+          "Use the Track page with your AWB, LR or tracking number. Tracking support shows the latest available status of the shipment.",
+      },
+    ],
+    signature: {
+      kind: "journey",
+      title: "From your door to theirs",
+      lede: "The four moments every express parcel goes through.",
+      stops: [
+        {
+          title: "Your door",
+          body: "Parcels are prepared at your office, warehouse, store or fulfilment centre.",
+        },
+        {
+          title: "Pickup",
+          body: "The pickup coordination team supports collection from your location.",
+        },
+        {
+          title: "In transit",
+          body: "Each consignment moves according to its route, destination and service requirement.",
+        },
+        {
+          title: "Delivered",
+          body: "Tracking support shows the delivery status, so enquiries are easy to answer.",
+        },
+      ],
+      segmentsLabel: "What are you sending?",
+      segments: [
+        {
+          id: "b2b",
+          label: "B2B",
+          title: "Business to business",
+          body: "Consignments move to business locations, distributors and retail partners.",
+        },
+        {
+          id: "b2c",
+          label: "B2C",
+          title: "Business to customer",
+          body: "E-commerce and direct-to-customer orders, delivered to the buyer.",
+        },
+        {
+          id: "bulk",
+          label: "Bulk",
+          title: "Bulk parcels",
+          body: "Flexible support for bulk requirements, so multiple shipments can be planned and managed together.",
+        },
+      ],
+    },
+  },
+  {
+    slug: "full-truckload",
+    name: "Full truckload",
+    summary: "A dedicated vehicle for large shipments, factory dispatches and planned movement.",
+    headline: "Your dedicated truck. Your planned movement.",
+    body: [
+      "For large shipments, factory dispatches and dedicated business movement, Full truckload provides dependable road-freight support. When your cargo requires an entire vehicle, you get a transport solution planned around your business needs.",
+      "From pickup to delivery, your shipment is moved with focused coordination, helping you manage larger volumes with greater efficiency and confidence.",
+    ],
+    bullets: [
+      "A dedicated vehicle planned for your cargo, route and delivery requirements",
+      "No space shared with unrelated consignments",
+      "Better control over loading, movement schedules and delivery planning",
+      "Road freight across cities, regions and major business routes",
+      "Regular contract arrangements for recurring movement",
+      "Structured planning for manufacturing and retail distribution",
+    ],
+    bestFor: [
+      "Large quantities of goods in one movement",
+      "Time-sensitive stock that needs direct coordination",
+      "Finished goods dispatched from a factory",
+      "Retail stock replenishment and distribution-centre transfers",
+      "Companies moving goods between fixed locations on a schedule",
     ],
     vehicles: ["19 ft mxl", "32 ft multi-axle", "Open-body lorry"],
+    sections: [
+      {
+        title: "Long-distance transport",
+        body: [
+          "Long-distance cargo movement requires careful planning, dependable coordination and clear communication. Full truckload supports road freight across cities, regions and major business routes.",
+          "By planning the vehicle, route and shipment schedule around your requirements, large consignments travel longer distances with greater ease — useful for organisations expanding into new markets, servicing multiple locations or managing regular intercity distribution.",
+        ],
+      },
+      {
+        title: "Regular contract logistics support",
+        body: [
+          "For businesses with recurring transport needs, regular Full truckload support can be part of a planned logistics arrangement. It suits companies that frequently move goods between fixed locations such as factories, warehouses, distributors, retail outlets or project sites.",
+          "A regular arrangement improves consistency, simplifies planning and gives better control over ongoing freight, so your team can focus less on arranging individual shipments.",
+        ],
+      },
+    ],
+    showLanes: true,
     questions: [
       {
-        question: "How do I get a rate for a full load?",
+        question: "What does a dedicated vehicle mean?",
         answer:
-          "Send the load, the pickup point and the delivery city — WhatsApp, phone or the quote form. The vehicle and the rate are confirmed before anything is booked, and the rate does not move after the truck leaves.",
+          "The truck is planned specifically for your cargo, route and delivery requirements, without sharing space with unrelated consignments.",
       },
       {
-        question: "Can you load at night, or around market hours?",
+        question: "Can I arrange regular truckloads?",
         answer:
-          "Tell us the window you need and the desk will say whether it works for that lane. Market days set the shape of most schedules out of Surat, and bookings are built around them rather than the other way round.",
+          "Yes. Recurring needs can be set up as a planned logistics arrangement between fixed locations such as factories, warehouses, distributors, retail outlets or project sites.",
       },
       {
-        question: "What paperwork do I keep ready?",
+        question: "Do you cover long distances?",
         answer:
-          "The invoice, and the e-way bill details where the consignment needs them. Our desk checks both at pickup so a vehicle is not held at a barrier for a piece of paper.",
+          "Yes. Road freight is supported across cities, regions and major business routes, with the vehicle, route and schedule planned around your requirements.",
       },
     ],
-    image: null,
+    signature: {
+      kind: "dedicated",
+      title: "One truck, one plan",
+      lede: "Switch between a shared body and a dedicated one.",
+      toggleLabel: "How is the vehicle used?",
+      dedicated: {
+        id: "dedicated",
+        label: "Dedicated",
+        title: "A truck planned for your cargo",
+        body: "The vehicle is planned specifically for your cargo, route and delivery requirements, without sharing space with unrelated consignments.",
+      },
+      shared: {
+        id: "shared",
+        label: "Shared",
+        title: "A body shared with other consignments",
+        body: "Space is divided among several unrelated consignments. Full truckload is the alternative when you need control over loading, movement schedules and delivery planning.",
+      },
+      figureCaption:
+        "An outline of a truck body. In the shared view it holds several consignments; in the dedicated view it holds only yours.",
+      flowTitle: "Manufacturing and retail distribution",
+      flow: [
+        {
+          title: "Factory dispatch",
+          body: "Finished goods leave the factory on a vehicle planned for them.",
+        },
+        {
+          title: "Warehouse and distribution centre",
+          body: "Inventory moves to a distribution centre to keep the supply chain active.",
+        },
+        {
+          title: "Distributors and partners",
+          body: "Products are supplied to business partners where they are needed.",
+        },
+        {
+          title: "Retail stock",
+          body: "Retail stock is replenished so products stay available in stores.",
+        },
+      ],
+    },
   },
   {
-    slug: "part-load",
-    name: "Part load (PTL)",
-    summary: "Space on a vehicle that is already going, priced for the space you take.",
+    slug: "local-on-demand",
+    name: "Local on-demand delivery",
+    summary: "Quick point-to-point delivery of urgent documents, parcels, inventory and supplies.",
+    headline: "Fast delivery across the city, whenever you need it.",
     body: [
-      "Most dispatch from this city does not need a whole truck. Part load puts your cartons, bales or rolls onto a vehicle that is travelling anyway, and charges you for the fraction of the body your load occupies.",
-      "It waits for the vehicle to fill, so it is not the fastest option on the lane. It is usually the sensible one. Loads are put together at the Surat end and broken down at the destination hub, which is where the cross-dock service earns its keep.",
+      "Local on-demand delivery is quick, point-to-point support for urgent documents, parcels, inventory and business supplies. When a shipment needs to move within the city without delay, you can arrange dependable transport at the right time.",
+      "Send an important document to a client, move stock between stores, deliver a customer order or arrange urgent business supplies — local movement made simpler, faster and easier to manage.",
     ],
     bullets: [
-      "Charged by the space occupied, not by a whole vehicle",
-      "Consolidated and broken down by our own desk, not a terminal",
-      "One LR per consignment, so your paperwork stays separate",
-      "Cut-off agreed at booking so the load makes the vehicle it was priced on",
-      "Delivered by the same last-mile fleet as a full load",
+      "Same-day pickup and delivery for eligible intra-city requirements",
+      "Pickup coordinated from your office, warehouse, store or business location",
+      "Shipments moved directly towards the destination",
+      "Vehicle chosen by shipment size, weight and movement requirement",
+      "Both scheduled and urgent requests supported",
+      "Recurring local movement planned around your business",
     ],
     bestFor: [
-      "Cartons and parcels short of a full vehicle",
-      "Replenishment to a distributor point",
-      "Samples and small batches between markets",
-      "Stock that can wait a day to move cheaper",
-      "Several consignees on one lane",
+      "A document that must reach a client today",
+      "Stock moving between stores",
+      "A customer order that cannot wait",
+      "Urgent business supplies",
+      "Stores, offices, warehouses and service teams with repeat needs",
     ],
-    vehicles: ["12 ft pickup", "17 ft container", "19 ft mxl"],
+    vehicles: ["Two-wheeler", "12 ft pickup", "Three-wheeler load carrier"],
+    sections: [
+      {
+        title: "Same-day local pickup and delivery",
+        body: [
+          "A delayed document, parcel or stock transfer can affect customer service, operations and business commitments. Same-day pickup and delivery is available for eligible intra-city requirements.",
+          "Once your shipment is ready, pickup is coordinated from your location and the shipment moves directly towards its destination.",
+        ],
+      },
+      {
+        title: "Support for repeat requirements",
+        body: [
+          "Businesses that regularly move documents, parcels, inventory or supplies within the city need a partner they can depend on repeatedly. Recurring local movement is supported for stores, offices, warehouses, distributors, service teams and other business locations.",
+          "Whether you need local delivery every day, several times a week or at specific intervals, a practical movement plan can be built around your business.",
+        ],
+      },
+    ],
+    showLanes: false,
     questions: [
       {
-        question: "How is my share of the vehicle measured?",
+        question: "Is same-day delivery available?",
         answer:
-          "By the space the load takes once it is packed — feet of body, or the number of bales, whichever the lane is priced on. The measurement is taken at the godown and written on the same sheet you are quoted from.",
+          "Same-day pickup and delivery is supported for eligible intra-city requirements. Tell the desk what is moving and where, and they will confirm what is available.",
       },
       {
-        question: "Will my load be delayed while the vehicle fills?",
+        question: "What vehicle will my shipment need?",
         answer:
-          "That is the trade a part load makes. The desk tells you at booking which vehicle your load is going on, so you know the departure before you commit the stock.",
+          "That depends on its size, weight and movement requirement. A document or small parcel may need a two-wheeler; cartons, inventory or business supplies may need a larger vehicle.",
       },
       {
-        question: "Can two of my consignees share one part load?",
+        question: "Can I set up deliveries that repeat?",
         answer:
-          "Yes. Each consignee gets its own LR and its own proof of delivery, on one booking.",
+          "Yes. Local delivery can be arranged every day, several times a week or at specific intervals, with a movement plan suited to your business.",
       },
     ],
-    image: null,
+    signature: {
+      kind: "selector",
+      title: "What are you sending?",
+      lede: "Pick the load and see the kind of vehicle it calls for.",
+      questionLabel: "I am sending",
+      vehicleLabel: "Vehicle",
+      options: [
+        {
+          id: "document",
+          label: "A document",
+          title: "A document",
+          body: "A small document is typically a two-wheeler job.",
+          vehicle: "Two-wheeler",
+        },
+        {
+          id: "parcel",
+          label: "A parcel",
+          title: "A small parcel",
+          body: "A small parcel is typically a two-wheeler job.",
+          vehicle: "Two-wheeler",
+        },
+        {
+          id: "cartons",
+          label: "Cartons",
+          title: "Cartons",
+          body: "Cartons usually need a larger vehicle than a two-wheeler.",
+          vehicle: "A larger vehicle",
+        },
+        {
+          id: "inventory",
+          label: "Inventory or supplies",
+          title: "Inventory or business supplies",
+          body: "Inventory and business supplies usually need a larger vehicle, chosen by weight and volume.",
+          vehicle: "A larger vehicle",
+        },
+      ],
+      modesLabel: "When does it have to move?",
+      modes: [
+        {
+          id: "scheduled",
+          label: "Scheduled",
+          title: "Planned in advance",
+          body: "Plan pickups and drop-offs around your daily operations.",
+        },
+        {
+          id: "urgent",
+          label: "Urgent",
+          title: "Needed now",
+          body: "When time is critical, faster movement is coordinated for you.",
+        },
+      ],
+    },
   },
   {
-    slug: "textile-parcel-bale-dispatch",
-    name: "Textile parcel & bale dispatch",
-    summary: "Bales, rolls and parcels to the markets, counted at both ends.",
+    slug: "warehousing-fulfilment",
+    name: "Warehousing & fulfilment",
+    summary: "Store, organise and fulfil your products with one trusted partner.",
+    headline: "From storage to delivery, with one trusted partner.",
     body: [
-      "This is the freight Surat is known for, and it is handled differently from a carton. Bales are counted and weighed at the godown, rolls are laid or stood according to the fabric, and a parcel list travels with every vehicle so the receiving market can check it against the LR before anything is signed for.",
-      "Market days set the pace. Say which market the load is going into — Meerut, Bareilly, Lucknow, Delhi NCR — and the booking is built around that day rather than around ours.",
+      "Warehousing & fulfilment helps businesses store, organise and fulfil their products efficiently, so you can focus on growing your business while the movement behind it is supported.",
+      "Whether you are an e-commerce seller, retailer, distributor or manufacturer, effective warehousing and fulfilment can simplify your operations: manage inventory, process orders and dispatch products with greater control and convenience.",
     ],
     bullets: [
-      "Bale, roll and parcel counts recorded at pickup",
-      "Parcel list travels with the LR",
-      "Covered and tarped loading on request",
-      "Delivered to the market gate or the consignee's godown",
-      "Shortages and damage noted on the same sheet, at the door, not afterwards",
-      "Return loading picked up on the same vehicle where the lane allows",
+      "Secure storage for products of different sizes and volumes",
+      "Incoming products organised and stock movement recorded",
+      "Orders picked, prepared and packed for safe dispatch",
+      "Prepared orders moved from the warehouse into the delivery network",
+      "Returned products received, managed and actioned systematically",
+      "Support that adapts to changing stock levels and order volumes",
     ],
     bestFor: [
-      "Mill and job-work loads between textile markets",
-      "Piece-goods parcels to wholesalers",
-      "Rolls and grey fabric on covered vehicles",
-      "Return empty bales and tubes coming back to Surat",
-      "Consignments timed to a market day",
+      "E-commerce sellers handling daily orders",
+      "Retailers who want stock held away from the store",
+      "Distributors managing inventory and replenishment",
+      "Manufacturers who prefer not to store stock at the production site",
+      "Businesses whose order volumes are growing",
     ],
-    vehicles: ["12 ft pickup", "17 ft container", "19 ft mxl", "32 ft multi-axle"],
-    questions: [
-      {
-        question: "Do you count the bales, or do I?",
-        answer:
-          "Both, on the same sheet. The count taken at pickup and the count taken at delivery are written against the LR number, which is how a shortage gets settled in a phone call instead of an argument.",
-      },
-      {
-        question: "Can you handle a load that is not ready when the vehicle is?",
-        answer:
-          "Yes — put it on the cross-dock service. The load is held against the booking and goes on the next vehicle out on that lane, with one reference running through both.",
-      },
-      {
-        question: "Which markets do you deliver into?",
-        answer:
-          "Wherever the network reaches. The map on this page is the honest list: every hub we run to is on it, and a delivery outside those goes to the desk as a question rather than a promise.",
-      },
-    ],
-    image: null,
-  },
-  {
-    slug: "warehousing-cross-dock",
-    name: "Warehousing & cross-dock",
-    summary: "Storage between trips and transfer between vehicles, without a second booking.",
-    body: [
-      "Goods that arrive before their onward vehicle, or after a market has closed, should sit somewhere dry rather than on a roadside. Storage is held against the booking the stock will travel on, so nothing ages on the floor waiting to be noticed.",
-      "Cross-dock is the same thing done in hours: the load comes off one vehicle and goes onto another, with the count checked in between. No new consignment number, no second set of paperwork, no gap in the LR trail.",
-    ],
-    bullets: [
-      "Inward and outward counts logged against the same reference",
-      "Held against a booking, so stock moves on the vehicle it was priced for",
-      "Transfer between vehicles without a new consignment number",
-      "Market-day timing absorbed on our side of the move",
-      "Covered, lockable storage — no open-yard holding",
-      "Consolidation and de-consolidation by the desk that took the booking",
-    ],
-    bestFor: [
-      "Stock waiting on a market day",
-      "Several small dispatches assembled into one vehicle",
-      "One inbound load split across many consignees",
-      "Buyers collecting from several suppliers in one trip",
-      "Goods that arrive before their godown can receive them",
-    ],
-    /* No vehicles: this service is the floor, not the road. The detail page
-       drops the block and closes the numbering over it. */
     vehicles: [],
+    sections: [
+      {
+        title: "Inventory handling and stock visibility",
+        body: [
+          "Managing stock accurately is essential for smooth business operations. The team helps organise incoming products, maintain stock movement records and keep inventory ready for order fulfilment.",
+          "Better stock visibility shows what is available, what needs replenishment and what is moving faster — supporting better planning and more informed decisions.",
+        ],
+      },
+      {
+        title: "A flexible fulfilment partner for growth",
+        body: [
+          "As your business grows, your warehousing and order-processing needs can change quickly. Flexible support adapts to changing stock levels, order volumes and delivery requirements.",
+          "By bringing storage, inventory handling, packing and dispatch together, the fulfilment journey stays smoother — giving you more time and confidence to focus on customers, products and growth.",
+        ],
+      },
+    ],
+    showLanes: false,
     questions: [
       {
-        question: "How long can you hold a consignment?",
+        question: "What does fulfilment include?",
         answer:
-          "As long as the booking needs. Say at the enquiry whether the hold is a day or a month — storage is quoted with the movement, so it does not arrive later as a separate bill.",
+          "Storage, inventory handling, order processing and packing, and dispatch into the delivery network — brought together so the fulfilment journey is smoother.",
       },
       {
-        question: "Is cross-dock the same as storage?",
+        question: "How are returns handled?",
         answer:
-          "No. Cross-dock is a transfer on the same day: one vehicle off, another on, counted in between. Storage is a hold against a booking. Most Surat dispatch uses one or the other, rarely both.",
+          "Returned products are received, managed systematically and given the next appropriate action, which keeps the post-delivery process organised and your inventory under control.",
       },
       {
-        question: "Do you pack or repack?",
+        question: "What if my order volumes change?",
         answer:
-          "We re-cover and re-tie a load that has come apart in transit and note it on the sheet. Repacking a consignment properly is a separate job — ask the desk rather than assuming it.",
+          "Support is flexible and can adapt to changing stock levels, order volumes and delivery requirements as your business grows.",
       },
     ],
-    image: null,
-  },
-  {
-    slug: "last-mile-delivery",
-    name: "Last-mile delivery",
-    summary: "From the destination hub to the door, with proof of delivery returned.",
-    body: [
-      "A load that reaches the city but not the shop has not arrived. Last-mile runs are planned against the receiving hours on the other end: a consignee's gate, a market godown, a distributor bay or a home address, each with its own window.",
-      "Every stop produces a signature or a photograph of where the goods were left, and an exception is raised at the desk the moment it happens — a refused delivery is a phone call while the vehicle is still outside, not a line on a report next week.",
-    ],
-    bullets: [
-      "Delivery slot agreed with the consignee before the vehicle loads",
-      "Smaller vehicles for lanes a truck cannot enter",
-      "Signature or photograph at the door on every stop",
-      "Exceptions raised at the desk during the run, not after it",
-      "Runs carry the same LR reference as the linehaul",
-      "Multi-drop routes built by locality, so one vehicle covers a market",
-    ],
-    bestFor: [
-      "Shop and counter deliveries in the destination city",
-      "Narrow market lanes a truck cannot turn into",
-      "Multi-drop runs across one locality",
-      "Home delivery for parcels and cash-on-delivery",
-      "Returns collected on the same vehicle",
-    ],
-    vehicles: ["12 ft pickup", "Three-wheeler load carrier"],
-    questions: [
-      {
-        question: "Do you deliver inside the walled markets?",
-        answer:
-          "Yes, on the small vehicles. A full-size container stops at the godown and the load goes in on a pickup or a load carrier — which is priced into the delivery, not added at the gate.",
-      },
-      {
-        question: "What counts as proof of delivery?",
-        answer:
-          "The consignee's signature against the LR number. Where nobody will sign — an open stall, a locked gate — the vehicle sends a photograph of where the goods were left, and the desk calls you.",
-      },
-      {
-        question: "Can you hold a delivery until a buyer is in town?",
-        answer:
-          "Hold it at the destination hub against the booking and release it when you say. That is the cross-dock service doing the waiting, and it keeps one reference across both legs.",
-      },
-    ],
-    image: null,
+    signature: {
+      kind: "loop",
+      title: "The fulfilment loop",
+      lede: "From the shelf to the customer — and back, when a return comes in.",
+      stages: [
+        { title: "Storage", body: "Products are held in secure, organised storage." },
+        { title: "Inventory", body: "Stock is recorded and kept ready for orders." },
+        { title: "Pick & pack", body: "Orders are picked, prepared and packed for safe dispatch." },
+        { title: "Dispatch", body: "Prepared orders move into the delivery network." },
+      ],
+      returnLabel: "Returns come back into stock",
+      capabilitiesTitle: "What the warehouse does",
+      capabilities: [
+        {
+          title: "Secure storage space",
+          body: "Your inventory has a safe, organised place to be stored, so goods stay arranged, accessible and ready for fulfilment — and you carry less at your own office, store or production site.",
+        },
+        {
+          title: "Inventory handling and stock visibility",
+          body: "Incoming products are organised, stock movement is recorded and inventory is kept ready for orders.",
+        },
+        {
+          title: "Order processing and packing",
+          body: "Once an order is received, the required products are picked, prepared and packed with appropriate packaging.",
+        },
+        {
+          title: "Dispatch and returns support",
+          body: "Prepared orders enter the delivery network, and returned products are received and managed systematically.",
+        },
+      ],
+    },
   },
 ];
 
 /* ——— Index page (/services) ——— */
 export const servicesIndex = {
   eyebrow: "Services",
-  title: "What we move out of Surat.",
-  lede: "Five services, one desk. Loads leave the city on the same vehicles and the same paperwork whichever of them you book — the difference is how much of a vehicle you are paying for, and who is holding the list.",
+  title: "What we move across India.",
+  lede: "Four services, one desk. Whichever you book, the same team coordinates pickup, movement and delivery — the difference is the shape of the shipment: a parcel, a whole vehicle, a run across the city, or stock on a shelf.",
   /** Derived from the catalogue, so it cannot disagree with it. */
   countLine: (count: number, hubCount: number): string =>
     `${count} services · ${hubCount} hubs on the map`,
@@ -252,6 +443,9 @@ export const serviceDetail = {
   /** Small-caps line above the H1; the page appends the catalogue position. */
   eyebrow: "Service",
   includedTitle: "What's included",
+  detailTitle: "In detail",
+  /** Small-caps label on the signature block above the numbered sections. */
+  signatureEyebrow: "At a glance",
   bestForTitle: "What it fits",
   vehiclesTitle: "Vehicles on this service",
   lanesTitle: "Lanes from Surat",
@@ -277,12 +471,4 @@ export const serviceDetail = {
 
 export function findService(slug: string): Service | undefined {
   return services.find((service) => service.slug === slug);
-}
-
-/** Manifest key for a service photo. `Service.image` points anywhere in the
-   manifest; the default follows the `assets/originals/<group>/<name>` rule, so
-   dropping `services/full-truckload.png` in lights up the tile and the index
-   preview without a code change. */
-export function serviceImageKey(service: Service): string {
-  return service.image ?? `services/${service.slug}`;
 }

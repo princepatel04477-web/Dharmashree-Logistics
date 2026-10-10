@@ -1,7 +1,8 @@
-import { formatPhoneIN } from "@/lib/format";
+import { formatNumberIN, formatPhoneIN } from "@/lib/format";
 import { company } from "./company";
 import { HUBS, ORIGIN } from "./hubs";
 import { services } from "./services";
+import { track } from "./track";
 
 /* Site chrome copy and link data (Prompt 04). Every string here is either a
    label for a route or derived from a fact in `company.ts` — no invented
@@ -14,7 +15,7 @@ export interface NavItem {
 }
 
 /** `route` → next/link · the rest are plain `<a>` (house rule 10). */
-export type FooterLinkKind = "route" | "phone" | "email" | "whatsapp";
+export type FooterLinkKind = "route" | "phone" | "email" | "whatsapp" | "website";
 
 export interface FooterLink {
   readonly label: string;
@@ -35,15 +36,24 @@ export interface FooterColumn {
   readonly lines: readonly FooterLine[];
 }
 
-/* ——— Wordmark ———
-   Split from company.name so the header never carries a second spelling of the
-   firm: the face renders as display text, the remainder as the small-caps
-   lockup (Maa Sheetla's `.logo` + `.logo small`). */
-const nameParts = company.name.split(" ");
+/* ——— Logo ———
+   The supplied logo (`assets/brand/`, built into `public/brand/` by
+   `npm run brand`). The dimensions are the trimmed file's own, so the header can
+   reserve its box before the image loads. */
+export const logo = {
+  src: "/brand/dharmashree-logo.png",
+  width: 420,
+  height: 98,
+};
 
-export const wordmark = {
-  primary: nameParts[0] ?? company.name,
-  secondary: nameParts.slice(1).join(" "),
+/* The footer wordmark (`assets/brand/dharmashree-footer-logo-source.png`, built
+   by `npm run brand`). Only the footer uses it, and always the white `light`
+   file, because the footer sits on `--brand-deep`. */
+export const footerLogo = {
+  src: "/brand/dharmashree-footer-logo.png",
+  lightSrc: "/brand/dharmashree-footer-logo-light.png",
+  width: 2400,
+  height: 210,
 };
 
 /* ——— Primary navigation (desktop centre cluster, ≥1024px) ——— */
@@ -51,17 +61,72 @@ export const primaryNav: readonly NavItem[] = [
   { href: "/services", label: "Services" },
   { href: "/network", label: "Network" },
   { href: "/track", label: "Track" },
+  { href: "/attach-truck", label: "Attach truck" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+];
+
+/** Pages the primary bar has no room for. The mobile menu lists them under the
+    main links; the footer carries them in its own columns. */
+export const secondaryNav: readonly NavItem[] = [
+  { href: "/support", label: "Support & FAQ" },
+  { href: "/partners", label: "Delivery partners" },
 ];
 
 /* ——— The one filled CTA on every page ——— */
 export const quoteCta = {
   href: "/quote",
-  label: "Request a quote",
+  label: "Enquire now",
   /** Narrow-viewport label — same intent, fits 360px next to the hamburger. */
-  compactLabel: "Quote",
+  compactLabel: "Enquire",
 };
+
+/* ——— Portal sign-ins (header on lg+, mobile sheet below) ———
+   Outline buttons beside the filled "Enquire now" (house rule 6). The labels are
+   the ones /track already uses, so the same portal has one name everywhere; a
+   `null` portal URL drops its button (house rule 4). The portals live on another
+   host, so they open in a new tab. `compactLabel` is the shorter wording the
+   header uses between 1024px and 1279px, where the full labels would not fit. */
+export interface PortalLink {
+  readonly id: "customer" | "consignee";
+  readonly label: string;
+  readonly compactLabel: string;
+  readonly href: string;
+}
+
+export interface PortalNav {
+  readonly links: readonly PortalLink[];
+  /** Read after each label by screen readers: the link leaves this site. */
+  readonly newTabHint: string;
+  readonly ariaLabel: string;
+}
+
+function buildPortalNav(): PortalNav {
+  const links: PortalLink[] = [];
+  if (company.portals.customer !== null) {
+    links.push({
+      id: "customer",
+      label: track.portals.customerLabel,
+      compactLabel: "Customer login",
+      href: company.portals.customer,
+    });
+  }
+  if (company.portals.consignee !== null) {
+    links.push({
+      id: "consignee",
+      label: track.portals.consigneeLabel,
+      compactLabel: track.portals.consigneeLabel,
+      href: company.portals.consignee,
+    });
+  }
+  return {
+    links,
+    newTabHint: track.portals.newTabHint,
+    ariaLabel: "Portal sign-in",
+  };
+}
+
+export const portalNav: PortalNav = buildPortalNav();
 
 export const skipLink = {
   href: "#main",
@@ -96,6 +161,22 @@ export function whatsappLink(message: string = whatsapp.defaultMessage): string 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+/* ——— Website ———
+   Shown as the bare domain ("dharmashreegroup.in"), linked to the full URL.
+   `null` when the fact is `null`. */
+export function websiteDomain(): string | null {
+  if (company.website === null) return null;
+  const domain = company.website.replace(/^https?:\/\//i, "").replace(/\/+$/, "");
+  return domain === "" ? null : domain;
+}
+
+/* ——— Giving ———
+   The percentage is deliberately not tied to a base ("profits", "revenue"): the
+   source fact only says what share of earnings is set aside. `null` hides it. */
+function givingPercentText(): string | null {
+  return company.givingPercent === null ? null : `${formatNumberIN(company.givingPercent)}%`;
+}
+
 /* ——— Contact rows shared by the mobile menu and the footer ——— */
 export function contactLinks(): FooterLink[] {
   const links: FooterLink[] = [];
@@ -113,6 +194,10 @@ export function contactLinks(): FooterLink[] {
   if (wa !== null) {
     links.push({ label: whatsapp.label, href: wa, kind: "whatsapp" });
   }
+  const domain = websiteDomain();
+  if (company.website !== null && domain !== null) {
+    links.push({ label: domain, href: company.website, kind: "website" });
+  }
   return links;
 }
 
@@ -120,9 +205,15 @@ export function contactLinks(): FooterLink[] {
    optional Maps link wraps the whole address instead of just its first row. */
 export function contactLines(): FooterLine[] {
   const lines: FooterLine[] = [];
-  const address = company.headquarters.addressLines ?? [];
+  /* The contact address first; the headquarters' own lines only when no
+     contact address is set. */
+  const contact = company.contactAddress;
+  const address = contact?.lines ?? company.headquarters.addressLines ?? [];
   if (address.length > 0) {
-    lines.push({ text: address.join(", "), href: company.headquarters.mapsUrl });
+    lines.push({
+      text: address.join(", "),
+      href: contact === null ? company.headquarters.mapsUrl : contact.mapsUrl,
+    });
   }
   if (company.gstin !== null) {
     lines.push({ text: `GSTIN ${company.gstin}`, href: null });
@@ -140,7 +231,13 @@ function footerColumns(): FooterColumn[] {
     {
       id: "company",
       title: "Company",
-      links: [route("/about", "About"), route("/network", "Network"), route("/contact", "Contact")],
+      links: [
+        route("/about", "About"),
+        route("/network", "Network"),
+        route("/partners", "Delivery partners"),
+        route("/attach-truck", "Attach your truck"),
+        route("/contact", "Contact"),
+      ],
       lines: [],
     },
     {
@@ -154,7 +251,7 @@ function footerColumns(): FooterColumn[] {
       title: "Help",
       links: [
         route("/track", "Track"),
-        route("/contact#faq", "FAQ"),
+        route("/support", "Support & FAQ"),
         route("/privacy", "Privacy"),
         route("/terms", "Terms"),
       ],
@@ -172,16 +269,68 @@ function footerColumns(): FooterColumn[] {
   return columns.filter((column) => column.links.length > 0 || column.lines.length > 0);
 }
 
-export const credit = {
-  prefix: "Site by",
-  name: company.credit.name,
-  url: company.credit.url,
-};
+/* ——— Utility bar (lg+, above the header) ———
+   Contact facts on the left, the giving line on the right. The portal sign-ins
+   moved into the header itself (`portalNav`). Every item is dropped when its
+   fact is `null` (house rule 4). */
+export interface UtilityLink {
+  readonly id: string;
+  readonly label: string;
+  readonly href: string;
+  readonly kind: "email" | "phone";
+}
+
+export interface UtilityBar {
+  readonly contact: readonly UtilityLink[];
+  /** Plain text, not a link. `null` when `company.givingPercent` is `null`. */
+  readonly giving: string | null;
+  readonly ariaLabel: string;
+}
+
+function buildUtilityBar(): UtilityBar {
+  const contact: UtilityLink[] = [];
+  if (company.email !== null) {
+    contact.push({
+      id: "email",
+      label: company.email,
+      href: `mailto:${company.email}`,
+      kind: "email",
+    });
+  }
+  if (company.phone !== null) {
+    contact.push({
+      id: "phone",
+      label: formatPhoneIN(company.phone),
+      href: `tel:${company.phone}`,
+      kind: "phone",
+    });
+  }
+  const percent = givingPercentText();
+  return {
+    contact,
+    giving: percent === null ? null : `${percent} of our earnings are set aside for good causes`,
+    ariaLabel: "Contact details",
+  };
+}
+
+export const utilityBar: UtilityBar = buildUtilityBar();
+export const hasUtilityBar: boolean = utilityBar.contact.length > 0 || utilityBar.giving !== null;
+
+/** Used when `company.tagline` is `null`. Brand-level: no city, no numbers. */
+const FALLBACK_SLOGAN = "Freight you can trust, across India.";
+
+function buildGiving(): string | null {
+  const percent = givingPercentText();
+  return percent === null
+    ? null
+    : `${company.name} sets aside ${percent} of its earnings for good causes.`;
+}
 
 export const footer = {
-  /** The single display line in the top band — a fact, not a slogan. */
-  slogan: `Move it from ${company.headquarters.city}.`,
-  ctaLabel: quoteCta.label,
+  /** The single display line in the top band: the company's own tagline. */
+  slogan: company.tagline ?? FALLBACK_SLOGAN,
+  /** The giving statement; `null` when the fact is `null`. */
+  giving: buildGiving(),
   columns: footerColumns(),
   /** Decorative band; the real, keyboard-reachable list lives on /network. */
   hubBand: [ORIGIN.name, ...HUBS.map((hub) => hub.name)],

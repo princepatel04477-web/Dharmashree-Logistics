@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { HUBS } from "@/content/hubs";
+import { quote } from "@/content/quote";
 import { findService } from "@/content/services";
 import { EMPTY_QUOTE, type QuotePayload } from "@/lib/quote";
 import { readQuoteDraft, type QuoteDraft } from "@/lib/quote-draft";
@@ -32,27 +33,53 @@ function emptyEntry(): QuoteEntry {
   return { values: { ...EMPTY_QUOTE }, consent: false, step: 1 };
 }
 
+/** Longest lane text the query may write into From / To. */
+const MAX_LANE_TEXT = 60;
+
+function laneText(raw: string): string {
+  return raw.trim().slice(0, MAX_LANE_TEXT);
+}
+
 /** The draft, with the query applied on top. Pure, and exported for
     `scripts/verify-quote.tsx`: `?service=` takes a slug from `services.ts` and
-    resolves it to the service *name* the sheet stores, `?to=` takes a hub id and
-    resolves it to the hub's name. Anything unrecognised is ignored rather than
-    written into the form. */
+    resolves it to the service *name* the sheet stores; `?intent=pickup` seeds
+    the notes. `?from=` and `?to=` are the lane typed into the home page's quote
+    tab: `to` resolves a hub id or hub name to the hub's name and otherwise keeps
+    the text as typed, because a city that is not on the map is a question for
+    the desk (the form's own "To" field accepts it too); `from` is free text.
+    An unknown service slug or intent is ignored rather than written into the
+    form. */
 export function resolveQuoteEntry(draft: QuoteDraft | null, search: string): QuoteEntry {
   const entry: QuoteEntry = draft ?? emptyEntry();
 
   const params = new URLSearchParams(search);
   const serviceSlug = params.get("service");
-  const hubId = params.get("to");
-  if (serviceSlug === null && hubId === null) return entry;
+  const toParam = params.get("to");
+  const fromParam = params.get("from");
+  const intent = params.get("intent");
+  if (serviceSlug === null && toParam === null && fromParam === null && intent === null) {
+    return entry;
+  }
 
   const values: QuotePayload = { ...entry.values };
   if (serviceSlug !== null) {
     const service = findService(serviceSlug);
     if (service !== undefined) values.service = service.name;
   }
-  if (hubId !== null) {
-    const hub = HUBS.find((candidate) => candidate.id === hubId);
-    if (hub !== undefined) values.to = hub.name;
+  if (toParam !== null && laneText(toParam) !== "") {
+    const wanted = laneText(toParam).toLowerCase();
+    const hub =
+      HUBS.find((candidate) => candidate.id === wanted) ??
+      HUBS.find((candidate) => candidate.name.toLowerCase() === wanted);
+    values.to = hub !== undefined ? hub.name : laneText(toParam);
+  }
+  if (fromParam !== null && laneText(fromParam) !== "") {
+    values.from = laneText(fromParam);
+  }
+  /* `?intent=pickup` seeds the notes with what a pickup needs — only into an
+     empty field, so a draft the visitor already typed is never overwritten. */
+  if (intent === "pickup" && values.notes.trim() === "") {
+    values.notes = quote.intents.pickup.notes;
   }
   return { values, consent: entry.consent, step: entry.step };
 }

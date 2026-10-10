@@ -43,7 +43,7 @@ export function HeritageTimeline({ entries }: HeritageTimelineProps) {
                   <li key={highlight} className="flex items-start gap-2.5">
                     <CheckIcon
                       aria-hidden="true"
-                      className="text-signal mt-0.5 size-3.5 shrink-0"
+                      className="text-brand mt-0.5 size-3.5 shrink-0"
                     />
                     <span>{highlight}</span>
                   </li>

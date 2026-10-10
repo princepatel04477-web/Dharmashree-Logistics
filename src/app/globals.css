@@ -11,12 +11,15 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-line-strong: var(--line-strong);
-  --color-accent: var(--accent);
-  --color-accent-ink: var(--accent-ink);
-  --color-signal: var(--signal);
-  --color-gold-deep: var(--gold-deep);
-  --color-map-ground: var(--map-ground);
-  --color-map-land: var(--map-land);
+  --color-brand: var(--brand);
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-tint: var(--brand-tint);
+  --color-signal-red: var(--signal-red);
+  --color-highway: var(--highway);
+  --color-on-deep: var(--on-deep);
+  --color-on-deep-text: var(--on-deep-text);
+  --color-on-deep-line: var(--on-deep-line);
+  --color-on-deep-band: var(--on-deep-band);
 
   /* Type → utilities (font-display, text-display, leading-body, tracking-caps, …) */
   --font-display: var(--font-display);
@@ -43,15 +46,13 @@
   --radius-2xs: var(--radius-2xs);
   --radius-xs: var(--radius-xs);
   --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-sm);
+  --radius-md: var(--radius-md);
   --radius-lg: var(--radius-sm);
   --radius-xl: var(--radius-sm);
 
   /* Shadows → utilities (shadow-card, shadow-xs, …) */
   --shadow-2xs: var(--shadow-2xs);
   --shadow-xs: var(--shadow-xs);
-  --shadow-accent-glow: var(--shadow-accent-glow);
-  --shadow-signal-glow: var(--shadow-signal-glow);
   --shadow-card: var(--shadow-card);
   --shadow-card-lift: var(--shadow-card-lift);
 
@@ -103,10 +104,10 @@
   }
 
   /* shadcn theme → our tokens (shadcn is install-only; all colour comes
-     from tokens). NOTE: `accent` and `muted` utilities keep OUR meanings
-     (brand maroon / muted ink). When restyling vendored shadcn components,
-     replace shadcn's `bg-accent` → `bg-paper-3`, `text-accent-foreground` →
-     `text-ink`, and `bg-muted` → `bg-paper-3`. */
+     from tokens). NOTE: `muted` keeps OUR meaning (muted ink), and shadcn's
+     `accent` utilities do not exist here. When restyling vendored shadcn
+     components, replace shadcn's `bg-accent` → `bg-paper-3`,
+     `text-accent-foreground` → `text-ink`, and `bg-muted` → `bg-paper-3`. */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -138,20 +139,20 @@
   --card-foreground: var(--ink);
   --popover: var(--paper-2);
   --popover-foreground: var(--ink);
-  --primary: var(--accent);
+  --primary: var(--brand);
   --primary-foreground: var(--paper-2);
   --secondary: var(--paper-3);
   --secondary-foreground: var(--ink);
-  --destructive: var(--accent);
+  --destructive: var(--brand);
   --destructive-foreground: var(--paper-2);
   --border: var(--line);
   --input: var(--line-strong);
-  --ring: var(--accent);
-  --chart-1: var(--accent);
-  --chart-2: var(--signal);
-  --chart-3: var(--gold-deep);
+  --ring: var(--brand);
+  --chart-1: var(--brand);
+  --chart-2: var(--highway);
+  --chart-3: var(--brand-deep);
   --chart-4: var(--ink-2);
-  --chart-5: var(--accent-ink);
+  --chart-5: var(--brand-deep);
   --radius: var(--radius-sm);
 }
 
@@ -168,9 +169,9 @@
   /* Prompt 02 owns scroll (Lenis). Lenis and CSS smooth-scroll conflict, so
      the motion layer disables one of them when both are present. */
 
-  /* Anchor offset for the fixed header — Prompt 04 builds it at 64px, 72px
-     from `lg` up — plus 16px of breathing room. Keep in sync with
-     `src/components/chrome/Header.tsx`. */
+  /* Anchor offset for the fixed header — 64px, and from `lg` up the 32px
+     utility bar plus the 72px bar (104px) — plus 16px of breathing room. Keep
+     in sync with `src/components/chrome/Header.tsx` and `layout.tsx`. */
   :target,
   section[id],
   div[id] {
@@ -181,7 +182,7 @@
     :target,
     section[id],
     div[id] {
-      scroll-margin-top: 5.5rem;
+      scroll-margin-top: 7.5rem;
     }
   }
 
@@ -220,13 +221,13 @@
   }
 
   ::selection {
-    background-color: var(--accent);
+    background-color: var(--brand);
     color: var(--paper-2);
   }
 
-  /* House rule 11: visible focus ring. 8.43:1 on paper. */
+  /* House rule 11: visible focus ring, --brand 6.19:1 on paper. */
   :focus-visible {
-    outline: 2px solid var(--accent);
+    outline: 2px solid var(--brand);
     outline-offset: 3px;
   }
 
@@ -241,7 +242,7 @@
     border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--signal);
+    background: var(--brand);
   }
 
   /* Locks page scroll behind the mobile drawer (Prompt 04). `overflow: hidden`
@@ -269,6 +270,25 @@
 }
 
 @layer components {
+  /* Display headings: Archivo at weight 700 and 88% width, so they read like
+     highway signage. Utilities such as font-medium still override the weight. */
+  .font-display {
+    font-weight: 700;
+    font-stretch: 88%;
+  }
+
+  /* Primary navigation: the display face (Archivo) at a semibold, slightly
+     condensed cut, so the menu belongs to the headings rather than to the
+     mono labels. Colour comes from the link (--brand-deep, --brand when
+     hovered or current). */
+  .nav-link {
+    font-family: var(--font-display);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    font-stretch: 94%;
+    letter-spacing: 0.005em;
+  }
+
   /* Small-caps mono label in muted ink. */
   .label-caps {
     font-family: var(--font-mono);
@@ -278,14 +298,14 @@
     color: var(--muted);
   }
 
-  /* Numbered section label — Maa Sheetla's "Section 02" treatment.
-     Gold-deep (not marigold) so 10.5px text passes AA (5.03:1). */
+  /* Numbered section label ("01", "02", …) in --brand: 6.19:1 on paper,
+     5.45:1 on --brand-tint, so 10.5px text passes AA. */
   .section-index {
     font-family: var(--font-mono);
     font-size: var(--step--1);
     letter-spacing: var(--tracking-caps);
     text-transform: uppercase;
-    color: var(--gold-deep);
+    color: var(--brand);
   }
 
   /* Horizontal divider rule. */
@@ -376,40 +396,149 @@
     padding-right: env(safe-area-inset-right, 0px);
   }
 
-  /* Brand text sheen (khadi → gold → maroon). */
-  .shimmer-text {
-    background: linear-gradient(
-      110deg,
-      var(--ink) 15%,
-      var(--signal) 45%,
-      var(--accent) 55%,
-      var(--ink) 85%
-    );
-    background-size: 250% 100%;
-    color: transparent;
-    -webkit-background-clip: text;
-    background-clip: text;
-    animation: shimmer 4.5s linear infinite;
+  /* Network map. The stage owns the live viewBox as four custom properties
+     (--vb-x/y/w/h) plus the zoom factor --k; GSAP writes them on the region
+     zoom, so the SVG geography and the HTML pins/labels laid over it stay in
+     lockstep. SVG strokes divide by --k to keep a constant hairline weight
+     (no vector-effect: DrawSVG measures dashes in user units). Pins and labels
+     are HTML, so they hold their pixel size at any zoom. */
+  .map-stage {
+    --vb-x: 0;
+    --vb-y: 0;
+    --vb-w: 760;
+    --vb-h: 860;
+    --k: 1;
+    position: relative;
+    aspect-ratio: 760 / 860;
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
   }
 
-  /* Network map (Prompt 03): scales to container width. Hub focus uses the
-     accent scale-in ring as its indicator, so the default outline is off. */
-  .network-map-svg {
+  /* Zoomed in, the crop is a window onto a larger map: feather its edges
+     rather than cutting the country off with a hard rectangle. */
+  .map-stage[data-zoomed="true"] {
+    mask-image:
+      linear-gradient(to right, transparent, black 7%, black 93%, transparent),
+      linear-gradient(to bottom, transparent, black 6%, black 94%, transparent);
+    mask-composite: intersect;
+  }
+
+  .map-svg {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
   }
 
-  .network-map [data-hub]:focus {
-    outline: none;
+  .map-svg .map-nation {
+    stroke-width: calc(1.1px / var(--k));
+  }
+  .map-svg .map-state {
+    stroke-width: calc(0.7px / var(--k));
+    transition: fill 0.5s ease;
+  }
+  .map-svg .map-ghost {
+    stroke-width: calc(0.8px / var(--k));
+    transition: opacity 0.4s ease;
+  }
+  .map-svg .map-ghost[data-dim="true"] {
+    opacity: 0.12;
+  }
+  .map-svg .map-active {
+    stroke-width: calc(2px / var(--k));
+  }
+  .map-svg .map-tropic {
+    stroke-width: calc(0.8px / var(--k));
+    stroke-dasharray: calc(3px / var(--k)) calc(4px / var(--k));
   }
 
-  @media (max-width: 767px) {
-    .network-map-svg {
-      touch-action: pan-y;
+  /* Anything placed at a map coordinate: set --x/--y in viewBox units. */
+  .map-at {
+    position: absolute;
+    left: calc((var(--x) - var(--vb-x)) / var(--vb-w) * 100%);
+    top: calc((var(--y) - var(--vb-y)) / var(--vb-h) * 100%);
+  }
+
+  .map-pin {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: opacity 0.4s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .map-pin[data-dim="true"] {
+    opacity: 0.14;
+  }
+  /* Surat's pin: the same 22px footprint and the same dot as every hub, but
+     not a control, so no cursor and no pointer events. */
+  .map-origin {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin: -11px 0 0 -11px;
+    pointer-events: none;
+  }
+  .map-pin:focus-visible {
+    outline-offset: 1px;
+  }
+  @media (pointer: coarse) {
+    .map-pin {
+      width: 30px;
+      height: 30px;
+      margin: -15px 0 0 -15px;
     }
-    .network-map-svg .map-hit {
-      r: 22px;
-    }
+  }
+
+  .map-dot {
+    grid-area: 1 / 1;
+    display: block;
+    width: 5px;
+    height: 5px;
+    border-radius: 9999px;
+    background: var(--brand);
+    box-shadow: 0 0 0 2px var(--map-halo);
+  }
+  .map-dot[data-primary="true"] {
+    width: 7px;
+    height: 7px;
+  }
+
+  .map-ring {
+    grid-area: 1 / 1;
+    display: block;
+    width: 17px;
+    height: 17px;
+    border-radius: 9999px;
+    border: 1px solid var(--brand);
+    box-shadow: 0 0 0 1.5px var(--map-halo);
+    pointer-events: none;
+  }
+
+  .map-label {
+    position: absolute;
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    pointer-events: none;
+    text-shadow:
+      0 0 2px var(--map-halo),
+      0 0 4px var(--map-halo),
+      0 0 6px var(--map-halo);
+    transition: opacity 0.25s ease;
+  }
+  .map-label[data-show="false"] {
+    opacity: 0;
   }
 }

@@ -102,3 +102,35 @@ Curve math (uniform 18%-perpendicular north-bowing arcs replace per-node
 CSS/SMIL/Framer animation, state polygons are dropped (see above), and the
 ledger becomes the `HubDirectory` + side panel. Outline path, viewBox,
 projection, node ids/names/states/coords and region labels stay verbatim.
+
+## Map finish pass (2026-10-08)
+
+What changed after the Prompt 03 port, and why:
+
+- **Stray rectangle fixed.** The outline group was `<g class="outline">`,
+  which Tailwind reads as its `outline` utility and drew a box round the map.
+- **State layer restored, simplified.** `scripts/generate-states.mts` reads
+  Maa Sheetla's `INDIA_STATES` and writes `src/components/map/india-states.ts`
+  (Douglas–Peucker at 0.7 units: 236 KB → 55 KB of path data). States with a
+  hub are tinted `--map-land-served`; a filtered region's states go
+  `--map-land-focus`. `NATION_PATH` is still drawn verbatim on top.
+- **Two layers, one coordinate system.** Geography and corridors stay in the
+  SVG; pins, labels, Surat and the callout are HTML laid over it via
+  `--vb-x/y/w/h` on `.map-stage`. Pins are real `<button>`s that keep their
+  pixel size at any zoom, with one roving tab stop and arrow-key travel.
+- **Region zoom.** A region chip tweens the live viewBox (GSAP) to a box
+  around that region's hubs (`zoomBoxFor`), which is what makes the 51-hub UP
+  cluster readable. Strokes divide by `--k` to stay hairlines.
+- **Collision-free labels.** `placeLabels` places principal hubs first, then
+  (zoomed in) the rest, avoiding other labels, other dots and Surat's label.
+- **Hub data.** `generate-hubs.mts` now emits `primary` (source `isPrimary`,
+  21 hubs), `stateId`, and `distanceKm`: the great-circle distance from
+  Surat rounded to 10 km. It is always labelled "straight-line" in the UI. It
+  is geometry, not a road or transit figure.
+- **Panel.** Idle: city search + region breakdown. Selected: the corridor
+  card. Focus moves to it through a callback ref (it mounts after the exit
+  animation, so an effect saw a null ref and focus never moved).
+- **Directory.** It no longer uses `scrollIntoView`, which scrolled the whole
+  window to the directory on every map selection.
+- **`/network`** now exists: full map + the complete directory. The nav,
+  footer and home section already linked to it.

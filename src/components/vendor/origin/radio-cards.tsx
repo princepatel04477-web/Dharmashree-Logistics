@@ -72,9 +72,9 @@ export function RadioCards({
               className={cn(
                 "bg-paper-2 flex cursor-pointer items-start gap-3 rounded-xs border p-4 transition-colors duration-200",
                 isSelected
-                  ? "border-accent"
+                  ? "border-brand"
                   : isInvalid
-                    ? "border-accent/60"
+                    ? "border-brand/60"
                     : "border-line hover:border-line-strong",
                 isDisabled && "cursor-not-allowed opacity-50",
               )}
@@ -93,7 +93,7 @@ export function RadioCards({
         })}
       </RadioGroup>
       {isInvalid ? (
-        <p id={errorId} role="alert" className="text-accent font-mono text-[11px]">
+        <p id={errorId} role="alert" className="text-brand font-mono text-[11px]">
           {error}
         </p>
       ) : (

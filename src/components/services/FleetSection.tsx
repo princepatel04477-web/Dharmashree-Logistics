@@ -46,7 +46,7 @@ export function FleetSection({ vehicles, density = "index" }: FleetSectionProps)
                 </ImageCurtain>
               )}
               <div className="flex flex-col gap-2">
-                <h3 className="font-display text-ink text-step-2 tracking-display leading-snug font-light">
+                <h3 className="font-display text-ink text-step-2 tracking-display leading-snug">
                   {vehicle.name}
                 </h3>
                 {vehicle.note !== "" && (
