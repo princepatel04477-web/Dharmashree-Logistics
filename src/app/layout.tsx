@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/chrome/Footer";
 import { Header } from "@/components/chrome/Header";
 import { SkipLink } from "@/components/chrome/SkipLink";
+import { AnnouncementBar } from "@/components/chrome/AnnouncementBar";
 import { WhatsAppButton } from "@/components/chrome/WhatsAppButton";
 import { MapSelectionProvider } from "@/components/map/MapSelection";
 import { Toaster } from "@/components/vendor/lightswind";
@@ -61,12 +62,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Header />
             {/* Clear of the fixed header: 64px mobile; from `lg` up 72px plus the
                 32px utility bar when it shows. tabIndex={-1} is the skip
-                link's landing target. */}
+                link's landing target. The announcement strip, when the admin
+                panel has one on, is the first row of every page. */}
             <main
               id="main"
               tabIndex={-1}
               className={`flex flex-1 flex-col pt-16 ${hasUtilityBar ? "lg:pt-26" : "lg:pt-18"}`}
             >
+              <AnnouncementBar />
               {children}
             </main>
             <Footer />

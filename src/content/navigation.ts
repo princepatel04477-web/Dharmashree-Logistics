@@ -163,6 +163,18 @@ export function whatsappLink(message: string = whatsapp.defaultMessage): string 
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+/* ——— Announcement strip ———
+   The notice itself is written in the admin panel and read at runtime; this is
+   the strip's own copy. The short labels are for phones. */
+export const announcement = {
+  label: "Announcement",
+  badge: "New",
+  actions: [
+    { id: "track", href: "/track/", label: "Track shipment", short: "Track" },
+    { id: "quote", href: "/quote/", label: "Get a quote", short: "Quote" },
+  ],
+} as const;
+
 /* ——— Website ———
    Shown as the bare domain ("dharmashreegroup.in"), linked to the full URL.
    `null` when the fact is `null`. */
