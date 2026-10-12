@@ -32,6 +32,9 @@ export const contact = {
   office: company.contactAddress
     ? `${company.contactAddress.city}, ${company.contactAddress.state}`
     : `${company.headquarters.city}, ${company.headquarters.state}`,
+  corporateOfficeLabel: "Corporate office",
+  corporateOffice: `${company.headquarters.city}, ${company.headquarters.state}`,
+  registrationLabel: "Registration",
   branchesLabel: "Also dispatching from",
 
   messageIndex: "02",

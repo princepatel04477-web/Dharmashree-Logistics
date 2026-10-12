@@ -180,12 +180,10 @@ function givingPercentText(): string | null {
 /* ——— Contact rows shared by the mobile menu and the footer ——— */
 export function contactLinks(): FooterLink[] {
   const links: FooterLink[] = [];
-  if (company.phone !== null) {
-    links.push({
-      label: formatPhoneIN(company.phone),
-      href: `tel:${company.phone}`,
-      kind: "phone",
-    });
+  const phones =
+    company.phone === null ? company.otherPhones : [company.phone, ...company.otherPhones];
+  for (const phone of phones) {
+    links.push({ label: formatPhoneIN(phone), href: `tel:${phone}`, kind: "phone" });
   }
   if (company.email !== null) {
     links.push({ label: company.email, href: `mailto:${company.email}`, kind: "email" });
@@ -201,24 +199,54 @@ export function contactLinks(): FooterLink[] {
   return links;
 }
 
-/* The HQ address renders as one line (Maa Sheetla's footer treatment), so the
+/* Addresses render as one line each (Maa Sheetla's footer treatment), so the
    optional Maps link wraps the whole address instead of just its first row. */
-export function contactLines(): FooterLine[] {
-  const lines: FooterLine[] = [];
-  /* The contact address first; the headquarters' own lines only when no
-     contact address is set. */
+export const addressLabels = {
+  corporateOffice: "Corporate office",
+  contactAddress: "Desk",
+  llpin: "CIN/LLP",
+  transporterId: "Transporter ID",
+  gstin: "GSTIN",
+};
+
+/** The Surat corporate office as one line; `null` when no address lines are set. */
+export function corporateOfficeLine(): FooterLine | null {
+  const lines = company.headquarters.addressLines;
+  if (lines === null || lines.length === 0) return null;
+  return { text: lines.join(", "), href: company.headquarters.mapsUrl };
+}
+
+/** The contact (postal) address as one line; `null` when it is not set. */
+export function contactAddressLine(): FooterLine | null {
   const contact = company.contactAddress;
-  const address = contact?.lines ?? company.headquarters.addressLines ?? [];
-  if (address.length > 0) {
-    lines.push({
-      text: address.join(", "),
-      href: contact === null ? company.headquarters.mapsUrl : contact.mapsUrl,
-    });
+  if (contact === null || contact.lines.length === 0) return null;
+  return { text: contact.lines.join(", "), href: contact.mapsUrl };
+}
+
+/** Registration numbers, plain text, each dropped when its fact is `null`. */
+export function registrationLines(): FooterLine[] {
+  const lines: FooterLine[] = [];
+  if (company.llpin !== null) {
+    lines.push({ text: `${addressLabels.llpin} ${company.llpin}`, href: null });
+  }
+  if (company.transporterId !== null) {
+    lines.push({ text: `${addressLabels.transporterId} ${company.transporterId}`, href: null });
   }
   if (company.gstin !== null) {
-    lines.push({ text: `GSTIN ${company.gstin}`, href: null });
+    lines.push({ text: `${addressLabels.gstin} ${company.gstin}`, href: null });
   }
   return lines;
+}
+
+export function contactLines(): FooterLine[] {
+  const lines: FooterLine[] = [];
+  const office = corporateOfficeLine();
+  if (office !== null) {
+    lines.push({ text: `${addressLabels.corporateOffice}: ${office.text}`, href: office.href });
+  }
+  const contact = contactAddressLine();
+  if (contact !== null) lines.push(contact);
+  return [...lines, ...registrationLines()];
 }
 
 /* ——— Footer ——— */

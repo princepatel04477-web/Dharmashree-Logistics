@@ -6,7 +6,14 @@ export const company: Company = {
   name: "DharmaShree Logistics",
   legalName: null,
   tagline: "Hum sirf shipments nahi, bharosa move karte hain.",
-  headquarters: { city: "Surat", state: "Gujarat", addressLines: null, mapsUrl: null },
+  headquarters: {
+    city: "Surat",
+    state: "Gujarat",
+    addressLines: ["G/No. 50, Niyol Transport Nagar", "Surat, Gujarat - 394325"],
+    /* A Maps search for the printed address — a link, not a pinned location. */
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=G%2FNo.%2050%20Niyol%20Transport%20Nagar%20Surat%20Gujarat%20394325",
+  },
   contactAddress: {
     city: "Sandila",
     state: "Uttar Pradesh",
@@ -20,12 +27,15 @@ export const company: Company = {
   },
   branches: [],
   phone: "+919807829071",
+  otherPhones: ["+919424092450", "+919838838676", "+919875065144"],
   whatsapp: "+919807829071",
   email: "admin@dharmashreegroup.com",
   website: "https://dharmashreegroup.in",
   givingPercent: 2.5,
   supportHours: null,
   gstin: null,
+  llpin: "ADB7030",
+  transporterId: "09ABAFD3081H1ZK",
   foundedYear: null,
   fleetSize: null,
   hubsServed: null,

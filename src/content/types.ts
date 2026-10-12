@@ -48,8 +48,10 @@ export interface Company {
      where the network's corridors start. `null` hides it. */
   contactAddress: ContactAddress | null;
   branches: Branch[];
-  /** E.164, e.g. "+919876543210". */
+  /** E.164, e.g. "+919876543210". The main desk number. */
   phone: string | null;
+  /** Further desk numbers, E.164, listed after `phone`. `[]` adds none. */
+  otherPhones: string[];
   /** E.164, used for wa.me links. */
   whatsapp: string | null;
   email: string | null;
@@ -63,6 +65,10 @@ export interface Company {
      `null` hides the row on `/support` and `/contact`. */
   supportHours: string | null;
   gstin: string | null;
+  /** LLP identification number as printed on the letterhead ("CIN/LLP"). */
+  llpin: string | null;
+  /** GST transporter ID used on e-way bills. */
+  transporterId: string | null;
   foundedYear: number | null;
   fleetSize: number | null;
   hubsServed: number | null;
