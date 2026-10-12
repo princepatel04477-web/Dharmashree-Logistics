@@ -10,5 +10,5 @@ compatibility_date = "2026-10-08"
 [[d1_databases]]
 binding = "DESK_DB"
 database_name = "dharmashree-desk"
-database_id = "5d6dc571-eaff-4509-9760-044e4da8b1a6"
+database_id = "d8edfa8d-986c-43ff-8a56-9f8c6160d3ad"
 migrations_dir = "migrations"
