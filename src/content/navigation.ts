@@ -165,14 +165,10 @@ export function whatsappLink(message: string = whatsapp.defaultMessage): string 
 
 /* ——— Announcement strip ———
    The notice itself is written in the admin panel and read at runtime; this is
-   the strip's own copy. The short labels are for phones. */
+   the strip's own copy. */
 export const announcement = {
   label: "Announcement",
   badge: "New",
-  actions: [
-    { id: "track", href: "/track/", label: "Track shipment", short: "Track" },
-    { id: "quote", href: "/quote/", label: "Get a quote", short: "Quote" },
-  ],
 } as const;
 
 /* ——— Website ———
@@ -376,4 +372,6 @@ export const footer = {
   columns: footerColumns(),
   /** Decorative band; the real, keyboard-reachable list lives on /network. */
   hubBand: [ORIGIN.name, ...HUBS.map((hub) => hub.name)],
+  /** Where the copyright line leads: the admin panel's sign-in. */
+  adminHref: "/admin/",
 };

@@ -122,8 +122,14 @@ export function Footer() {
 
       {/* ——— Legal row ——— */}
       <div className="wrap flex flex-col gap-2 py-6 sm:flex-row sm:items-center sm:justify-between">
+        {/* The copyright line doubles as the way into the admin panel. */}
         <p className="label-caps text-on-deep-text">
-          © {year} {holder}
+          <Link
+            href={footer.adminHref}
+            className="hover:text-on-deep transition-colors duration-200"
+          >
+            © {year} {holder}
+          </Link>
         </p>
         {footer.giving !== null && (
           <p className="text-on-deep-text text-xs font-light">{footer.giving}</p>

@@ -25,7 +25,9 @@ interface LogoLoopProps {
    length is the measured track width divided by `speed`, re-measured when
    the width changes (web fonts swapping in), so long and short lists move at
    the same pace. It pauses on hover and while offscreen. Under reduced
-   motion it renders a static wrapped list instead, so nothing is hidden.
+   motion it renders one still row that fades out at the end: wrapping the
+   whole list turned a 78-hub band into a wall of names on phones, and every
+   use is decorative (the full lists live on their own pages).
 
    Changed from the vendored original: that one sped up with scroll velocity
    by rewriting `animation-duration` every frame, and a running CSS animation
@@ -93,14 +95,14 @@ export function LogoLoop({
     </span>
   );
 
-  /* Reduced motion: the full list, wrapped, no loop and no clipping. */
+  /* Reduced motion: one still row, clipped, fading out toward the end. */
   if (prefersReduced === true) {
     return (
       <div
         ref={containerRef}
         aria-hidden={decorative || undefined}
         className={cn(
-          "border-line bg-paper-2/30 text-ink-2 flex w-full flex-wrap items-center gap-y-1 border-y py-3 font-mono text-[11px] tracking-[0.22em] whitespace-normal uppercase",
+          "border-line bg-paper-2/30 text-ink-2 flex w-full items-center overflow-hidden border-y [mask-image:linear-gradient(to_right,black_75%,transparent)] py-3 font-mono text-[11px] tracking-[0.22em] whitespace-nowrap uppercase",
           className,
         )}
       >
