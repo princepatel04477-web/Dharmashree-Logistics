@@ -25,7 +25,7 @@ export function ServicesSection() {
           />
           <Link
             href={sectionLinks.services.href}
-            className="group/all text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase sm:pb-2"
+            className="tap-target group/all text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase sm:pb-2"
           >
             <span className="relative">
               {sectionLinks.services.label}

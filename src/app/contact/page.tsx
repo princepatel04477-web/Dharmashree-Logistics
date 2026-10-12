@@ -107,7 +107,7 @@ export default function ContactPage() {
                       href={link.href}
                       target={newTab ? "_blank" : undefined}
                       rel={newTab ? "noopener" : undefined}
-                      className="font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                      className="tap-target font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
                     >
                       {link.label}
                     </a>

@@ -3,6 +3,8 @@
 import { ArrowRightIcon } from "lucide-react";
 import { motion } from "motion/react";
 import {
+  useCallback,
+  useEffect,
   useId,
   useRef,
   useState,
@@ -10,7 +12,7 @@ import {
   type ReactElement,
 } from "react";
 import { TrackPanel } from "@/components/track/TrackPanel";
-import { AnnouncementBar } from "./AnnouncementBar";
+import { AnnouncementBar, type AnnouncementAction } from "./AnnouncementBar";
 import { Button } from "@/components/ui/button";
 import { TextField } from "@/components/vendor/origin";
 import { company } from "@/content/company";
@@ -37,7 +39,9 @@ import { cn } from "@/lib/utils";
    reduced motion it moves instantly.
 
    Above both, when the client has one switched on in the admin panel, the
-   announcement bar spans the card's full width (`AnnouncementBar`). */
+   announcement bar spans the card's full width (`AnnouncementBar`). Its two
+   shortcuts open a tab and put the cursor in that tab's first empty field (the
+   LR number, or the quote's destination — the origin is already filled). */
 
 type TabId = "track" | "quote";
 
@@ -97,6 +101,35 @@ export function HeroTabs(): ReactElement {
   const baseId = useId();
   const [active, setActive] = useState<TabId>("track");
   const tabRefs = useRef<Record<TabId, HTMLButtonElement | null>>({ track: null, quote: null });
+  const pendingFieldFocus = useRef<TabId | null>(null);
+
+  /* The first field a bar shortcut lands on: the LR number, or the quote's
+     destination (its origin is already filled). */
+  const focusFirstField = useCallback(
+    (tab: TabId): void => {
+      document
+        .getElementById(`${baseId}-panel-${tab}`)
+        ?.querySelector<HTMLInputElement>(tab === "quote" ? 'input[name="to"]' : "input")
+        ?.focus();
+    },
+    [baseId],
+  );
+
+  /* After a bar shortcut, focus the field once its panel is no longer hidden. */
+  useEffect(() => {
+    if (pendingFieldFocus.current !== active) return;
+    pendingFieldFocus.current = null;
+    focusFirstField(active);
+  }, [active, focusFirstField]);
+
+  function openFromBar(action: AnnouncementAction): void {
+    if (active === action) {
+      focusFirstField(action);
+      return;
+    }
+    pendingFieldFocus.current = action;
+    setActive(action);
+  }
 
   function select(next: TabId): void {
     setActive(next);
@@ -122,7 +155,7 @@ export function HeroTabs(): ReactElement {
 
   return (
     <div className="bg-paper shadow-card-lift overflow-hidden rounded-md lg:grid lg:grid-cols-[13rem_minmax(0,1fr)]">
-      <AnnouncementBar className="overflow-hidden lg:col-span-2" />
+      <AnnouncementBar className="overflow-hidden lg:col-span-2" onAction={openFromBar} />
       <div
         role="tablist"
         aria-label={heroTabs.ariaLabel}

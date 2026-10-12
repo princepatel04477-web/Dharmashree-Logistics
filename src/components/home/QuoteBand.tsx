@@ -52,7 +52,7 @@ export function QuoteBand() {
               href={whatsappHref}
               target="_blank"
               rel="noopener"
-              className="group/wa text-on-deep-text hover:text-on-deep focus-visible:outline-paper inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+              className="tap-target group/wa text-on-deep-text hover:text-on-deep focus-visible:outline-paper inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
             >
               <span className="relative">
                 {quoteBand.whatsappLabel}

@@ -53,7 +53,7 @@ export default function ServicesIndexPage() {
             <p className="text-ink-2 leading-body text-sm font-light">{servicesIndex.askLine}</p>
             <Link
               href={quoteCta.href}
-              className="group/ask text-brand-deep inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
+              className="tap-target group/ask text-brand-deep inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
             >
               <span className="relative">
                 {servicesIndex.askLabel}

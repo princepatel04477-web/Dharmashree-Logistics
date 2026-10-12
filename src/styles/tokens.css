@@ -26,6 +26,14 @@
   --signal-red: #ff3131;
   --highway: #f5a623;
 
+  /* WhatsApp's own brand green, used only by the WhatsApp button so the mark
+     reads as WhatsApp at a glance. --paper on --whatsapp is 3.0:1 (AA for the
+     glyph as a non-text mark); the label pill uses --whatsapp-deep, where
+     --paper text holds 5.4:1. */
+  --whatsapp: #1daa61;
+  --whatsapp-deep: #0f7a43;
+  --whatsapp-glow: color-mix(in srgb, var(--whatsapp) 45%, transparent);
+
   /* Text, hairlines and bands on a --brand-deep ground (footer, utility bar).
      Built from --paper so no raw colour is repeated. */
   --on-deep: var(--paper);
@@ -65,6 +73,9 @@
   --font-mono: var(--font-mono-face), "JetBrains Mono", "DM Mono", ui-monospace, monospace;
 
   --step--1: 0.65625rem;
+  /* --step--1 on phones (below 40rem): the mono caps labels — form labels
+     among them — read too small at 10.5px held in the hand. */
+  --step--1-phone: 0.75rem;
   --step-0: 0.875rem;
   --step-1: 1rem;
   --step-2: 1.25rem;

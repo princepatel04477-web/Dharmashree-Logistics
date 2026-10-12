@@ -27,7 +27,7 @@ export function CommitmentsSection() {
           />
           <Link
             href={sectionLinks.commitments.href}
-            className="group/about text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
+            className="tap-target group/about text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
           >
             <span className="relative">
               {sectionLinks.commitments.label}

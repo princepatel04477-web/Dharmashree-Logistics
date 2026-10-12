@@ -145,6 +145,8 @@ export function quoteHrefForService(serviceSlug: string): string {
    company.whatsapp is null every WhatsApp affordance is absent, not empty. */
 export const whatsapp = {
   label: "WhatsApp",
+  /** The floating button's label, shown beside the mark from `sm` up. */
+  floatingLabel: "Chat with us",
   defaultMessage: `Hello ${company.name}, I'd like a freight rate.`,
 };
 

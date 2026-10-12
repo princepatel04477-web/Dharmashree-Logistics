@@ -16,6 +16,9 @@
   --color-brand-tint: var(--brand-tint);
   --color-signal-red: var(--signal-red);
   --color-highway: var(--highway);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-deep: var(--whatsapp-deep);
+  --color-whatsapp-glow: var(--whatsapp-glow);
   --color-on-deep: var(--on-deep);
   --color-on-deep-text: var(--on-deep-text);
   --color-on-deep-line: var(--on-deep-line);
@@ -308,6 +311,13 @@
     color: var(--brand);
   }
 
+  @media (width < 40rem) {
+    .label-caps,
+    .section-index {
+      font-size: var(--step--1-phone);
+    }
+  }
+
   /* Horizontal divider rule. */
   .hairline {
     border: 0;
@@ -540,5 +550,23 @@
   }
   .map-label[data-show="false"] {
     opacity: 0;
+  }
+}
+
+/* A touch target of at least 44 × 44px around a small control (a text link, a
+   checkbox, a stepper dot) without changing its layout: an invisible box
+   centred on the element takes the tap. Not for elements that already use
+   ::after. */
+@utility tap-target {
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 2.75rem);
+    height: max(100%, 2.75rem);
+    transform: translate(-50%, -50%);
   }
 }

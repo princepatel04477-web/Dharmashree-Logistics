@@ -216,7 +216,7 @@ export function DirectTrackFlow({
                   setMobileError(undefined);
                   setFailure(null);
                 }}
-                className="text-brand-deep hover:text-ink font-mono text-[11px] tracking-[0.14em] uppercase underline underline-offset-4"
+                className="tap-target text-brand-deep hover:text-ink font-mono text-[11px] tracking-[0.14em] uppercase underline underline-offset-4"
               >
                 {copy.demoFill}
               </button>

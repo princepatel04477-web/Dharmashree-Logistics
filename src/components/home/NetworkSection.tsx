@@ -43,7 +43,7 @@ export function NetworkSection() {
             <p className="section-index text-brand">{sectionLinks.network.directoryLabel}</p>
             <Link
               href={sectionLinks.network.href}
-              className="group/hubs text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
+              className="tap-target group/hubs text-brand inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
             >
               <span className="relative">
                 {sectionLinks.network.label}

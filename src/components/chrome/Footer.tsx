@@ -20,7 +20,7 @@ const NEW_TAB_KINDS: readonly FooterLink["kind"][] = ["whatsapp", "website"];
 
 function FooterLinkRow({ link }: { link: FooterLink }) {
   const base =
-    "text-on-deep-text hover:text-on-deep inline-block py-1 text-sm font-light underline-offset-4 transition-colors duration-200 hover:underline";
+    "text-on-deep-text hover:text-on-deep inline-block py-2.5 text-sm font-light sm:py-1 underline-offset-4 transition-colors duration-200 hover:underline";
   if (link.kind === "route") {
     return (
       <Link href={link.href} className={base}>

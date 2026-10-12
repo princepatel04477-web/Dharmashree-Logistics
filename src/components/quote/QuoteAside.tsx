@@ -76,7 +76,7 @@ export function QuoteAside() {
                 href={row.href}
                 target={row.external ? "_blank" : undefined}
                 rel={row.external ? "noopener" : undefined}
-                className="text-ink-2 hover:text-ink inline-flex w-full items-center justify-between gap-4 text-sm font-light transition-colors duration-200"
+                className="text-ink-2 hover:text-ink inline-flex min-h-11 w-full items-center justify-between gap-4 text-sm font-light transition-colors duration-200 sm:min-h-0"
               >
                 <span className="label-caps shrink-0">{row.label}</span>
                 <span className="min-w-0 truncate">{row.value}</span>
