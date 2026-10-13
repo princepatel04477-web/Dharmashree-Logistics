@@ -16,7 +16,7 @@ import { GSAP_EASES, MOTION_DURATIONS, MOTION_EASES, MOTION_STAGGER } from "@/li
    loads, when it is switched off, or when the call fails.
 
    Animation owners (house rule 8): Motion opens the strip (AnimatePresence) and
-   ripples the red status dot a few times; GSAP reveals the notice word by word
+   keeps the red status dot blinking and rippling to draw the eye; GSAP reveals the notice word by word
    under a mask, then reverts the split so the text reflows normally. The strip
    lives in the root layout, so it reveals once per visit, not on every route.
    Reduced motion: the strip and its text simply appear. The amber tag is a
@@ -106,14 +106,24 @@ export function AnnouncementBar(): ReactElement {
                       initial={{ scale: 1, opacity: 0 }}
                       animate={{ scale: [1, 2.8], opacity: [0.7, 0] }}
                       transition={{
-                        duration: MOTION_DURATIONS.xl,
+                        duration: MOTION_DURATIONS.lg,
                         ease: MOTION_EASES.out,
-                        repeat: 3,
-                        repeatDelay: 0.6,
+                        repeat: Infinity,
+                        repeatDelay: MOTION_DURATIONS.lg,
                       }}
                     />
                   )}
-                  <span className="bg-signal-red relative inline-block size-2 rounded-full" />
+                  {/* The dot itself blinks for as long as the strip is up; one
+                      blink per ripple half-cycle so the two stay in step. */}
+                  <motion.span
+                    className="bg-signal-red relative inline-block size-2 rounded-full"
+                    animate={reduced ? { opacity: 1 } : { opacity: [1, 0.15, 1] }}
+                    transition={
+                      reduced
+                        ? { duration: 0 }
+                        : { duration: MOTION_DURATIONS.lg, ease: MOTION_EASES.inOut, repeat: Infinity }
+                    }
+                  />
                 </span>
                 <span className="bg-highway text-ink rounded-2xs shrink-0 px-1.5 py-0.5 font-mono text-[10px] tracking-[0.14em] uppercase">
                   {announcement.badge}
