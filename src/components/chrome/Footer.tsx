@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
-import { footer, footerLogo, type FooterLink } from "@/content/navigation";
+import { footer, footerLogo, type ContactEntry, type FooterLink } from "@/content/navigation";
 import { FooterMessage } from "./FooterMessage";
 
 /* Site footer (Prompt 04), on the --brand-deep ground: headings full white,
@@ -41,6 +41,29 @@ function FooterLinkRow({ link }: { link: FooterLink }) {
   );
 }
 
+/* A contact entry: a number or address as a plain <a> (house rule 10), or
+   plain text for the registration IDs. Multi-row addresses keep their breaks. */
+function ContactEntryRow({ entry }: { entry: ContactEntry }) {
+  const rows = entry.rows.map((row) => (
+    <span key={row} className="block">
+      {row}
+    </span>
+  ));
+  if (entry.href === null) {
+    return <p className="text-on-deep-text py-0.5 text-sm font-light">{rows}</p>;
+  }
+  return (
+    <a
+      href={entry.href}
+      target={entry.external ? "_blank" : undefined}
+      rel={entry.external ? "noopener" : undefined}
+      className="text-on-deep hover:text-on-deep-text inline-block py-2 text-sm font-light [overflow-wrap:anywhere] underline-offset-4 transition-colors duration-200 hover:underline sm:py-0.5"
+    >
+      {rows}
+    </a>
+  );
+}
+
 export function Footer() {
   const year = new Date().getFullYear();
   const holder = company.legalName ?? company.name;
@@ -64,16 +87,16 @@ export function Footer() {
         <FooterMessage />
       </div>
 
-      {/* ——— Columns ——— */}
+      {/* ——— Columns: the link lists, then "Reach us" in two labelled halves ——— */}
       <div className="wrap pb-14 sm:pb-16 lg:pb-20">
-        <ul className="border-on-deep-line grid grid-cols-1 gap-10 border-t pt-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
-          {footer.columns.map((column) => (
-            <li key={column.id}>
-              <nav aria-labelledby={`footer-${column.id}`}>
-                <h2 id={`footer-${column.id}`} className="label-caps text-on-deep mb-3">
-                  {column.title}
-                </h2>
-                {column.links.length > 0 && (
+        <div className="border-on-deep-line grid grid-cols-1 gap-12 border-t pt-10 lg:grid-cols-12 lg:gap-8">
+          <ul className="grid grid-cols-1 gap-10 sm:grid-cols-3 sm:gap-8 lg:col-span-7">
+            {footer.columns.map((column) => (
+              <li key={column.id}>
+                <nav aria-labelledby={`footer-${column.id}`}>
+                  <h2 id={`footer-${column.id}`} className="label-caps text-on-deep mb-3">
+                    {column.title}
+                  </h2>
                   <ul className="flex flex-col">
                     {column.links.map((link) => (
                       <li key={`${column.id}-${link.href}`}>
@@ -81,32 +104,39 @@ export function Footer() {
                       </li>
                     ))}
                   </ul>
-                )}
-                {column.lines.length > 0 && (
-                  <div className="mt-3 flex flex-col gap-1.5">
-                    {column.lines.map((line) =>
-                      line.href === null ? (
-                        <p key={line.text} className="text-on-deep-text text-sm font-light">
-                          {line.text}
-                        </p>
-                      ) : (
-                        <a
-                          key={line.text}
-                          href={line.href}
-                          target="_blank"
-                          rel="noopener"
-                          className="text-on-deep-text hover:text-on-deep block text-sm font-light underline-offset-4 transition-colors duration-200 hover:underline"
-                        >
-                          {line.text}
-                        </a>
-                      ),
-                    )}
-                  </div>
-                )}
-              </nav>
-            </li>
-          ))}
-        </ul>
+                </nav>
+              </li>
+            ))}
+          </ul>
+
+          {footer.reach.groups.length > 0 && (
+            <section aria-labelledby="footer-reach" className="lg:col-span-5">
+              <h2 id="footer-reach" className="label-caps text-on-deep mb-5">
+                {footer.reach.title}
+              </h2>
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+                {(["channels", "places"] as const).map((side) => {
+                  const groups = footer.reach.groups.filter((group) => group.side === side);
+                  if (groups.length === 0) return null;
+                  return (
+                    <dl key={side} className="flex flex-col gap-6">
+                      {groups.map((group) => (
+                        <div key={group.id}>
+                          <dt className="label-caps text-on-deep-text mb-1.5">{group.label}</dt>
+                          {group.entries.map((entry) => (
+                            <dd key={entry.rows.join(" ")}>
+                              <ContactEntryRow entry={entry} />
+                            </dd>
+                          ))}
+                        </div>
+                      ))}
+                    </dl>
+                  );
+                })}
+              </div>
+            </section>
+          )}
+        </div>
       </div>
 
       {/* ——— Hub band ——— decoration only: /network holds the real directory */}

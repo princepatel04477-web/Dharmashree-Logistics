@@ -34,6 +34,20 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact/" },
 };
 
+/* The channel links grouped by kind, in first-seen order, so every phone
+   number sits under a single "Call" label. */
+function channelRows(
+  links: readonly FooterLink[],
+): { kind: FooterLink["kind"]; links: FooterLink[] }[] {
+  const rows: { kind: FooterLink["kind"]; links: FooterLink[] }[] = [];
+  for (const link of links) {
+    const row = rows.find((candidate) => candidate.kind === link.kind);
+    if (row === undefined) rows.push({ kind: link.kind, links: [link] });
+    else row.links.push(link);
+  }
+  return rows;
+}
+
 const SECTION_TITLE = "font-display text-ink text-4xl leading-headline tracking-display";
 
 /* One labelled row of the channels list: a place name over its printed lines. */
@@ -94,23 +108,26 @@ export default function ContactPage() {
             />
           </div>
           <dl className="divide-line border-line divide-y border-y lg:col-span-8">
-            {links.map((link) => {
-              const newTab = NEW_TAB_KINDS.includes(link.kind);
+            {channelRows(links).map((row) => {
+              const newTab = NEW_TAB_KINDS.includes(row.kind);
               return (
                 <div
-                  key={link.href}
+                  key={row.kind}
                   className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between"
                 >
-                  <dt className="label-caps">{contact.channelLabels[link.kind]}</dt>
-                  <dd>
-                    <a
-                      href={link.href}
-                      target={newTab ? "_blank" : undefined}
-                      rel={newTab ? "noopener" : undefined}
-                      className="tap-target font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
-                    >
-                      {link.label}
-                    </a>
+                  <dt className="label-caps">{contact.channelLabels[row.kind]}</dt>
+                  <dd className="flex flex-col sm:items-end">
+                    {row.links.map((link) => (
+                      <a
+                        key={link.href}
+                        href={link.href}
+                        target={newTab ? "_blank" : undefined}
+                        rel={newTab ? "noopener" : undefined}
+                        className="tap-target font-display text-ink hover:text-brand-deep text-2xl [overflow-wrap:anywhere] transition-colors sm:text-3xl"
+                      >
+                        {link.label}
+                      </a>
+                    ))}
                   </dd>
                 </div>
               );
@@ -122,11 +139,9 @@ export default function ContactPage() {
                 lines={[office]}
               />
             )}
-            <PlaceRow
-              label={contact.officeLabel}
-              place={contact.office}
-              lines={address === null ? [] : [address]}
-            />
+            {address !== null && (
+              <PlaceRow label={contact.officeLabel} place={contact.office} lines={[address]} />
+            )}
             {registration.length > 0 && (
               <PlaceRow label={contact.registrationLabel} place={null} lines={registration} />
             )}

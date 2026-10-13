@@ -8,14 +8,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import {
-  contactLinks,
-  contactLines,
-  portalNav,
-  primaryNav,
-  secondaryNav,
-  type FooterLinkKind,
-} from "@/content/navigation";
+import { contactGroups, portalNav, primaryNav, secondaryNav } from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { ScrollTrigger } from "@/lib/gsap";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -51,11 +44,6 @@ function neverChanges(): () => void {
 }
 const mountedOnClient = (): boolean => true;
 const prerendered = (): boolean => false;
-
-/** WhatsApp and the website leave the page; tel: and mailto: hand off to apps. */
-function opensNewTab(kind: FooterLinkKind): boolean {
-  return kind === "whatsapp" || kind === "website";
-}
 
 interface CircleOrigin {
   x: number;
@@ -239,8 +227,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
     exit: { opacity: 0, transition: { duration: reduced ? 0 : MOTION_DURATIONS.xs } },
   };
 
-  const links = contactLinks();
-  const lines = contactLines();
+  const groups = contactGroups();
 
   return (
     <div className="flex items-center gap-2 lg:hidden">
@@ -377,40 +364,47 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                   </motion.nav>
                 </div>
 
-                {(links.length > 0 || lines.length > 0) && (
-                  <motion.div
+                {groups.length > 0 && (
+                  <motion.dl
                     variants={itemVariants}
-                    className="wrap border-line flex flex-col gap-3 border-t pt-6"
+                    className="wrap border-line grid grid-cols-1 gap-x-8 gap-y-5 border-t pt-6 sm:grid-cols-2"
                   >
-                    {lines.map((line) =>
-                      line.href === null ? (
-                        <p key={line.text} className="text-ink-2 text-sm font-light">
-                          {line.text}
-                        </p>
-                      ) : (
-                        <a
-                          key={line.text}
-                          href={line.href}
-                          target="_blank"
-                          rel="noopener"
-                          className="text-ink-2 hover:text-brand-deep text-sm font-light transition-colors duration-200"
-                        >
-                          {line.text}
-                        </a>
-                      ),
-                    )}
-                    {links.map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        target={opensNewTab(link.kind) ? "_blank" : undefined}
-                        rel={opensNewTab(link.kind) ? "noopener" : undefined}
-                        className="font-display text-ink hover:text-brand-deep text-lg transition-colors duration-200"
-                      >
-                        {link.label}
-                      </a>
+                    {groups.map((group) => (
+                      <div key={group.id}>
+                        <dt className="label-caps mb-1">{group.label}</dt>
+                        {group.entries.map((entry) => {
+                          const rows = entry.rows.map((row) => (
+                            <span key={row} className="block">
+                              {row}
+                            </span>
+                          ));
+                          const size =
+                            group.side === "channels"
+                              ? "font-display text-ink text-lg"
+                              : "text-ink-2 text-sm font-light";
+                          return (
+                            <dd key={entry.rows.join(" ")}>
+                              {entry.href === null ? (
+                                <p className={size}>{rows}</p>
+                              ) : (
+                                <a
+                                  href={entry.href}
+                                  target={entry.external ? "_blank" : undefined}
+                                  rel={entry.external ? "noopener" : undefined}
+                                  className={cn(
+                                    size,
+                                    "hover:text-brand-deep inline-block py-1 [overflow-wrap:anywhere] transition-colors duration-200",
+                                  )}
+                                >
+                                  {rows}
+                                </a>
+                              )}
+                            </dd>
+                          );
+                        })}
+                      </div>
                     ))}
-                  </motion.div>
+                  </motion.dl>
                 )}
               </motion.div>
             )}

@@ -33,7 +33,25 @@ export interface FooterColumn {
   readonly id: string;
   readonly title: string;
   readonly links: readonly FooterLink[];
-  readonly lines: readonly FooterLine[];
+}
+
+/** One printed entry in a contact group: a number, an address, an ID. */
+export interface ContactEntry {
+  /** Printed rows; an address keeps its own line breaks. */
+  readonly rows: readonly string[];
+  /** `tel:` / `mailto:` / `wa.me` / Maps / the website; `null` is plain text. */
+  readonly href: string | null;
+  /** Leaves the site (WhatsApp, the website, Maps), so it opens in a new tab. */
+  readonly external: boolean;
+}
+
+/** A labelled block of contact facts ("Phone", "Corporate office", …).
+    `channels` are ways to reach the desk; `places` are where it is and who it is. */
+export interface ContactGroup {
+  readonly id: "phone" | "email" | "whatsapp" | "website" | "office" | "desk" | "registration";
+  readonly label: string;
+  readonly side: "channels" | "places";
+  readonly entries: readonly ContactEntry[];
 }
 
 /* ——— Logo ———
@@ -248,15 +266,82 @@ export function registrationLines(): FooterLine[] {
   return lines;
 }
 
-export function contactLines(): FooterLine[] {
-  const lines: FooterLine[] = [];
-  const office = corporateOfficeLine();
-  if (office !== null) {
-    lines.push({ text: `${addressLabels.corporateOffice}: ${office.text}`, href: office.href });
-  }
-  const contact = contactAddressLine();
-  if (contact !== null) lines.push(contact);
-  return [...lines, ...registrationLines()];
+export const contactGroupLabels: Record<ContactGroup["id"], string> = {
+  phone: "Phone",
+  email: "Email",
+  whatsapp: "WhatsApp",
+  website: "Website",
+  office: addressLabels.corporateOffice,
+  desk: addressLabels.contactAddress,
+  registration: "Registration",
+};
+
+/* ——— Contact groups shared by the footer and the mobile menu ———
+   Each fact sits under its own label: every phone number together, then email,
+   WhatsApp and the website; then the addresses, each printed on its own lines;
+   then the registration numbers. A group whose facts are all `null` is
+   dropped, not rendered as an empty label. */
+export function contactGroups(): ContactGroup[] {
+  const groups: ContactGroup[] = [];
+  const add = (id: ContactGroup["id"], side: ContactGroup["side"], entries: ContactEntry[]) => {
+    if (entries.length > 0) groups.push({ id, label: contactGroupLabels[id], side, entries });
+  };
+
+  const phones =
+    company.phone === null ? company.otherPhones : [company.phone, ...company.otherPhones];
+  add(
+    "phone",
+    "channels",
+    phones.map((phone) => ({
+      rows: [formatPhoneIN(phone)],
+      href: `tel:${phone}`,
+      external: false,
+    })),
+  );
+  add(
+    "email",
+    "channels",
+    company.email === null
+      ? []
+      : [{ rows: [company.email], href: `mailto:${company.email}`, external: false }],
+  );
+  const wa = whatsappLink();
+  add(
+    "whatsapp",
+    "channels",
+    wa === null ? [] : [{ rows: [whatsapp.floatingLabel], href: wa, external: true }],
+  );
+  const domain = websiteDomain();
+  add(
+    "website",
+    "channels",
+    company.website === null || domain === null
+      ? []
+      : [{ rows: [domain], href: company.website, external: true }],
+  );
+
+  const office = company.headquarters.addressLines;
+  add(
+    "office",
+    "places",
+    office === null || office.length === 0
+      ? []
+      : [{ rows: office, href: company.headquarters.mapsUrl, external: true }],
+  );
+  const desk = company.contactAddress;
+  add(
+    "desk",
+    "places",
+    desk === null || desk.lines.length === 0
+      ? []
+      : [{ rows: desk.lines, href: desk.mapsUrl, external: true }],
+  );
+  add(
+    "registration",
+    "places",
+    registrationLines().map((line) => ({ rows: [line.text], href: null, external: false })),
+  );
+  return groups;
 }
 
 /* ——— Footer ——— */
@@ -276,13 +361,11 @@ function footerColumns(): FooterColumn[] {
         route("/attach-truck", "Attach your truck"),
         route("/contact", "Contact"),
       ],
-      lines: [],
     },
     {
       id: "services",
       title: "Services",
       links: services.map((service) => route(`/services/${service.slug}`, service.name)),
-      lines: [],
     },
     {
       id: "help",
@@ -293,18 +376,11 @@ function footerColumns(): FooterColumn[] {
         route("/privacy", "Privacy"),
         route("/terms", "Terms"),
       ],
-      lines: [],
-    },
-    {
-      id: "reach",
-      title: "Reach us",
-      links: contactLinks(),
-      lines: contactLines(),
     },
   ];
 
   /* A column with nothing to say is dropped, not rendered as an empty shell. */
-  return columns.filter((column) => column.links.length > 0 || column.lines.length > 0);
+  return columns.filter((column) => column.links.length > 0);
 }
 
 /* ——— Utility bar (lg+, above the header) ———
@@ -370,6 +446,8 @@ export const footer = {
   /** The giving statement; `null` when the fact is `null`. */
   giving: buildGiving(),
   columns: footerColumns(),
+  /** The "Reach us" block: labelled contact groups, dropped when empty. */
+  reach: { title: "Reach us", groups: contactGroups() },
   /** Decorative band; the real, keyboard-reachable list lives on /network. */
   hubBand: [ORIGIN.name, ...HUBS.map((hub) => hub.name)],
   /** Where the copyright line leads: the admin panel's sign-in. */
