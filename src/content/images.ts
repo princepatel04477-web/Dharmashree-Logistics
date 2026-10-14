@@ -10,7 +10,7 @@
    owner of the vehicle, the premises or the people shown: the photographs are
    illustrative, not records of the company's own fleet or sites (house rule 7).
    The one exception is the home hero: at the client's request its truck carries
-   the DHARMASHREE name, painted on by `scripts/paint-hero-wordmark.py`.
+   the white DharmaShree logo, painted on by `scripts/paint-hero-logo.py`.
 
    A slot whose original has not been produced yet renders a quiet branded
    ground from `ResponsiveImage` (never a label); `hasImage(key)` lets a section
