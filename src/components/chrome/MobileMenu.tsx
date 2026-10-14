@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, type Variants } from "motion/react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
+import { Button } from "@/components/ui/button";
 import { company } from "@/content/company";
-import { contactLinks, contactLines, primaryNav } from "@/content/navigation";
+import { contactGroups, portalNav, primaryNav, secondaryNav } from "@/content/navigation";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 import { ScrollTrigger } from "@/lib/gsap";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -19,8 +20,12 @@ import { cn } from "@/lib/utils";
    stays non-modal for AT — `aria-modal` would hide the header that holds it.
    Focus is trapped by hand and returned to the trigger on close.
 
-   The panel is portaled to <body>: the header is translated by GSAP, and a
-   transformed ancestor would capture this `position: fixed` sheet. */
+   Under the five main links sit the two portal sign-ins, full-width outline
+   buttons that open in a new tab (house rule 10: plain <a>). A null portal URL
+   drops its button.
+
+   The panel is portaled to <body> so its z-40 layer sits beneath the z-50
+   header: the trigger, which lives in the header, stays clickable. */
 
 /** Width at which the desktop nav takes over (Tailwind `lg`). */
 const MENU_BREAKPOINT = "(min-width: 64rem)";
@@ -55,6 +60,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const savedScrollY = useRef(0);
+  const pathnameRef = useRef("");
   const reduced = useReducedMotionSafe();
   const pathname = usePathname();
   const lenis = useLenis();
@@ -90,12 +96,18 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
     onOpenChange(true);
   }, [measure, onOpenChange, open]);
 
+  useEffect(() => {
+    pathnameRef.current = pathname;
+  }, [pathname]);
+
   /* Scroll lock: lenis.stop() plus the pinned-body rule ported into
-     globals.css. The offset is restored on close; the sheet covers the
-     viewport the whole time, so neither the pin nor the restore is visible. */
+     globals.css. Closing the sheet on the same page restores the offset;
+     closing it because a link navigated opens the new page at its top. The
+     sheet covers the viewport the whole time, so neither is visible. */
   useEffect(() => {
     if (!open) return;
     const body = document.body;
+    const openedOn = pathnameRef.current;
     savedScrollY.current = window.scrollY;
     body.classList.add("nav-locked");
     body.style.top = `-${savedScrollY.current}px`;
@@ -104,10 +116,15 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
       body.classList.remove("nav-locked");
       body.style.top = "";
       lenis?.start();
+      const target = pathnameRef.current === openedOn ? savedScrollY.current : 0;
       if (lenis !== undefined && lenis !== null) {
-        lenis.scrollTo(savedScrollY.current, { immediate: true });
+        /* Lenis measured the page while the body was pinned (one viewport
+           tall), so its scroll limit is 0 and any target would clamp to the
+           top. Re-measure before restoring. */
+        lenis.resize();
+        lenis.scrollTo(target, { immediate: true, force: true });
       } else {
-        window.scrollTo(0, savedScrollY.current);
+        window.scrollTo(0, target);
       }
       ScrollTrigger.refresh();
     };
@@ -210,8 +227,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
     exit: { opacity: 0, transition: { duration: reduced ? 0 : MOTION_DURATIONS.xs } },
   };
 
-  const links = contactLinks();
-  const lines = contactLines();
+  const groups = contactGroups();
 
   return (
     <div className="flex items-center gap-2 lg:hidden">
@@ -223,7 +239,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
         aria-controls="mobile-menu"
         aria-label={open ? "Close menu" : "Open menu"}
         className={cn(
-          "border-line text-ink hover:border-accent hover:text-accent-ink",
+          "border-line text-ink hover:border-brand hover:text-brand-deep",
           "inline-flex size-11 shrink-0 items-center justify-center rounded-xs border transition-colors duration-200",
         )}
       >
@@ -288,8 +304,8 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                               aria-current={active ? "page" : undefined}
                               className={cn(
                                 "font-display relative flex items-baseline justify-between gap-4 py-3",
-                                "leading-headline tracking-display text-4xl font-light",
-                                active ? "text-ink" : "text-ink-2 hover:text-ink",
+                                "leading-headline tracking-display text-4xl",
+                                active ? "text-brand" : "text-brand-deep hover:text-brand",
                                 "transition-colors duration-200",
                               )}
                             >
@@ -298,7 +314,7 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                                 {active && (
                                   <span
                                     aria-hidden="true"
-                                    className="bg-accent absolute -bottom-1 left-0 h-px w-full"
+                                    className="bg-brand absolute -bottom-1 left-0 h-0.5 w-full"
                                   />
                                 )}
                               </span>
@@ -311,42 +327,84 @@ export function MobileMenu({ open, onOpenChange }: MobileMenuProps) {
                       })}
                     </ul>
                   </nav>
+
+                  {portalNav.links.length > 0 && (
+                    <motion.nav
+                      variants={itemVariants}
+                      aria-label={`${portalNav.ariaLabel}, mobile`}
+                      className="flex flex-col gap-3"
+                    >
+                      {portalNav.links.map((link) => (
+                        <Button key={link.id} asChild variant="outline" className="w-full">
+                          <a href={link.href} target="_blank" rel="noopener noreferrer">
+                            {link.label}
+                            <span className="sr-only"> {portalNav.newTabHint}</span>
+                          </a>
+                        </Button>
+                      ))}
+                    </motion.nav>
+                  )}
+
+                  <motion.nav
+                    variants={itemVariants}
+                    aria-label="More, mobile"
+                    className="border-line flex flex-wrap gap-x-8 gap-y-1 border-t pt-4"
+                  >
+                    {secondaryNav.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={close}
+                        aria-current={pathname.startsWith(item.href) ? "page" : undefined}
+                        className="text-ink-2 hover:text-brand-deep inline-flex min-h-11 items-center font-mono text-[11px] tracking-[0.14em] uppercase transition-colors duration-200"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </motion.nav>
                 </div>
 
-                {(links.length > 0 || lines.length > 0) && (
-                  <motion.div
+                {groups.length > 0 && (
+                  <motion.dl
                     variants={itemVariants}
-                    className="wrap border-line flex flex-col gap-3 border-t pt-6"
+                    className="wrap border-line grid grid-cols-1 gap-x-8 gap-y-5 border-t pt-6 sm:grid-cols-2"
                   >
-                    {lines.map((line) =>
-                      line.href === null ? (
-                        <p key={line.text} className="text-ink-2 text-sm font-light">
-                          {line.text}
-                        </p>
-                      ) : (
-                        <a
-                          key={line.text}
-                          href={line.href}
-                          target="_blank"
-                          rel="noopener"
-                          className="text-ink-2 hover:text-accent-ink text-sm font-light transition-colors duration-200"
-                        >
-                          {line.text}
-                        </a>
-                      ),
-                    )}
-                    {links.map((link) => (
-                      <a
-                        key={link.href}
-                        href={link.href}
-                        target={link.kind === "whatsapp" ? "_blank" : undefined}
-                        rel={link.kind === "whatsapp" ? "noopener" : undefined}
-                        className="font-display text-ink hover:text-accent-ink text-lg font-light transition-colors duration-200"
-                      >
-                        {link.label}
-                      </a>
+                    {groups.map((group) => (
+                      <div key={group.id}>
+                        <dt className="label-caps mb-1">{group.label}</dt>
+                        {group.entries.map((entry) => {
+                          const rows = entry.rows.map((row) => (
+                            <span key={row} className="block">
+                              {row}
+                            </span>
+                          ));
+                          const size =
+                            group.side === "channels"
+                              ? "font-display text-ink text-lg"
+                              : "text-ink-2 text-sm font-light";
+                          return (
+                            <dd key={entry.rows.join(" ")}>
+                              {entry.href === null ? (
+                                <p className={size}>{rows}</p>
+                              ) : (
+                                <a
+                                  href={entry.href}
+                                  target={entry.external ? "_blank" : undefined}
+                                  rel={entry.external ? "noopener" : undefined}
+                                  className={cn(
+                                    size,
+                                    "hover:text-brand-deep inline-block py-1 [overflow-wrap:anywhere] transition-colors duration-200",
+                                  )}
+                                >
+                                  {rows}
+                                </a>
+                              )}
+                            </dd>
+                          );
+                        })}
+                      </div>
                     ))}
-                  </motion.div>
+                  </motion.dl>
                 )}
               </motion.div>
             )}

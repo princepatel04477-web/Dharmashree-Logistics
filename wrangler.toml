@@ -1,0 +1,14 @@
+# Cloudflare Pages project — direct upload (`wrangler pages deploy out`), not
+# git-connected. This file is the project's binding config: the D1 database that
+# stores form submissions and the admin panel's announcement. Secrets
+# (DSL_LR_API_KEY, DSL_ADMIN_PASSWORD, DSL_ADMIN_SESSION_KEY) stay encrypted in
+# the project and are never written here.
+name = "dharmashree-logistics"
+pages_build_output_dir = "out"
+compatibility_date = "2026-10-08"
+
+[[d1_databases]]
+binding = "DESK_DB"
+database_name = "dharmashree-desk"
+database_id = "d8edfa8d-986c-43ff-8a56-9f8c6160d3ad"
+migrations_dir = "migrations"

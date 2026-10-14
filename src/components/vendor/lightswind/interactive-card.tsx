@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from "motion/react";
+import { motion, useMotionValue, useSpring, useTransform } from "motion/react";
 import { useRef, type MouseEvent, type ReactNode } from "react";
 import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface InteractiveCardProps {
   children: ReactNode;
@@ -17,7 +18,7 @@ interface InteractiveCardProps {
    on touch devices and under reduced motion. */
 export function InteractiveCard({ children, className = "", shadow = true }: InteractiveCardProps) {
   const canHover = useHoverCapable();
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
   const ref = useRef<HTMLDivElement>(null);
   const pointerX = useMotionValue(0.5);
   const pointerY = useMotionValue(0.5);

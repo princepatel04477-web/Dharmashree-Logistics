@@ -23,7 +23,87 @@ for both schemes) — so none is created here.
 
 Contrast ratios below are relative luminance vs `--paper` (#FCFBF7) unless noted.
 
+## 0. DharmaShree Blue redesign (supersedes the colour values in §1)
+
+**Why:** the client's feedback is that the site is not colourful enough and does
+not read as a logistics business. The palette below is sampled from the logo
+(`public/brand/dharmashree-logo.png`). The plan is in
+`docs/antigravity-redesign-plan.md`; house rules 5–7 in `AGENTS.md` were
+rewritten to match. The Maa Sheetla values in §1 remain as provenance for the
+original port; where a token appears in both tables, this table wins, and the
+Phase 6 table below lists the §1 tokens that no longer exist.
+
+| Token               | Value                                 | Use                                                                                                   |
+| ------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--brand`           | `#2860B0`                             | Logo blue. Links, icons, active nav, filled primary CTA, focus ring. White on it is about 6.2:1 (AA). |
+| `--brand-deep`      | `#123A73`                             | Full-width bands: hero overlay, quote band, footer.                                                   |
+| `--brand-tint`      | `#EAF1FB`                             | Pale blue section ground, alternating with white. Icon badges.                                        |
+| `--signal-red`      | `#FF3131`                             | Small marks only: status dots, the Surat pin, badges. Never text.                                     |
+| `--highway`         | `#F5A623`                             | Highlights: step numbers, corridors on dark ground, underline marks. Text on it is always `--ink`.    |
+| `--ink`             | `#14171F`                             | Body text (was `#1C1917`): a cooler near-black beside the blue.                                       |
+| `--paper`           | `#FFFFFF`                             | Main ground (was cream `#FCFBF7`).                                                                    |
+| `--paper-2`         | `#F5F7FA`                             | Card ground on tinted sections (was white `#FFFFFF`).                                                 |
+| `--paper-3`         | `#EEF2F7`                             | Deepest neutral: badges, inputs (was `#F6F2EC`).                                                      |
+| `--line`            | `rgba(20,23,31,.10)`                  | Hairlines (was `rgba(28,25,23,.08)`).                                                                 |
+| `--line-strong`     | `rgba(20,23,31,.20)`                  | Stronger borders (was `rgba(28,25,23,.18)`).                                                          |
+| `--radius-xs`       | `6px`                                 | Was `2px`. `--radius-sm` is also `6px`.                                                               |
+| `--radius-md`       | `12px`                                | New: cards, the hero track card. Exposed as `rounded-md`.                                             |
+| `--map-land-quiet`  | `var(--paper-2)`                      | Network map land.                                                                                     |
+| `--map-land-served` | `var(--brand-tint)`                   | Network map served land.                                                                              |
+| `--map-land-focus`  | `color-mix(--brand 16%, --paper)`     | Network map focused region (was `#EFE7DA`).                                                           |
+| `--map-corridor`    | `color-mix(--brand 35%, transparent)` | Network map corridor trace.                                                                           |
+
+| `--on-deep` | `var(--paper)` | Headings and full-strength text on `--brand-deep` (footer, utility bar). 11.18:1. |
+| `--on-deep-text` | `color-mix(--paper 85%, transparent)` | Footer links and small text on `--brand-deep`. 8.53:1. |
+| `--on-deep-line` | `color-mix(--paper 12%, transparent)` | Hairlines on `--brand-deep`. |
+| `--on-deep-band` | `color-mix(--paper 6%, transparent)` | The footer hub marquee band on `--brand-deep`. |
+
+Shadows and the map border / state-line colours were re-based on the new ink
+(`rgb(20,23,31)`); the glows use `--brand` and `--highway`.
+
+**Display type (Phase 1).** The serif display (Fraunces, Instrument Serif) is
+replaced by Archivo, a sturdy sans with a width axis, so headings read like
+highway signage. `.font-display` in `globals.css` sets weight 700 and
+`font-stretch: 88%`; `--tracking-display` is `-0.02em`, `--leading-display`
+is `1` and `--leading-headline` is `1.05`. Body stays DM Sans and labels stay
+JetBrains Mono. The §2 family table, the §2 line-height table and §5 below
+describe the original Maa Sheetla port and are superseded for the display face.
+
+**Phase 6 clean-up (colour).** The Maa Sheetla colour names are gone from
+`tokens.css`, `globals.css` and every component:
+
+| Removed                                                           | Replaced by                                                                              |
+| ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `--accent` (and `bg-accent`, `text-accent`, …)                    | `--brand` (`bg-brand`, `text-brand`, …)                                                  |
+| `--accent-ink` (`text-accent-ink`, …)                             | `--brand-deep` (`text-brand-deep`, …)                                                    |
+| `--signal` (`text-signal`, …)                                     | `--brand` for icons and rules on white; `--highway` only for highlights on dark ground   |
+| `--gold-deep` (section indexes, form labels, eyebrows, accordion) | `--brand`; `.section-index` is `--brand` itself, so no per-page override is needed       |
+| `--map-ground`, `--map-land`, `--map-land-stroke`                 | none: the dark map panel was never built; the light-ground `--map-*` tokens remain       |
+| `--shadow-accent-glow`, `--shadow-signal-glow`                    | none: unused                                                                             |
+| `.shimmer-text`                                                   | none: unused (the `shimmer` keyframes stay for `ShinyText`)                              |
+
+Two tokens were re-pointed to cool greys so secondary text no longer reads warm
+(contrast on `--paper` / `--brand-tint` / `--paper-3`):
+
+| Token       | Value     | Contrast                | Use                                                    |
+| ----------- | --------- | ----------------------- | ------------------------------------------------------ |
+| `--ink-2`   | `#475467` | 7.69 / 6.76 / 6.84      | Body-adjacent text: nav links, ledes, descriptions.    |
+| `--muted`   | `#5B6678` | 5.81 / 5.11 / 5.16      | Captions, helper text, label caps, placeholders.       |
+
+`--scrollbar-thumb` is now `color-mix(--ink 22%, --paper)` (hover `--brand`).
+The focus ring is `2px solid var(--brand)` (6.19:1 on `--paper`). Error text and
+invalid borders use `--brand` as well; there is no separate error colour (see the
+open items in the Phase 6 report).
+
+Tailwind utilities: `bg-brand`, `text-brand`, `border-brand`,
+`bg-brand-deep`, `bg-brand-tint`, `text-signal-red`, `bg-signal-red`,
+`bg-highway`, `text-highway`, and so on, from `--color-*` in `globals.css`.
+
 ## 1. Colour roles
+
+> Provenance only. `--accent`, `--accent-ink`, `--signal`, `--gold-deep`,
+> `--map-ground`, `--map-land` and `--map-land-stroke` below no longer exist, and
+> `--ink-2`, `--muted` and `--scrollbar-thumb` have new values (see §0).
 
 | Our token           | Value                | Source value                                   | Contrast | Notes                                                                                                                                                                                                            |
 | ------------------- | -------------------- | ---------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -147,10 +227,22 @@ insets, `overscroll-behavior-y: contain`, tap-highlight removal,
 house rule 9 by the motion layer in Prompt 02.
 
 Focus ring (house rule 11) has no source equivalent (only one ad-hoc
-`focus-visible:ring` in TSX): derived as `2px solid var(--accent)` with `3px`
-offset (8.43:1 on paper ✓), documented here as an addition, not a port.
+`focus-visible:ring` in TSX): derived as `2px solid var(--brand)` with `3px`
+offset (6.19:1 on paper ✓; it was `--accent` before Phase 6), documented here as an addition, not a port.
 
 ## 5. Fonts — self-hosted via `next/font/local`
+
+**Update (Phase 1):** the Fraunces and Instrument Serif files listed in the
+table below were deleted. The display face is now
+`archivo-var-latin-normal.woff2` (90.1 KB), the `latin` subset of the Google
+Fonts v25 Archivo variable file
+(`https://fonts.gstatic.com/s/archivo/v25/k3kQo8UDI-1M0wlSfdnoLg.woff2`, from the
+CSS2 API request `family=Archivo:wdth,wght@62..125,400..800`). Its `fvar` table
+carries two axes: `wght` 100–900 and `wdth` 62–125. `fonts.ts` declares weight
+`100 900` and `font-stretch: 62% 125%` (via `declarations`, because next/font
+does not write the width range itself). Headings use weight 700 at 88% width.
+`--font-display-accent` no longer exists. The rest of this section is the
+original port, kept for provenance.
 
 Maa Sheetla loads Google Fonts via `<link>` (Fraunces opsz+wght + italics,
 DM Sans opsz+wght + italics, JetBrains Mono 300–500, Instrument Serif 400 +

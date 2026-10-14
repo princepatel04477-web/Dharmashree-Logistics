@@ -13,6 +13,8 @@ interface SectionHeadingProps {
   as?: HeadingTag;
   className?: string;
   titleClassName?: string;
+  /** Extra classes for the index label, e.g. a colour for a dark ground. */
+  indexClassName?: string;
 }
 
 /* Section index label + masked line-reveal title. The plain title is
@@ -24,6 +26,7 @@ export function SectionHeading({
   as = "h2",
   className = "",
   titleClassName = "",
+  indexClassName = "",
 }: SectionHeadingProps) {
   const reduced = useReducedMotionSafe();
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -50,7 +53,7 @@ export function SectionHeading({
 
   return (
     <div className={className}>
-      <p className="section-index">{index}</p>
+      <p className={`section-index ${indexClassName}`}>{index}</p>
       <Tag ref={titleRef} className={titleClassName}>
         {title}
       </Tag>

@@ -26,7 +26,7 @@ export function TextField({ label, helper, error, id, ...props }: TextFieldProps
         {...props}
       />
       {error !== undefined ? (
-        <p id={errorId} role="alert" className="text-accent font-mono text-[11px]">
+        <p id={errorId} role="alert" className="text-brand font-mono text-[11px]">
           {error}
         </p>
       ) : helper !== undefined ? (

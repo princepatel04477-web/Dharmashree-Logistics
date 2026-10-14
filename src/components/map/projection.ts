@@ -16,11 +16,24 @@ export interface ProjectedPoint {
   y: number;
 }
 
+/* `Math.log` and `Math.tan` are not required to agree to the last bit between
+   the engine that renders the HTML (Node) and the browser, so the raw
+   projection can differ in the 13th digit and the pin offsets derived from it
+   would then be serialised differently on the server and the client (a
+   hydration mismatch). Every projected point is therefore rounded here, once,
+   to a thousandth of a viewBox unit (far below a pixel); everything downstream
+   is plain IEEE arithmetic on those rounded values and agrees exactly. */
+const PRECISION = 1000;
+
+function settle(value: number): number {
+  return Math.round(value * PRECISION) / PRECISION;
+}
+
 export function projectPoint(lat: number, lng: number): ProjectedPoint {
   const { scale, ox, oy, mx0, myTop } = PROJECTION;
   const my = Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
   return {
-    x: ox + ((lng * Math.PI) / 180 - mx0) * scale,
-    y: oy + (myTop - my) * scale,
+    x: settle(ox + ((lng * Math.PI) / 180 - mx0) * scale),
+    y: settle(oy + (myTop - my) * scale),
   };
 }

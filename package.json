@@ -5,13 +5,20 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "tsx scripts/fix-export-segments.mts",
     "start": "next start",
     "lint": "eslint",
     "images": "tsx scripts/build-images.mts",
+    "brand": "tsx scripts/build-brand.mts",
     "generate:hubs": "tsx scripts/generate-hubs.mts",
+    "generate:states": "tsx scripts/generate-states.mts",
     "verify:hubs": "tsx scripts/verify-hubs.mts",
     "verify:services": "tsx scripts/verify-services.mts",
     "verify:quote": "tsx scripts/verify-quote.tsx",
+    "verify:partners": "tsx scripts/verify-partners.tsx",
+    "verify:truck": "tsx scripts/verify-truck.tsx",
+    "verify:lr": "tsx scripts/verify-lr.mts",
+    "verify:desk": "tsx scripts/verify-desk.mts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -30,9 +37,7 @@
   },
   "devDependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
-    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/jetbrains-mono": "^5.3.0",
-    "@fontsource/instrument-serif": "^5.3.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

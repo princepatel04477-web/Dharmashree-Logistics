@@ -1,8 +1,8 @@
 "use client";
 
-import { useReducedMotion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { formatNumberIN } from "@/lib/format";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface CountUpProps {
   to?: number;
@@ -30,7 +30,7 @@ export function CountUp({
   const target = to ?? value ?? 0;
   const ref = useRef<HTMLSpanElement>(null);
   const started = useRef(false);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
 
   useEffect(() => {
     const el = ref.current;

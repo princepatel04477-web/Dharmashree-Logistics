@@ -1,6 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "motion/react";
+import { motion, type Variants } from "motion/react";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 type SplitTag = "h1" | "h2" | "h3" | "p" | "span" | "div";
 
@@ -44,7 +45,7 @@ export function SplitText({
   duration = 0.45,
   onComplete,
 }: SplitTextProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotionSafe();
   const Tag = TAG_COMPONENTS[tag];
 
   if (reduceMotion === true) {

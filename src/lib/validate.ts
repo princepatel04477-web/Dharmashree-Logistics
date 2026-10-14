@@ -269,3 +269,34 @@ export function validateLr(value: string): LrCode | null {
   const length = lrLength(lr);
   return length >= 4 && length <= 20 ? null : "LrFormat";
 }
+
+/* ——— Track by SMS code (live backend) ——— */
+
+export const MOBILE_CODES = ["MobileRequired", "MobileFormat"] as const;
+
+export type MobileCode = (typeof MOBILE_CODES)[number];
+
+/** The mobile number the SMS goes to: required, and an Indian mobile once
+    `+91` / `0` are stripped (`normalizePhone`, `isIndianMobile`). */
+export function validateMobile(value: string): MobileCode | null {
+  if (value.trim() === "") return "MobileRequired";
+  return isIndianMobile(value) ? null : "MobileFormat";
+}
+
+export const OTP_LENGTH = 6;
+
+export const OTP_CODES = ["OtpRequired", "OtpFormat"] as const;
+
+export type OtpCode = (typeof OTP_CODES)[number];
+
+/** Digits only, at most `OTP_LENGTH`. A pasted SMS ("Your code is 123456") keeps
+    its digits, so paste works without a special case. */
+export function normalizeOtp(value: string): string {
+  return value.replace(/\D/g, "").slice(0, OTP_LENGTH);
+}
+
+export function validateOtp(value: string): OtpCode | null {
+  const otp = normalizeOtp(value);
+  if (otp === "") return "OtpRequired";
+  return otp.length === OTP_LENGTH ? null : "OtpFormat";
+}

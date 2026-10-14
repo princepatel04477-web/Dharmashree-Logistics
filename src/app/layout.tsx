@@ -3,12 +3,14 @@ import type { ReactNode } from "react";
 import { Footer } from "@/components/chrome/Footer";
 import { Header } from "@/components/chrome/Header";
 import { SkipLink } from "@/components/chrome/SkipLink";
+import { AnnouncementBar } from "@/components/chrome/AnnouncementBar";
 import { WhatsAppButton } from "@/components/chrome/WhatsAppButton";
 import { MapSelectionProvider } from "@/components/map/MapSelection";
 import { Toaster } from "@/components/vendor/lightswind";
 import { company } from "@/content/company";
+import { hasUtilityBar } from "@/content/navigation";
 import { MotionProviders } from "@/providers/MotionProviders";
-import { fontBody, fontDisplayAccent, fontDisplayFace, fontMono } from "./fonts";
+import { fontBody, fontDisplayFace, fontMono } from "./fonts";
 import "./globals.css";
 
 /* Root shell (Prompt 04): fonts → motion + map providers → skip link → fixed
@@ -16,11 +18,12 @@ import "./globals.css";
    viewport mounted once for the whole site. `template.tsx` layers the route
    transition over this. */
 
-const description =
-  company.tagline ??
-  `${company.name} — freight and transport from ${company.headquarters.city}, ${company.headquarters.state}.`;
+const description = `${company.name} — ${company.services.join(", ").toLowerCase()} across India, from our desk in ${company.headquarters.city}, ${company.headquarters.state}.${company.tagline === null ? "" : ` ${company.tagline}`}`;
 
+/* `metadataBase` resolves relative metadata URLs (Open Graph images, canonical
+   links) against the live domain; it is omitted while `company.website` is null. */
 export const metadata: Metadata = {
+  ...(company.website === null ? {} : { metadataBase: new URL(company.website) }),
   title: {
     default: company.name,
     template: `%s · ${company.name}`,
@@ -50,16 +53,23 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en-IN"
-      className={`${fontDisplayFace.variable} ${fontDisplayAccent.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
+      className={`${fontDisplayFace.variable} ${fontBody.variable} ${fontMono.variable} h-full antialiased`}
     >
       <body className="bg-paper text-ink flex min-h-full flex-col font-sans">
         <MotionProviders>
           <MapSelectionProvider>
             <SkipLink />
             <Header />
-            {/* Clear of the fixed header: 64px mobile, 72px from `lg` up.
-                tabIndex={-1} is the skip link's landing target. */}
-            <main id="main" tabIndex={-1} className="flex flex-1 flex-col pt-16 lg:pt-18">
+            {/* Clear of the fixed header: 64px mobile; from `lg` up 72px plus the
+                32px utility bar when it shows. tabIndex={-1} is the skip
+                link's landing target. The announcement strip, when the admin
+                panel has one on, is the first row of every page. */}
+            <main
+              id="main"
+              tabIndex={-1}
+              className={`flex flex-1 flex-col pt-16 ${hasUtilityBar ? "lg:pt-26" : "lg:pt-18"}`}
+            >
+              <AnnouncementBar />
               {children}
             </main>
             <Footer />

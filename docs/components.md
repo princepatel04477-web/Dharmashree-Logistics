@@ -126,7 +126,7 @@ link data live in `src/content/navigation.ts`; every `null` fact in
 | ------------- | ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
 | Header        | GSAP       | `components/chrome/Header.tsx`         | Hairline fades in past 24px (`toggleClass`); bar hides past 120px on scroll-down, reveals on scroll-up (`yPercent`, 0.35s)                                                                   | Slide resolves instantly; hairline still toggles         |
 | Nav underline | Motion     | `components/chrome/Header.tsx`         | 1px accent bar shared by `layoutId="nav-underline"`; inactive links draw on hover (origin-left, 0.3s, CSS)                                                                                   | Underline appears with no travel                         |
-| Quote CTA     | React Bits | `components/chrome/Header.tsx`         | The one filled button (`--ink` on paper, `--accent-ink` on hover), wrapped in `Magnet` (strength 10)                                                                                         | `Magnet` renders its static wrapper (also on touch)      |
+| Quote CTA     | React Bits | `components/chrome/Header.tsx`         | The one filled button (`--ink` on paper, `--brand-deep` on hover), wrapped in `Magnet` (strength 10)                                                                                         | `Magnet` renders its static wrapper (also on touch)      |
 | Mobile sheet  | Motion     | `components/chrome/MobileMenu.tsx`     | Portaled full-screen `--paper` panel, clip-path circle from the trigger (0.5s), links staggered 24px / 0.06s; hamburger ⇄ ×; focus trapped, Escape closes, `lenis.stop()` + pinned body lock | Panel opens at final clip-path, links land instantly     |
 | Footer        | none       | `components/chrome/Footer.tsx`         | One display line + outline quote button, then Company / Services / Help / Reach us columns (empty columns dropped)                                                                           | Static                                                   |
 | Hub band      | React Bits | `components/chrome/Footer.tsx`         | `LogoLoop` of hub cities, `.label-caps`, `·` separator in accent, slow (60s), pauses on hover + offscreen, `aria-hidden`                                                                     | Renders the whole list statically, wrapped and unclipped |
@@ -171,7 +171,7 @@ as the description).
 | Stats strip | React Bits            | `components/home/StatsStrip.tsx`                         | `<dl>` ledger with hairline dividers, `CountUp` (en-IN) on enter; hidden below two facts; `foundedYear` is a plain "Since 2016"-style value   | Final numbers, no count-up                              |
 | Services    | Bits + Motion + GSAP  | `components/home/ServicesSection.tsx`, `ServiceTile.tsx` | Asymmetric 7/5 grid (first tile tall, next two stacked, rest side by side); `SpotlightCard` surface, optional photo in `ImageCurtain`         | No spotlight, no wipe; arrow does not lift (also touch) |
 | Network     | GSAP                  | `components/home/NetworkSection.tsx`                     | Derived hub/region count line, `mode="full"` map, then the real `HubDirectory` clipped to a 24rem box at `lg` with `overscroll-contain`       | Section heading static; map entrance resolves           |
-| Process     | GSAP                  | `components/home/ProcessSection.tsx`                     | One scrub timeline (`scrub: 0.6`, `+=250%`) pins a `100svh` stage: rail nodes fill with `--accent`, step text and big numeral crossfade       | No pin — four `Reveal`ed rows on a static rail          |
+| Process     | GSAP                  | `components/home/ProcessSection.tsx`                     | One scrub timeline (`scrub: 0.6`, `+=250%`) pins a `100svh` stage: rail nodes fill with `--brand`, step text and big numeral crossfade       | No pin — four `Reveal`ed rows on a static rail          |
 | Industries  | Lightswind            | `components/home/IndustriesSection.tsx`                  | `ScrollCarousel` pin+scrub band, one hairline card per industry (heading outside the pinned band)                                             | Vendored native horizontal strip, no pin                |
 | Commitments | GSAP (`DrawLine`)     | `components/home/CommitmentsSection.tsx`                 | Three statements set large with drawn accent hairlines between them; no icons, no cards                                                       | Lines present, undrawn                                  |
 | Quote band  | React Bits            | `components/home/QuoteBand.tsx`                          | Inverted `--ink` band with the page's second filled CTA (`--paper` on ink, `Magnet`) + WhatsApp text link                                     | `Magnet` static, no travel                              |
@@ -317,3 +317,33 @@ text/plain;charset=utf-8` with a JSON _string_ body: a CORS-simple request, so
 - **Reported, not fixed:** the vendored `StepperTitle` renders an `<h3>` inside
   the trigger `<button>`, which is not phrasing content. It is Prompt 01's
   component and appears on every use of the stepper, so it is left as-is here.
+
+## Company profile pages — Prompts 09–14
+
+Source copy: `Company_Profile/` (eight files). Plan and decisions:
+`docs/company-profile-plan.md`. The catalogue is the profile's four services;
+`/support` and `/partners` are new routes; `/about` and `/track` are extended.
+
+| Piece | Owner | File | Behaviour |
+| ----- | ----- | ---- | --------- |
+| Commitments pin | GSAP | `components/motion/PinnedSteps.tsx` | The home "process" scrub made reusable: pinned `lg`+, big numeral and step crossfade, accent rail fills; stacked list below 1024px and under reduced motion. Used by `/about` for the four commitments |
+| Business selector | Origin UI + Motion | `components/about/BusinessSelector.tsx` | `RadioCards` choose Online seller / Manufacturer / Retailer / Distributor; the answer panel swaps under `AnimatePresence`; services linked by slug (`verify:services` checks the slugs) |
+| Segmented switch | Motion | `components/services/signature/SegmentedSwitch.tsx` | Mono-caps choices with one 1px accent bar sliding by `layoutId`; `aria-pressed` buttons. Used by the signature blocks and the support filter |
+| Journey block | GSAP + Motion | `components/services/signature/JourneyBlock.tsx` | Express parcel: scrubbed line + nodes + captions (GSAP, ≥640px), then a B2B / B2C / Bulk switch (Motion) |
+| Dedicated block | GSAP + Motion + Lightswind | `components/services/signature/DedicatedBlock.tsx` | Full truckload: truck outline drawn on entry (GSAP); cargo outlines grow/fade between Shared and Dedicated (Motion); supply-chain legs on `ScrollCarousel` |
+| Selector block | Origin UI + Motion | `components/services/signature/SelectorBlock.tsx` | Local on-demand: `RadioCards` pick the load → vehicle line swaps; Scheduled / Urgent switch |
+| Loop block | GSAP + Lightswind | `components/services/signature/LoopBlock.tsx` | Warehousing: pinned scrub draws the pipeline and the returns arc; four capabilities as `InteractiveCard`s in a 7/5 · 5/7 layout |
+| Status ladder | GSAP + Origin UI | `components/track/StatusLadder.tsx` | `/track`: accent rail draws beside a `FaqAccordion` of the seven statuses — an explainer, never a result |
+| No-number panel | Motion + Origin UI | `components/track/NoNumberPanel.tsx` | Disclosure (height + fade) onto a local, unsaved tick-list |
+| Support filter | Motion + Origin UI | `components/support/SupportFaq.tsx` | Topic chips filter the FAQ; `layout` follows the list height; accordion remounts per topic |
+| Partner map | static SVG + shared selection | `components/map/PartnerMap.tsx` | The network map's geometry cropped to the partner cities, numbered outline pins as real buttons |
+| Partner directory | Motion | `components/partners/PartnersNetwork.tsx` | List and map share `MapSelection`; a row expands to address and `tel:` links |
+| Partner band | React Bits | `app/partners/page.tsx` | `LogoLoop` of partner names, decorative (`aria-hidden`) |
+| Partner form | Origin UI + Lightswind | `components/partners/PartnerForm.tsx`, `lib/partner.ts` | Posts through `postToDesk` (same Apps Script, `kind: "partner"` → `Partners` tab); toasts for the outcome; outline submit |
+| Pickup intent | none | `components/quote/useQuoteEntry.ts` | `/quote/?intent=pickup` seeds the notes — only an empty field |
+| Copy | none | `content/about.ts`, `services.ts`, `track.ts`, `support.ts`, `partners.ts` | Profile text; counts derived from `hubs.ts` |
+| Checks | none | `scripts/verify-partners.tsx` (`npm run verify:partners`) | Partner phones/hubs/pin projection, partner form ↔ `Code.gs`, `text/plain` post, support topics |
+
+Deviations from the plan: the partner map is its own small component (not a
+`focus` prop on the 950-line `IndiaNetworkMap`), and old service slugs are not
+redirected because `output: "export"` has no server to redirect from.

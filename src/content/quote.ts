@@ -28,6 +28,15 @@ export const quote = {
     description: `${responseNote === null ? "" : `${responseNote} `}Three steps: the lane, the load, and where the rate should go.`,
   },
 
+  /** `?intent=` prefills (Prompt 12). The pickup link from /support starts the
+     notes with what the desk needs for a pickup, ready to be completed. */
+  intents: {
+    pickup: {
+      notes:
+        "Pickup request. Pickup address, contact person and mobile number, approximate weight or dimensions, number of parcels, destination: ",
+    },
+  },
+
   /** Accessible name for the form and its step rail. */
   formLabel: "Quote request",
   stepperLabel: "Quote request steps",

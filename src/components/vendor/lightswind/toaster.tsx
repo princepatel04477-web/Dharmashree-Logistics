@@ -1,10 +1,11 @@
 "use client";
 
 import { cva } from "class-variance-authority";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, XIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 export type ToastType = "default" | "success" | "destructive";
 
@@ -73,8 +74,12 @@ function getSnapshot(): ToastItem[] {
   return items;
 }
 
+/* One shared empty list: React compares snapshots by identity, and a fresh
+   `[]` per call reads as "changed" on every hydration pass. */
+const SERVER_SNAPSHOT: ToastItem[] = [];
+
 function getServerSnapshot(): ToastItem[] {
-  return [];
+  return SERVER_SNAPSHOT;
 }
 
 const toastVariants = cva(
@@ -85,7 +90,7 @@ const toastVariants = cva(
       type: {
         default: "border-line",
         success: "border-line",
-        destructive: "border-accent",
+        destructive: "border-brand",
       },
     },
   },
@@ -94,18 +99,18 @@ const toastVariants = cva(
 function ToastIcon({ type }: { type: ToastType }) {
   if (type === "success") {
     return (
-      <CheckCircle2Icon aria-hidden="true" className="text-gold-deep mt-0.5 size-4 shrink-0" />
+      <CheckCircle2Icon aria-hidden="true" className="text-brand mt-0.5 size-4 shrink-0" />
     );
   }
   if (type === "destructive") {
-    return <AlertCircleIcon aria-hidden="true" className="text-accent mt-0.5 size-4 shrink-0" />;
+    return <AlertCircleIcon aria-hidden="true" className="text-brand mt-0.5 size-4 shrink-0" />;
   }
   return <InfoIcon aria-hidden="true" className="text-muted mt-0.5 size-4 shrink-0" />;
 }
 
 export function Toaster({ className = "" }: { className?: string }) {
   const toasts = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
 
   return (
     <div

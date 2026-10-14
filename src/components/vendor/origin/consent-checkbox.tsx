@@ -47,7 +47,7 @@ export function ConsentCheckbox({
         </label>
       </div>
       {error !== undefined && (
-        <p id={errorId} role="alert" className="text-accent font-mono text-[11px]">
+        <p id={errorId} role="alert" className="text-brand font-mono text-[11px]">
           {error}
         </p>
       )}
