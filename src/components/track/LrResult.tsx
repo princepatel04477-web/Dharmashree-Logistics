@@ -22,7 +22,6 @@ import {
   formatAmountINR,
   formatDateIN,
   formatDateTimeIN,
-  formatNumberIN,
   formatPhoneIN,
 } from "@/lib/format";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
@@ -35,8 +34,8 @@ import { statusCopy } from "./statusCopy";
      header     LR number, delivery and payment terms, the status and the
                 desk's own words for it, the journey bar
      summary    route, booked / expected / delivered, vehicle, last location
-     parties    consignor and consignee, with GSTIN and contact
-     slip       invoice details beside freight details
+     consignee  the consignee, with GSTIN and contact
+     freight    the freight details
      delivery   the delivery address and its numbers
      history    every recorded movement, newest first
 
@@ -143,41 +142,6 @@ function PartyCard({
   );
 }
 
-function invoiceRows(record: LrRecord, details: LrDetails): Row[] {
-  const rows: Row[] = [];
-  const push = (label: string, value: string | null): void => {
-    if (value !== null && value !== "") rows.push({ label, value });
-  };
-  push(copy.invoiceNoLabel, details.invoiceNo);
-  push(
-    copy.invoiceDateLabel,
-    details.invoiceDate === null ? null : formatDateIN(details.invoiceDate),
-  );
-  push(
-    copy.invoiceValueLabel,
-    details.invoiceValue === null ? null : formatAmountINR(details.invoiceValue),
-  );
-  push(copy.privateMarkLabel, details.privateMark);
-  push(copy.containsLabel, details.contains);
-  push(copy.ewayBillLabel, details.ewayBill);
-  push(
-    copy.packagesLabel,
-    record.packages === null
-      ? null
-      : [formatNumberIN(record.packages), details.packageType].filter(Boolean).join(" · "),
-  );
-  if (record.packages === null) push(copy.packageTypeLabel, details.packageType);
-  push(
-    copy.weightLabel,
-    record.weightKg === null ? null : copy.weightValue(formatNumberIN(record.weightKg)),
-  );
-  if (details.chargeWeightKg !== null && details.chargeWeightKg !== record.weightKg) {
-    push(copy.chargeWeightLabel, copy.weightValue(formatNumberIN(details.chargeWeightKg)));
-  }
-  push(copy.supplierLabel, details.supplier);
-  return rows;
-}
-
 function freightRows(details: LrDetails): Row[] {
   const rows: Row[] = [];
   if (details.rateType !== null) rows.push({ label: copy.rateTypeLabel, value: details.rateType });
@@ -225,7 +189,6 @@ export function LrResult({ record, onReset }: LrResultProps): ReactElement {
   const terms = [details.deliveryType, details.paymentMode].filter(
     (term): term is string => term !== null,
   );
-  const invoice = invoiceRows(record, details);
   const freight = freightRows(details);
 
   return (
@@ -327,31 +290,16 @@ export function LrResult({ record, onReset }: LrResultProps): ReactElement {
         )}
       </dl>
 
-      {/* ——— Parties ——— */}
-      {(record.consignor !== "" || record.consignee !== "") && (
-        <div className="grid grid-cols-1 gap-4 @lg:grid-cols-2">
-          <PartyCard
-            role={copy.consignorLabel}
-            name={record.consignor}
-            gstin={details.consignorGstin}
-            contact={details.consignorContact}
-          />
-          <PartyCard
-            role={copy.consigneeLabel}
-            name={record.consignee}
-            gstin={details.consigneeGstin}
-            contact={details.consigneeContact}
-          />
-        </div>
-      )}
+      {/* ——— Consignee ——— */}
+      <PartyCard
+        role={copy.consigneeLabel}
+        name={record.consignee}
+        gstin={details.consigneeGstin}
+        contact={details.consigneeContact}
+      />
 
-      {/* ——— Invoice and freight ——— */}
-      {(invoice.length > 0 || freight.length > 0) && (
-        <div className="grid grid-cols-1 items-start gap-4 @xl:grid-cols-2">
-          <SlipBlock title={copy.invoiceTitle} rows={invoice} />
-          <SlipBlock title={copy.freightTitle} rows={freight} />
-        </div>
-      )}
+      {/* ——— Freight ——— */}
+      <SlipBlock title={copy.freightTitle} rows={freight} />
 
       {/* ——— Delivery at ——— */}
       {(details.deliveryAddress !== null || details.deliveryContacts.length > 0) && (
