@@ -57,21 +57,13 @@ export interface ContactGroup {
 /* ——— Logo ———
    The supplied logo (`assets/brand/`, built into `public/brand/` by
    `npm run brand`). The dimensions are the trimmed file's own, so the header can
-   reserve its box before the image loads. */
+   reserve its box before the image loads. The footer uses the white `lightSrc`
+   twin, because it sits on `--brand-deep`. */
 export const logo = {
   src: "/brand/dharmashree-logo.png",
-  width: 420,
-  height: 98,
-};
-
-/* The footer wordmark (`assets/brand/dharmashree-footer-logo-source.png`, built
-   by `npm run brand`). Only the footer uses it, and always the white `light`
-   file, because the footer sits on `--brand-deep`. */
-export const footerLogo = {
-  src: "/brand/dharmashree-footer-logo.png",
-  lightSrc: "/brand/dharmashree-footer-logo-light.png",
-  width: 2400,
-  height: 210,
+  lightSrc: "/brand/dharmashree-logo-light.png",
+  width: 1052,
+  height: 231,
 };
 
 /* ——— Primary navigation (desktop centre cluster, ≥1024px) ——— */
@@ -190,7 +182,7 @@ export const announcement = {
 } as const;
 
 /* ——— Website ———
-   Shown as the bare domain ("dharmashreegroup.in"), linked to the full URL.
+   Shown as the bare domain ("dharmashreegroup.com"), linked to the full URL.
    `null` when the fact is `null`. */
 export function websiteDomain(): string | null {
   if (company.website === null) return null;

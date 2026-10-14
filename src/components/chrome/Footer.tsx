@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LogoLoop } from "@/components/vendor/reactbits";
 import { company } from "@/content/company";
-import { footer, footerLogo, type ContactEntry, type FooterLink } from "@/content/navigation";
+import { footer, logo, type ContactEntry, type FooterLink } from "@/content/navigation";
 import { FooterMessage } from "./FooterMessage";
 
 /* Site footer (Prompt 04), on the --brand-deep ground: headings full white,
@@ -74,11 +74,11 @@ export function Footer() {
       <div className="wrap grid grid-cols-1 gap-10 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:gap-16 lg:py-20">
         <div className="flex flex-col items-start gap-6 lg:col-span-5">
           <Image
-            src={footerLogo.lightSrc}
+            src={logo.lightSrc}
             alt={company.name}
-            width={footerLogo.width}
-            height={footerLogo.height}
-            className="h-6 w-auto sm:h-7"
+            width={logo.width}
+            height={logo.height}
+            className="h-12 w-auto sm:h-14"
           />
           <p className="font-display text-headline text-on-deep leading-headline tracking-display">
             {footer.slogan}

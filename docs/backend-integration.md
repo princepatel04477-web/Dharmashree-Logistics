@@ -197,8 +197,8 @@ Please answer these (or send a sample request and response for each call):
 The site is a static export. The visitor's browser calls the client's API **directly**.
 The API must therefore answer cross-origin requests from:
 
-- `https://dharmashreegroup.in` (the production site, per the plan) — and whichever
-  origin the site is finally served from, e.g. `https://www.dharmashreegroup.in`;
+- `https://dharmashreegroup.com` (the production site's custom domain) — and any
+  other origin it is served from, e.g. `https://www.dharmashreegroup.com`;
 - the Cloudflare Pages preview domain(s), e.g. `https://<project>.pages.dev` and
   `https://<branch>.<project>.pages.dev`, so previews can be tested.
 
