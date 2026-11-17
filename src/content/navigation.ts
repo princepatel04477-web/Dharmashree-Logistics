@@ -223,7 +223,7 @@ export function contactLinks(): FooterLink[] {
    optional Maps link wraps the whole address instead of just its first row. */
 export const addressLabels = {
   corporateOffice: "Corporate office",
-  contactAddress: "Desk",
+  contactAddress: "Office",
   llpin: "CIN/LLP",
   transporterId: "Transporter ID",
   gstin: "GSTIN",

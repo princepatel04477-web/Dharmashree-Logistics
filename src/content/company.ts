@@ -9,12 +9,20 @@ export const company: Company = {
   headquarters: {
     city: "Surat",
     state: "Gujarat",
-    addressLines: ["G/No. 50, Niyol Transport Nagar", "Surat, Gujarat - 394325"],
+    addressLines: null,
+    mapsUrl: null,
+  },
+  contactAddress: {
+    city: "Sandila",
+    state: "Uttar Pradesh",
+    lines: [
+      "Sandila-Bangarmau Road, near best furniture",
+      "Hardoi district, Uttar Pradesh - 241204",
+    ],
     /* A Maps search for the printed address — a link, not a pinned location. */
     mapsUrl:
-      "https://www.google.com/maps/search/?api=1&query=G%2FNo.%2050%20Niyol%20Transport%20Nagar%20Surat%20Gujarat%20394325",
+      "https://www.google.com/maps/search/?api=1&query=Sandila-Bangarmau%20Road%20near%20best%20furniture%20Sandila%20Hardoi%20Uttar%20Pradesh%20241204",
   },
-  contactAddress: null,
   branches: [],
   phone: "+919424092450",
   otherPhones: ["+919838838676", "+919875065144"],

@@ -27,7 +27,7 @@ export const contact = {
     website: "Web",
     route: "",
   },
-  officeLabel: "Desk",
+  officeLabel: "Office",
   /** The place the printed address is in; the desk's own city when none is set. */
   office: company.contactAddress
     ? `${company.contactAddress.city}, ${company.contactAddress.state}`
