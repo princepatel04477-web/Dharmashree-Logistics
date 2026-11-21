@@ -67,10 +67,18 @@ function PlaceRow({
         {place !== null && (
           <span className="font-display text-ink block text-2xl sm:text-3xl">{place}</span>
         )}
-        {lines.map((line) =>
-          line.href === null ? (
+        {lines.map((line) => {
+          const content =
+            line.rows && line.rows.length > 1
+              ? line.rows.map((row) => (
+                  <span key={row} className="block">
+                    {row}
+                  </span>
+                ))
+              : line.text;
+          return line.href === null ? (
             <span key={line.text} className="text-ink-2 mt-1 block text-sm font-light">
-              {line.text}
+              {content}
             </span>
           ) : (
             <a
@@ -78,10 +86,10 @@ function PlaceRow({
               href={line.href}
               className="text-ink-2 hover:text-brand-deep mt-1 block text-sm font-light underline-offset-4 hover:underline"
             >
-              {line.text}
+              {content}
             </a>
-          ),
-        )}
+          );
+        })}
       </dd>
     </div>
   );

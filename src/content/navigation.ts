@@ -25,6 +25,7 @@ export interface FooterLink {
 
 export interface FooterLine {
   readonly text: string;
+  readonly rows?: readonly string[];
   /** Address lines link to Maps when `mapsUrl` is set; otherwise plain text. */
   readonly href: string | null;
 }
@@ -223,7 +224,7 @@ export function contactLinks(): FooterLink[] {
    optional Maps link wraps the whole address instead of just its first row. */
 export const addressLabels = {
   corporateOffice: "Corporate office",
-  contactAddress: "Office",
+  contactAddress: "Transporter office",
   llpin: "CIN/LLP",
   transporterId: "Transporter ID",
   gstin: "GSTIN",
@@ -233,27 +234,39 @@ export const addressLabels = {
 export function corporateOfficeLine(): FooterLine | null {
   const lines = company.headquarters.addressLines;
   if (lines === null || lines.length === 0) return null;
-  return { text: lines.join(", "), href: company.headquarters.mapsUrl };
+  return { text: lines.join(", "), rows: lines, href: company.headquarters.mapsUrl };
 }
 
 /** The contact (postal) address as one line; `null` when it is not set. */
 export function contactAddressLine(): FooterLine | null {
   const contact = company.contactAddress;
   if (contact === null || contact.lines.length === 0) return null;
-  return { text: contact.lines.join(", "), href: contact.mapsUrl };
+  return { text: contact.lines.join(", "), rows: contact.lines, href: contact.mapsUrl };
 }
 
 /** Registration numbers, plain text, each dropped when its fact is `null`. */
 export function registrationLines(): FooterLine[] {
   const lines: FooterLine[] = [];
-  if (company.llpin !== null) {
-    lines.push({ text: `${addressLabels.llpin} ${company.llpin}`, href: null });
-  }
   if (company.transporterId !== null) {
-    lines.push({ text: `${addressLabels.transporterId} ${company.transporterId}`, href: null });
+    lines.push({
+      text: `${addressLabels.transporterId} ${company.transporterId}`,
+      rows: [addressLabels.transporterId, company.transporterId],
+      href: null,
+    });
+  }
+  if (company.llpin !== null) {
+    lines.push({
+      text: `${addressLabels.llpin} ${company.llpin}`,
+      rows: [`${addressLabels.llpin} ${company.llpin}`],
+      href: null,
+    });
   }
   if (company.gstin !== null) {
-    lines.push({ text: `${addressLabels.gstin} ${company.gstin}`, href: null });
+    lines.push({
+      text: `${addressLabels.gstin} ${company.gstin}`,
+      rows: [`${addressLabels.gstin} ${company.gstin}`],
+      href: null,
+    });
   }
   return lines;
 }
@@ -331,7 +344,11 @@ export function contactGroups(): ContactGroup[] {
   add(
     "registration",
     "places",
-    registrationLines().map((line) => ({ rows: [line.text], href: null, external: false })),
+    registrationLines().map((line) => ({
+      rows: line.rows ?? [line.text],
+      href: null,
+      external: false,
+    })),
   );
   return groups;
 }

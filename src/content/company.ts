@@ -9,8 +9,10 @@ export const company: Company = {
   headquarters: {
     city: "Surat",
     state: "Gujarat",
-    addressLines: null,
-    mapsUrl: null,
+    addressLines: ["G/No. 50, Niyol Transport Nagar", "Surat, Gujarat - 394325"],
+    /* A Maps search for the printed address — a link, not a pinned location. */
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=G%2FNo.%2050%20Niyol%20Transport%20Nagar%20Surat%20Gujarat%20394325",
   },
   contactAddress: {
     city: "Sandila",
