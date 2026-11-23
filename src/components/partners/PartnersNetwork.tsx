@@ -68,12 +68,20 @@ function PartnerList() {
                     <div className="flex flex-col gap-5 pb-6 pl-10 sm:pl-12">
                       <div className="flex flex-col gap-1">
                         <p className="label-caps">{copy.addressLabel}</p>
-                        <address className="text-ink-2 text-sm leading-relaxed font-light not-italic">
-                          {partner.addressLines.map((line) => (
-                            <span key={line} className="block">
-                              {line}
-                            </span>
-                          ))}
+                        <address className="not-italic">
+                          <a
+                            href={partner.mapsUrl}
+                            target="_blank"
+                            rel="noopener"
+                            aria-label={`${partner.name} address in ${partner.city} on Google Maps`}
+                            className="text-ink-2 hover:text-brand-deep block text-sm leading-relaxed font-light transition-colors duration-200 underline-offset-4 hover:underline"
+                          >
+                            {partner.addressLines.map((line) => (
+                              <span key={line} className="block">
+                                {line}
+                              </span>
+                            ))}
+                          </a>
                         </address>
                       </div>
                       {partner.phones.length > 0 ? (

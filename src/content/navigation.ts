@@ -250,7 +250,7 @@ export function registrationLines(): FooterLine[] {
   if (company.transporterId !== null) {
     lines.push({
       text: `${addressLabels.transporterId} ${company.transporterId}`,
-      rows: [addressLabels.transporterId, company.transporterId],
+      rows: [`${addressLabels.transporterId} ${company.transporterId}`],
       href: null,
     });
   }

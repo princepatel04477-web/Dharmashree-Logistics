@@ -23,12 +23,20 @@ export function BranchList() {
             </h3>
             <p className="label-caps">{partner.name}</p>
           </div>
-          <address className="text-ink-2 text-sm leading-relaxed font-light not-italic">
-            {partner.addressLines.map((line) => (
-              <span key={line} className="block">
-                {line}
-              </span>
-            ))}
+          <address className="not-italic">
+            <a
+              href={partner.mapsUrl}
+              target="_blank"
+              rel="noopener"
+              aria-label={`${partner.name} address in ${partner.city} on Google Maps`}
+              className="text-ink-2 hover:text-brand-deep block text-sm leading-relaxed font-light transition-colors duration-200 underline-offset-4 hover:underline"
+            >
+              {partner.addressLines.map((line) => (
+                <span key={line} className="block">
+                  {line}
+                </span>
+              ))}
+            </a>
           </address>
           {partner.phones.length > 0 && (
             <ul aria-label={contact.branches.phonesLabel} className="flex flex-col">

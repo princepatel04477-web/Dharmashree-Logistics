@@ -12,7 +12,9 @@ import { PinnedSteps } from "@/components/motion/PinnedSteps";
 import { Reveal } from "@/components/motion/Reveal";
 import { SectionHeading } from "@/components/motion/SectionHeading";
 import { HeritageTimeline } from "@/components/vendor/origin";
+import { BranchList } from "@/components/contact/BranchList";
 import { about } from "@/content/about";
+import { contact } from "@/content/contact";
 import { images } from "@/content/images";
 import { industries } from "@/content/industries";
 import { services } from "@/content/services";
@@ -215,6 +217,22 @@ export default function AboutPage() {
           </div>
         </section>
       )}
+
+      {/* ——— Branches and delivery partners ——— */}
+      <section className="bg-brand-tint border-line border-t py-14 sm:py-16 lg:py-20">
+        <div className="wrap flex flex-col gap-10">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="flex flex-col gap-2">
+              <h2 className={SECTION_TITLE}>{contact.branches.title}</h2>
+              <p className="text-ink-2 max-w-measure text-sm font-light">
+                {contact.branches.body}
+              </p>
+            </div>
+            <ArrowLink href="/partners" label={contact.branches.partnersLink} />
+          </div>
+          <BranchList />
+        </div>
+      </section>
 
       <QuoteBand />
     </>

@@ -2,12 +2,11 @@ import { quoteCta } from "./navigation";
 import type { Partner } from "./types";
 
 /* `/partners` (Prompt 13). The directory is a fact list from the company
-   profile — each partner's name, address and phone numbers exactly as the
-   profile prints them (E.164 here, grouped `+91 XXXXX XXXXX` on screen). A
-   partner whose city is a network hub names it in `hubId`; one whose city is
-   not (Hardoi) carries `null`, and the map pins it from `latLng`, which is
-   geography rather than a claim. Sandila's profile entry carries no phone, so
-   its list is empty and the row shows no call link. */
+   profile — each partner's name, address, Google Maps link, and phone numbers
+   (E.164 here, grouped `+91 XXXXX XXXXX` on screen). A partner whose city is a
+   network hub names it in `hubId`; one whose city is not (Hardoi) carries
+   `null`, and the map pins it from `latLng`, which is geography rather than a
+   claim. */
 
 export const partners: readonly Partner[] = [
   {
@@ -15,7 +14,9 @@ export const partners: readonly Partner[] = [
     name: "KRC Transport",
     city: "Lucknow",
     addressLines: ["Aishbagh, Malviya Nagar Tiraha", "Gupta Market, Lucknow", "Uttar Pradesh"],
-    phones: ["+918090408899", "+919628180992", "+919305182357", "+919424092450"],
+    phones: ["+919424092450"],
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Aishbagh%2C%20Malviya%20Nagar%20Tiraha%2C%20Gupta%20Market%2C%20Lucknow%2C%20Uttar%20Pradesh",
     hubId: "lucknow",
     latLng: [26.8467, 80.9462],
   },
@@ -24,7 +25,9 @@ export const partners: readonly Partner[] = [
     name: "Roshan Freight Carrier",
     city: "Kanpur",
     addressLines: ["Transport Nagar, Cooperganj", "Kanpur, Uttar Pradesh – 208023"],
-    phones: ["+919336113507", "+919424092450"],
+    phones: ["+919424092450"],
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Transport%20Nagar%2C%20Cooperganj%2C%20Kanpur%2C%20Uttar%20Pradesh%20208023",
     hubId: "kanpur",
     latLng: [26.4499, 80.3319],
   },
@@ -32,8 +35,13 @@ export const partners: readonly Partner[] = [
     id: "sandila-verma",
     name: "Verma Transport",
     city: "Sandila",
-    addressLines: ["Sandila", "Uttar Pradesh"],
-    phones: [],
+    addressLines: [
+      "Sandila-Bangarmau Road, near best furniture",
+      "Hardoi district, Uttar Pradesh – 241204",
+    ],
+    phones: ["+919424092450"],
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Sandila-Bangarmau%20Road%20near%20best%20furniture%20Sandila%20Hardoi%20Uttar%20Pradesh%20241204",
     hubId: "sandila",
     latLng: [27.0667, 80.5],
   },
@@ -42,7 +50,9 @@ export const partners: readonly Partner[] = [
     name: "Dwivedi Transport Corporation (Regd)",
     city: "Hardoi",
     addressLines: ["Near FCI, Lucknow Road", "Hardoi, Uttar Pradesh"],
-    phones: ["+919335900903", "+917518266307", "+919424092450"],
+    phones: ["+919424092450"],
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Near%20FCI%2C%20Lucknow%20Road%2C%20Hardoi%2C%20Uttar%20Pradesh",
     hubId: null,
     latLng: [27.3964, 80.1316],
   },
@@ -51,7 +61,9 @@ export const partners: readonly Partner[] = [
     name: "Raunak Goods Carriers",
     city: "Raebareli",
     addressLines: ["Fish Market, Opposite Station Road", "Raebareli, Uttar Pradesh"],
-    phones: ["+919336778571", "+918090408899", "+919424092450", "+919628180992"],
+    phones: ["+919424092450"],
+    mapsUrl:
+      "https://www.google.com/maps/search/?api=1&query=Fish%20Market%2C%20Opposite%20Station%20Road%2C%20Raebareli%2C%20Uttar%20Pradesh",
     hubId: "rai-barelly",
     latLng: [26.2124, 81.2325],
   },

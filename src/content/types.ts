@@ -195,6 +195,7 @@ export interface Partner {
   readonly city: string;
   readonly addressLines: readonly string[];
   readonly phones: readonly string[];
+  readonly mapsUrl: string;
   readonly hubId: string | null;
   readonly latLng: readonly [number, number];
 }
