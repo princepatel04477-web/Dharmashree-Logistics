@@ -49,7 +49,16 @@ export interface ContactEntry {
 /** A labelled block of contact facts ("Phone", "Corporate office", …).
     `channels` are ways to reach the desk; `places` are where it is and who it is. */
 export interface ContactGroup {
-  readonly id: "phone" | "email" | "whatsapp" | "website" | "office" | "desk" | "registration";
+  readonly id:
+    | "phone"
+    | "email"
+    | "whatsapp"
+    | "website"
+    | "office"
+    | "desk"
+    | "registration"
+    | "transporterId"
+    | "llpin";
   readonly label: string;
   readonly side: "channels" | "places";
   readonly entries: readonly ContactEntry[];
@@ -250,21 +259,21 @@ export function registrationLines(): FooterLine[] {
   if (company.transporterId !== null) {
     lines.push({
       text: `${addressLabels.transporterId} ${company.transporterId}`,
-      rows: [`${addressLabels.transporterId} ${company.transporterId}`],
+      rows: [addressLabels.transporterId, company.transporterId],
       href: null,
     });
   }
   if (company.llpin !== null) {
     lines.push({
       text: `${addressLabels.llpin} ${company.llpin}`,
-      rows: [`${addressLabels.llpin} ${company.llpin}`],
+      rows: [addressLabels.llpin, company.llpin],
       href: null,
     });
   }
   if (company.gstin !== null) {
     lines.push({
       text: `${addressLabels.gstin} ${company.gstin}`,
-      rows: [`${addressLabels.gstin} ${company.gstin}`],
+      rows: [addressLabels.gstin, company.gstin],
       href: null,
     });
   }
@@ -279,6 +288,8 @@ export const contactGroupLabels: Record<ContactGroup["id"], string> = {
   office: addressLabels.corporateOffice,
   desk: addressLabels.contactAddress,
   registration: "Registration",
+  transporterId: addressLabels.transporterId,
+  llpin: addressLabels.llpin,
 };
 
 /* ——— Contact groups shared by the footer and the mobile menu ———
@@ -341,15 +352,24 @@ export function contactGroups(): ContactGroup[] {
       ? []
       : [{ rows: desk.lines, href: desk.mapsUrl, external: true }],
   );
-  add(
-    "registration",
-    "places",
-    registrationLines().map((line) => ({
-      rows: line.rows ?? [line.text],
-      href: null,
-      external: false,
-    })),
-  );
+  if (company.transporterId !== null) {
+    add("transporterId", "places", [
+      {
+        rows: [company.transporterId],
+        href: null,
+        external: false,
+      },
+    ]);
+  }
+  if (company.llpin !== null) {
+    add("llpin", "places", [
+      {
+        rows: [company.llpin],
+        href: null,
+        external: false,
+      },
+    ]);
+  }
   return groups;
 }
 

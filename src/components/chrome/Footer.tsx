@@ -111,26 +111,38 @@ export function Footer() {
 
           {footer.reach.groups.length > 0 && (
             <section aria-labelledby="footer-reach" className="lg:col-span-5">
-              <h2 id="footer-reach" className="label-caps text-on-deep mb-5">
-                {footer.reach.title}
-              </h2>
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                 {(["channels", "places"] as const).map((side) => {
                   const groups = footer.reach.groups.filter((group) => group.side === side);
                   if (groups.length === 0) return null;
                   return (
-                    <dl key={side} className="flex flex-col gap-6">
-                      {groups.map((group) => (
-                        <div key={group.id}>
-                          <dt className="label-caps text-on-deep-text mb-1.5">{group.label}</dt>
-                          {group.entries.map((entry) => (
-                            <dd key={entry.rows.join(" ")}>
-                              <ContactEntryRow entry={entry} />
-                            </dd>
-                          ))}
-                        </div>
-                      ))}
-                    </dl>
+                    <div key={side}>
+                      {side === "channels" && (
+                        <h2 id="footer-reach" className="label-caps text-on-deep mb-3">
+                          {footer.reach.title}
+                        </h2>
+                      )}
+                      <dl className="flex flex-col gap-6">
+                        {groups.map((group, groupIndex) => (
+                          <div key={group.id}>
+                            <dt
+                              className={
+                                side === "places" && groupIndex === 0
+                                  ? "label-caps text-on-deep mb-3"
+                                  : "label-caps text-on-deep-text mb-1.5"
+                              }
+                            >
+                              {group.label}
+                            </dt>
+                            {group.entries.map((entry) => (
+                              <dd key={entry.rows.join(" ")}>
+                                <ContactEntryRow entry={entry} />
+                              </dd>
+                            ))}
+                          </div>
+                        ))}
+                      </dl>
+                    </div>
                   );
                 })}
               </div>
