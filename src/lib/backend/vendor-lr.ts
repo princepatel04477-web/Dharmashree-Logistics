@@ -48,7 +48,7 @@ export interface LrQuery {
     and trailing T / TO / TWO typos, yielding a clean string for LR parsing. */
 export function cleanLrInput(input: string): string {
   let v = input.trim().toUpperCase();
-  v = v.replace(/\b(IPHONE|HYPHEN|DASH|MINUS|SLASH)\b/gi, "-");
+  v = v.replace(/\b(HYPHEN|HYPHEM|DASH|MINUS|SLASH)\b/gi, "-");
   const words: Record<string, string> = {
     ZERO: "0",
     ONE: "1",

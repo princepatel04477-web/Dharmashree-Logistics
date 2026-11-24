@@ -268,7 +268,7 @@ export const LR_CODES = ["LrRequired", "LrFormat"] as const;
 export type LrCode = (typeof LR_CODES)[number];
 
 /** LR numbers are quoted in upper case, sometimes with a hyphen or a slash:
-    `normalizeLr` upper-cases, cleans voice dictation artifacts (e.g. "iPhone" → "-",
+    `normalizeLr` upper-cases, cleans voice dictation artifacts (e.g. "hyphen" → "-",
     trailing "T" → "2"), and formats as branch-number (e.g. SRT-2102). */
 export function normalizeLr(value: string): string {
   const query = parseLrQuery(value);

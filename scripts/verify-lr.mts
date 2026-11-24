@@ -31,9 +31,9 @@ for (const input of [
   "SRT3230",
   "SRT - 3230",
   "SRT -3230",
-  "SRT iPhone 3230",
-  "SRT iPhone 323T",
   "SRT hyphen 3230",
+  "SRT hyphem 3230",
+  "SRT hyphen 323T",
   "SRT dash 3230",
 ]) {
   const parsed = parseLrQuery(input);
@@ -43,7 +43,9 @@ for (const input of [
   );
 }
 check(parseLrQuery("SRT -2102")?.lrno === "2102", "SRT -2102 parsed as 2102");
-check(parseLrQuery("SRT iPhone 210T")?.lrno === "2102", "SRT iPhone 210T parsed as 2102");
+check(parseLrQuery("SRT hyphen 2102")?.lrno === "2102", "SRT hyphen 2102 parsed as 2102");
+check(parseLrQuery("SRT hyphem 2102")?.lrno === "2102", "SRT hyphem 2102 parsed as 2102");
+check(parseLrQuery("SRT iPhone 2102") === null, "iPhone is not treated as a hyphen");
 for (const input of ["3230", "SRT-", "12-AB", ""]) {
   check(parseLrQuery(input) === null, `"${input}" accepted, but it is not a whole LR number`);
 }
