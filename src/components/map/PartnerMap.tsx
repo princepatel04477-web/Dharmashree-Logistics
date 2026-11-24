@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { partners, partnersPage } from "@/content/partners";
+import type { Partner } from "@/content/types";
 import { cn } from "@/lib/utils";
 import { INDIA_PATHS, INDIA_VIEWBOX } from "./india-outline";
 import { INDIA_STATES } from "./india-states";
@@ -56,11 +57,17 @@ function cropAround(points: readonly { x: number; y: number }[]): Crop {
   return { x, y, w, h };
 }
 
-export function PartnerMap({ className }: { className?: string }) {
+export function PartnerMap({
+  className,
+  partners: partnerList = partners,
+}: {
+  className?: string;
+  partners?: readonly Partner[];
+}) {
   const [selectedId, select] = useMapSelection();
 
   const { crop, pins } = useMemo(() => {
-    const placed: Pin[] = partners.map((partner) => {
+    const placed: Pin[] = partnerList.map((partner) => {
       const point = projectPoint(partner.latLng[0], partner.latLng[1]);
       return {
         id: partner.id,
@@ -70,7 +77,7 @@ export function PartnerMap({ className }: { className?: string }) {
       };
     });
     return { crop: cropAround(placed), pins: placed };
-  }, []);
+  }, [partnerList]);
 
   return (
     <div

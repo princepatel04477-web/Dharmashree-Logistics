@@ -246,3 +246,117 @@ export async function loadAnnouncement(db: D1Database): Promise<Announcement> {
     return NO_ANNOUNCEMENT;
   }
 }
+
+/* ——— Custom Delivery Partners ——— */
+
+export const DELIVERY_PARTNERS_KEY = "delivery_partners";
+
+export interface CustomDeliveryPartner {
+  id: string;
+  name: string;
+  city: string;
+  addressLines: string[];
+  phones: string[];
+  mapsUrl: string;
+  createdAt: string;
+}
+
+export function buildGoogleMapsUrl(address: string, city: string): string {
+  const query = [address.trim(), city.trim()].filter(Boolean).join(", ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+}
+
+export function sanitizeCustomPartner(value: unknown): CustomDeliveryPartner | null {
+  if (typeof value !== "object" || value === null) return null;
+  const item = value as Record<string, unknown>;
+  if (
+    typeof item.id !== "string" ||
+    typeof item.name !== "string" ||
+    typeof item.city !== "string"
+  ) {
+    return null;
+  }
+  const id = item.id.trim();
+  const name = item.name.trim();
+  const city = item.city.trim();
+  if (!id || !name || !city) return null;
+
+  let addressLines: string[] = [];
+  if (Array.isArray(item.addressLines)) {
+    addressLines = item.addressLines
+      .filter((line): line is string => typeof line === "string")
+      .map((l) => l.trim())
+      .filter(Boolean);
+  } else if (typeof item.address === "string") {
+    addressLines = item.address
+      .split(/[\r\n]+/)
+      .map((l) => l.trim())
+      .filter(Boolean);
+  }
+
+  let phones: string[] = [];
+  if (Array.isArray(item.phones)) {
+    phones = item.phones
+      .filter((p): p is string => typeof p === "string")
+      .map((p) => p.trim())
+      .filter(Boolean);
+  } else if (typeof item.phone === "string") {
+    phones = item.phone
+      .split(/[,|/]+/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+  }
+
+  let mapsUrl = typeof item.mapsUrl === "string" ? item.mapsUrl.trim() : "";
+  if (!mapsUrl) {
+    mapsUrl = buildGoogleMapsUrl(addressLines.join(", "), city);
+  }
+
+  const createdAt = typeof item.createdAt === "string" ? item.createdAt : new Date().toISOString();
+
+  return {
+    id,
+    name,
+    city,
+    addressLines,
+    phones,
+    mapsUrl,
+    createdAt,
+  };
+}
+
+export function readDeliveryPartners(value: unknown): CustomDeliveryPartner[] {
+  if (!Array.isArray(value)) return [];
+  const result: CustomDeliveryPartner[] = [];
+  for (const item of value) {
+    const partner = sanitizeCustomPartner(item);
+    if (partner !== null) result.push(partner);
+  }
+  return result;
+}
+
+export async function loadDeliveryPartners(db: D1Database): Promise<CustomDeliveryPartner[]> {
+  const row = await db
+    .prepare("SELECT value FROM settings WHERE key = ?")
+    .bind(DELIVERY_PARTNERS_KEY)
+    .first<{ value: string }>();
+  if (row === null) return [];
+  try {
+    return readDeliveryPartners(JSON.parse(row.value) as unknown);
+  } catch {
+    return [];
+  }
+}
+
+export async function saveDeliveryPartners(
+  db: D1Database,
+  partners: CustomDeliveryPartner[],
+): Promise<void> {
+  await db
+    .prepare(
+      "INSERT INTO settings (key, value, updated_at) VALUES (?, ?, ?) " +
+        "ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at",
+    )
+    .bind(DELIVERY_PARTNERS_KEY, JSON.stringify(partners), new Date().toISOString())
+    .run();
+}

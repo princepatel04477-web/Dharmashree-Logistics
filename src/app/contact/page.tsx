@@ -13,7 +13,6 @@ import {
   contactLinks,
   corporateOfficeLine,
   quoteCta,
-  registrationLines,
   type FooterLine,
   type FooterLink,
 } from "@/content/navigation";
@@ -65,7 +64,9 @@ function PlaceRow({
       <dt className="label-caps">{label}</dt>
       <dd className="sm:text-right">
         {place !== null && (
-          <span className="font-display text-ink block text-2xl sm:text-3xl">{place}</span>
+          <span className="font-display text-ink block text-2xl [overflow-wrap:anywhere] sm:text-3xl">
+            {place}
+          </span>
         )}
         {lines.map((line) => {
           const content =
@@ -99,7 +100,6 @@ export default function ContactPage() {
   const links = contactLinks();
   const office = corporateOfficeLine();
   const address = contactAddressLine();
-  const registration = registrationLines();
 
   return (
     <>
@@ -150,8 +150,19 @@ export default function ContactPage() {
             {address !== null && (
               <PlaceRow label={contact.officeLabel} place={contact.office} lines={[address]} />
             )}
-            {registration.length > 0 && (
-              <PlaceRow label={contact.registrationLabel} place={null} lines={registration} />
+            {company.llpin !== null && (
+              <PlaceRow
+                label={contact.registrationLabel}
+                place={company.llpin}
+                lines={[{ text: "CIN/LLP", rows: ["CIN/LLP"], href: null }]}
+              />
+            )}
+            {company.transporterId !== null && (
+              <PlaceRow
+                label={contact.transporterIdLabel}
+                place={company.transporterId}
+                lines={[]}
+              />
             )}
             {company.supportHours !== null && (
               <div className="flex flex-col gap-1 py-5 sm:flex-row sm:items-baseline sm:justify-between">

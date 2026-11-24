@@ -35,6 +35,7 @@ export const contact = {
   corporateOfficeLabel: "Corporate office",
   corporateOffice: `${company.headquarters.city}, ${company.headquarters.state}`,
   registrationLabel: "Registration",
+  transporterIdLabel: "Transporter ID",
   branchesLabel: "Also dispatching from",
 
   messageIndex: "02",

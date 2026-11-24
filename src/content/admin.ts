@@ -26,12 +26,51 @@ export const admin = {
 
   tabsLabel: "Admin sections",
   tabs: {
+    partnerDirectory: "Delivery partners",
+    partner: "Partner applications",
     truck: "Truck attachments",
     message: "Messages",
     quote: "Quote requests",
-    partner: "Delivery partners",
     announcement: "Announcement",
-  } satisfies Record<DeskKind | "announcement", string>,
+  } as Record<DeskKind | "partnerDirectory" | "announcement", string>,
+
+  partnersManager: {
+    title: "Delivery partners directory",
+    lede: "Add, view and manage delivery partners across Uttar Pradesh. Changes appear immediately on /contact and /partners.",
+    addTitle: "Add delivery partner",
+    cityLabel: "City *",
+    cityPlaceholder: "e.g. Varanasi, Prayagraj, Gorakhpur",
+    nameLabel: "Partner / firm name *",
+    namePlaceholder: "e.g. KRC Transport, Shiv Freight Carriers",
+    addressLabel: "Address *",
+    addressPlaceholder: "e.g. Shop 12, Transport Nagar, Varanasi, Uttar Pradesh - 221001",
+    phoneLabel: "Mobile number *",
+    phonePlaceholder: "e.g. +91 94240 92450 or 9424092450",
+    mapsLabel: "Google Maps link",
+    mapsAutoLabel: "Auto-generate Maps link from address",
+    mapsCustomLabel: "Custom Maps link",
+    mapsPreview: "Preview on Google Maps ↗",
+    submit: "Add delivery partner",
+    submitting: "Adding delivery partner…",
+    saved: "Delivery partner added successfully.",
+    delete: "Remove",
+    deleting: "Removing…",
+    confirmDelete: "Are you sure you want to remove this delivery partner?",
+    empty: "No custom delivery partners added yet. The default partners from the company profile are active.",
+    baseCount: (count: number): string =>
+      `${String(count)} default partner${count === 1 ? "" : "s"} from company profile`,
+    customCount: (count: number): string =>
+      `${String(count)} custom added partner${count === 1 ? "" : "s"}`,
+    filterLabel: "Search partners",
+    filterPlaceholder: "City, name, phone, address…",
+    defaultBadge: "Base profile",
+    customBadge: "Added partner",
+    errors: {
+      Required: "Please fill all required fields: City, Name, Address, and Mobile number.",
+      Failed: "Could not save delivery partner. Try again.",
+      Network: "Network error. Please check your connection.",
+    },
+  },
 
   list: {
     receivedAt: "Received at",

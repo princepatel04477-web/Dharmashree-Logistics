@@ -27,7 +27,7 @@ export const company: Company = {
   },
   branches: [],
   phone: "+919424092450",
-  otherPhones: ["+919838838676", "+919875065144"],
+  otherPhones: ["+919875065144"],
   whatsapp: null,
   email: "admin@dharmashreegroup.com",
   website: "https://dharmashreegroup.com",

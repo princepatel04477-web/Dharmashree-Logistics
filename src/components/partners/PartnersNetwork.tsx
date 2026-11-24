@@ -3,8 +3,10 @@
 import { AnimatePresence, motion } from "motion/react";
 import { MapSelectionProvider, useMapSelection } from "@/components/map/MapSelection";
 import { PartnerMap } from "@/components/map/PartnerMap";
-import { partners, partnersPage } from "@/content/partners";
+import { partnersPage } from "@/content/partners";
+import type { Partner } from "@/content/types";
 import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
+import { useDeliveryPartners } from "@/lib/delivery-partners";
 import { formatPhoneIN } from "@/lib/format";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
 import { cn, numbered } from "@/lib/utils";
@@ -16,7 +18,7 @@ import { cn, numbered } from "@/lib/utils";
    height + fade); the numbers are plain `tel:` anchors (house rule 10). A
    partner with no number published says so instead of showing a dead link. */
 
-function PartnerList() {
+function PartnerList({ partners }: { partners: readonly Partner[] }) {
   const reduced = useReducedMotionSafe();
   const [selectedId, select] = useMapSelection();
   const copy = partnersPage.network;
@@ -114,14 +116,16 @@ function PartnerList() {
 }
 
 export function PartnersNetwork() {
+  const { allPartners } = useDeliveryPartners();
+
   return (
     <MapSelectionProvider>
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-10">
         <div className="lg:col-span-5">
-          <PartnerMap className="mx-auto max-w-[26rem] lg:max-w-none" />
+          <PartnerMap partners={allPartners} className="mx-auto max-w-[26rem] lg:max-w-none" />
         </div>
         <div className="lg:col-span-7">
-          <PartnerList />
+          <PartnerList partners={allPartners} />
         </div>
       </div>
     </MapSelectionProvider>
