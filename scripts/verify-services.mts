@@ -2,9 +2,11 @@
    stay one-for-one, the shape of every slug, and the fleet notes that no service
    claims. Run with `npm run verify:services`. */
 
+import { about } from "../src/content/about";
 import { company } from "../src/content/company";
 import { fleetVehicles, notedVehicleNames } from "../src/content/fleet";
-import { serviceImageKey, services } from "../src/content/services";
+import { serviceImage } from "../src/content/images";
+import { services } from "../src/content/services";
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
@@ -38,15 +40,57 @@ function main(): void {
         fail(`${service.slug}: question with an empty side`);
       }
     }
-    /* An override may point anywhere in the manifest, but it still has to look
-       like a manifest key: `<group>/<name>`. */
-    if (service.image !== null && !/^[a-z0-9-]+\/[a-z0-9-]+$/.test(service.image)) {
-      fail(`${service.slug}: image "${service.image}" is not a <group>/<name> manifest key`);
-    }
   });
 
   const slugs = new Set(services.map((service) => service.slug));
   if (slugs.size !== services.length) fail("duplicate slug in services.ts");
+
+  /* The About page's "Which business are you?" selector links by slug. */
+  for (const kind of about.kinds.list) {
+    if (kind.services.length === 0) fail(`about.kinds: "${kind.label}" lists no services`);
+    for (const slug of kind.services) {
+      if (!slugs.has(slug)) fail(`about.kinds: "${kind.label}" links to unknown service "${slug}"`);
+    }
+  }
+
+  /* Each signature block carries the data its renderer needs. */
+  for (const service of services) {
+    const signature = service.signature;
+    if (
+      signature.kind === "journey" &&
+      (signature.stops.length < 2 || signature.segments.length < 2)
+    ) {
+      fail(`${service.slug}: journey needs at least two stops and two segments`);
+    }
+    if (signature.kind === "dedicated" && signature.flow.length < 2) {
+      fail(`${service.slug}: dedicated signature needs at least two flow legs`);
+    }
+    if (
+      signature.kind === "selector" &&
+      (signature.options.length < 2 || signature.modes.length < 2)
+    ) {
+      fail(`${service.slug}: selector needs at least two options and two modes`);
+    }
+    if (
+      signature.kind === "loop" &&
+      (signature.stages.length < 2 || signature.capabilities.length === 0)
+    ) {
+      fail(`${service.slug}: loop needs stages and capabilities`);
+    }
+    if (service.headline.trim() === "") fail(`${service.slug}: empty headline`);
+  }
+
+  /* Vehicles named by the selector options must be real fleet names or the
+     generic "A larger vehicle" the profile uses. */
+  const listedVehicles = new Set(services.flatMap((service) => [...service.vehicles]));
+  for (const service of services) {
+    if (service.signature.kind !== "selector") continue;
+    for (const option of service.signature.options) {
+      if (option.vehicle !== "A larger vehicle" && !listedVehicles.has(option.vehicle)) {
+        fail(`${service.slug}: option "${option.label}" names unknown vehicle "${option.vehicle}"`);
+      }
+    }
+  }
 
   const bullets = new Set<string>();
   for (const service of services) {
@@ -77,9 +121,11 @@ function main(): void {
   }
 
   for (const service of services) {
-    const key = serviceImageKey(service);
-    if (service.image === null && key !== `services/${service.slug}`) {
-      fail(`${service.slug}: default image key "${key}" does not follow services/<slug>`);
+    const slot = serviceImage(service.slug);
+    if (slot === null) {
+      fail(`${service.slug}: no photo slot in images.ts (services.<slug>)`);
+    } else if (!slot.key.startsWith("services/") || slot.alt.trim() === "") {
+      fail(`${service.slug}: photo slot "${slot.key}" is not a services/* key with alt text`);
     }
   }
 

@@ -5,23 +5,22 @@ import { IndustriesSection } from "@/components/home/IndustriesSection";
 import { NetworkSection } from "@/components/home/NetworkSection";
 import { ProcessSection } from "@/components/home/ProcessSection";
 import { QuoteBand } from "@/components/home/QuoteBand";
+import { ScaleSection } from "@/components/home/ScaleSection";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import { StatsStrip } from "@/components/home/StatsStrip";
 import { hero } from "@/content/home";
 
-/* Home page (Prompt 05). Editorial rhythm straight from Maa Sheetla: numbered
-   sections, one hairline between each, generous `--space-section` padding and
-   asymmetric 12-column grids — never a row of equal cards. The layout owns
-   `<main>`, so this route returns the sections only.
-
-   Section order: hero · stats ledger · services · network · process ·
-   industries · commitments · quote band. Two of them are data-gated and
-   therefore absent until their content exists: `services.ts` is still empty
-   and every company figure is null, so H2 and the stats strip render nothing
-   (house rule 4). */
+/* Home page. The layout owns `<main>`, so this route returns the sections
+   only. Section order and grounds: hero (photo under --brand-deep) · facts strip
+   (--brand) · scale trail (--paper-2) · services (white) · network (--brand-tint) · process (white) ·
+   industries (--brand-tint) · commitments (white) · quote band (photo under
+   --brand-deep), so the page alternates white and blue grounds all the way
+   down. Two sections are data-gated: the facts strip shows the four services
+   as chips until `company.ts` has the figures (house rule 4), and `services.ts`
+   being empty drops the services section. */
 
 export const metadata: Metadata = {
-  title: "Freight & Transport from Surat",
+  title: "Freight & Transport across India",
   description: hero.body,
 };
 
@@ -30,6 +29,7 @@ export default function Home() {
     <>
       <HeroSection />
       <StatsStrip />
+      <ScaleSection />
       <ServicesSection />
       <NetworkSection />
       <ProcessSection />

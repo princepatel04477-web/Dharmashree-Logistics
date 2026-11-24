@@ -20,6 +20,7 @@
    everything after "Continue" would ship unrendered. */
 
 import { readFileSync } from "node:fs";
+import { company } from "../src/content/company";
 import { createServer } from "node:http";
 import { renderToStaticMarkup } from "react-dom/server";
 import { QuoteAside } from "../src/components/quote/QuoteAside";
@@ -293,12 +294,12 @@ async function main(): Promise<void> {
     company: "Test & Co",
     phone: "09876543210",
     email: "desk@example.com",
-    service: "Part load (PTL)",
+    service: "Express parcel",
     to: "Meerut",
     weightKg: "1200.5",
     pickupDate: todayISODate(),
     notes: "Twelve bales, covered.",
-    sourcePage: "/quote/?service=part-load",
+    sourcePage: "/quote/?service=express-parcel",
   };
 
   function noop(): void {}
@@ -369,7 +370,7 @@ async function main(): Promise<void> {
     />,
   );
   check(review.includes("Check the request"), "review heading missing");
-  check(review.includes("Part load (PTL)"), "review does not carry the service");
+  check(review.includes("Express parcel"), "review does not carry the service");
   check(review.includes("1200.5 kg"), "review does not format the weight");
   check(review.includes("+91 98765 43210"), "review does not format the phone");
   check(review.includes("Send request"), "review has no submit button");
@@ -423,23 +424,50 @@ async function main(): Promise<void> {
 
   const aside = renderToStaticMarkup(<QuoteAside />);
   check(aside.includes("The desk"), "aside heading missing");
-  check(
-    aside.includes("Phone and WhatsApp appear here"),
-    "aside does not explain the missing numbers",
-  );
+  /* The channel checks follow the facts: with every channel null the page must
+     say so; with one published it must offer exactly that one. */
+  const hasChannel = company.whatsapp !== null || company.phone !== null || company.email !== null;
+  if (hasChannel) {
+    check(
+      company.email === null || aside.includes(`mailto:${company.email}`),
+      "aside does not link the published email",
+    );
+    check(
+      !aside.includes("appear here once"),
+      "aside says the numbers are missing while one is published",
+    );
+  } else {
+    check(
+      aside.includes("Phone and WhatsApp appear here"),
+      "aside does not explain the missing numbers",
+    );
+  }
 
   const panel = renderToStaticMarkup(<TrackPanel />);
-  check(
-    panel.includes("no way to pass an LR number on"),
-    "track panel does not state the missing channels",
-  );
-  check(!panel.includes("tracking-number"), "track panel offers a control with nowhere to send");
+  if (hasChannel) {
+    check(
+      panel.includes(
+        company.whatsapp !== null
+          ? "Continue on WhatsApp"
+          : company.email !== null
+            ? "Email the desk"
+            : "Call the desk",
+      ),
+      "track panel does not offer the published channel",
+    );
+  } else {
+    check(
+      panel.includes("no way to pass a tracking number on"),
+      "track panel does not state the missing channels",
+    );
+    check(!panel.includes("tracking-number"), "track panel offers a control with nowhere to send");
+  }
 
   const slip = renderToStaticMarkup(<LrSlip />);
   check(slip.includes("DharmaShree Logistics"), "slip does not carry the desk's name");
   check(slip.includes("<figcaption"), "slip has no caption");
   check((slip.match(/data-draw/g) ?? []).length >= 10, "slip is not drawn");
-  check(slip.includes("stroke-accent"), "the LR field is not in the accent");
+  check(slip.includes("stroke-brand"), "the LR field is not drawn in --brand (stroke-brand)");
   check(
     !/[0-9]{4}/.test(slip.replace(/viewBox|rx|text-\[|font-mono|[0-9.]+px/g, "")),
     "the slip contains something that looks like a real number",
@@ -549,24 +577,63 @@ async function main(): Promise<void> {
     "a missing endpoint must report Unconfigured, not throw",
   );
 
-  /* ——— 13. The prefill: ?service=<slug> and ?to=<hub id> ——— */
-  const prefilled = resolveQuoteEntry(null, "?service=part-load&to=meerut");
+  /* ——— 13. The prefill: ?service=<slug>, ?to=<hub id or name>, ?from= ——— */
+  const prefilled = resolveQuoteEntry(null, "?service=express-parcel&to=meerut");
   check(
-    prefilled.values.service === "Part load (PTL)",
-    `?service=part-load prefilled "${prefilled.values.service}" instead of the service name`,
+    prefilled.values.service === "Express parcel",
+    `?service=express-parcel prefilled "${prefilled.values.service}" instead of the service name`,
   );
   check(prefilled.values.to === "Meerut", `?to=meerut prefilled "${prefilled.values.to}"`);
 
-  const unknownPrefill = resolveQuoteEntry(null, "?service=nope&to=atlantis");
+  const unknownPrefill = resolveQuoteEntry(null, "?service=nope&to=");
   check(
     unknownPrefill.values.service === "" && unknownPrefill.values.to === "",
-    "an unknown service slug or hub id was written into the form",
+    "an unknown service slug or an empty destination was written into the form",
+  );
+
+  /* The home page's quote tab sends the lane as typed: a hub name resolves to
+     the hub, a city that is not on the map stays as text, and From is free text. */
+  const homeLane = resolveQuoteEntry(null, "?from=Surat&to=delhi%20ncr");
+  check(
+    homeLane.values.from === "Surat" && homeLane.values.to === "Delhi NCR",
+    `?from=/?to= from the home tab prefilled "${homeLane.values.from}" -> "${homeLane.values.to}"`,
+  );
+  check(
+    resolveQuoteEntry(null, "?to=Nagpur").values.to === "Nagpur",
+    "a destination that is not a hub was dropped instead of kept as text",
+  );
+  check(
+    resolveQuoteEntry(null, "?from=%20%20&to=").values.from === "",
+    "a blank From or To overwrote the form",
+  );
+  check(
+    resolveQuoteEntry(null, `?to=${"x".repeat(200)}`).values.to.length <= 60,
+    "an over-long destination was written into the form unclipped",
   );
 
   const noPrefill = resolveQuoteEntry(null, "");
   check(
     noPrefill.values.service === "" && noPrefill.values.to === "",
     "an empty query is not an empty form",
+  );
+
+  /* ?intent=pickup seeds the notes, but never over something already typed. */
+  const pickupIntent = resolveQuoteEntry(null, "?intent=pickup");
+  check(
+    pickupIntent.values.notes.startsWith("Pickup request"),
+    "?intent=pickup did not seed the notes",
+  );
+  const typedNotes = resolveQuoteEntry(
+    { values: { ...EMPTY_QUOTE, notes: "Twelve cartons" }, consent: false, step: 1 },
+    "?intent=pickup",
+  );
+  check(
+    typedNotes.values.notes === "Twelve cartons",
+    "?intent=pickup overwrote notes the visitor had typed",
+  );
+  check(
+    resolveQuoteEntry(null, "?intent=nope").values.notes === "",
+    "an unknown intent was written into the form",
   );
 
   /* The click that brought the visitor here is newer than the tab's memory. */
@@ -576,17 +643,17 @@ async function main(): Promise<void> {
       consent: true,
       step: 2,
     },
-    "?service=part-load&to=meerut",
+    "?service=express-parcel&to=meerut",
   );
   check(
-    draftFirst.values.service === "Part load (PTL)" && draftFirst.values.to === "Meerut",
+    draftFirst.values.service === "Express parcel" && draftFirst.values.to === "Meerut",
     "the query did not win over the draft",
   );
   check(draftFirst.consent && draftFirst.step === 2, "the rest of the draft was lost");
   check(draftFirst.values.name === "", "the prefill carried a field the query did not ask for");
 
   console.log(
-    `verify:quote OK — ${String(QUOTE_FIELDS.length)} payload fields against ${String(headers.length)} sheet columns; honeypot, required list and text/plain guarded; the client posts through a stand-in for Apps Script's redirect; the ?service=/?to= prefill resolves slugs and hub ids; ${String(QUOTE_FIELD_CODES.length)} quote codes and ${String(LR_CODES.length)} LR codes have copy; valid payload passes and every rule bites; steps 1–3, review (filled/blank/failed), confirmation, aside, track panel and slip all render`,
+    `verify:quote OK — ${String(QUOTE_FIELDS.length)} payload fields against ${String(headers.length)} sheet columns; honeypot, required list and text/plain guarded; the client posts through a stand-in for Apps Script's redirect; the ?service=/?to=/?intent= prefill resolves slugs, hub ids and the pickup intent; ${String(QUOTE_FIELD_CODES.length)} quote codes and ${String(LR_CODES.length)} LR codes have copy; valid payload passes and every rule bites; steps 1–3, review (filled/blank/failed), confirmation, aside, track panel and slip all render`,
   );
 }
 

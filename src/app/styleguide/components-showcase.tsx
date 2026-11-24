@@ -75,7 +75,7 @@ export function ComponentsShowcase() {
     <section aria-labelledby="sg-components" className="space-y-8">
       <div className="wrap space-y-3">
         <p className="section-index">04 — Components</p>
-        <h2 id="sg-components" className="font-display text-3xl font-light tracking-tight">
+        <h2 id="sg-components" className="font-display text-3xl tracking-tight">
           Vendor set, restyled to tokens
         </h2>
       </div>
@@ -86,7 +86,7 @@ export function ComponentsShowcase() {
             tag="h3"
             mode="word"
             text={company.name}
-            className="font-display text-3xl font-light tracking-tight"
+            className="font-display text-3xl tracking-tight"
           />
         </DemoPanel>
         <DemoPanel index="RB-2" title="SplitText + onComplete" note="Character mode, HQ line.">
@@ -95,13 +95,13 @@ export function ComponentsShowcase() {
         <DemoPanel index="RB-3" title="CountUp" note="en-IN grouping, derived counts.">
           <div className="flex gap-10">
             <div className="space-y-1">
-              <p className="font-display text-signal text-5xl font-light">
+              <p className="font-display text-brand text-5xl">
                 <CountUp to={company.services.length} duration={1.2} />
               </p>
               <p className="label-caps">Core services</p>
             </div>
             <div className="space-y-1">
-              <p className="font-display text-signal text-5xl font-light">
+              <p className="font-display text-brand text-5xl">
                 <CountUp to={company.industries.length} duration={1.2} />
               </p>
               <p className="label-caps">Industries served</p>
@@ -129,12 +129,12 @@ export function ComponentsShowcase() {
             className="font-mono text-xs tracking-[0.2em] uppercase"
           />
         </DemoPanel>
-        <DemoPanel index="RB-5" title="SpotlightCard" note="Service tiles, accent 8% max.">
+        <DemoPanel index="RB-5" title="SpotlightCard" note="Service tiles, brand wash 8% max.">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {company.services.slice(0, 2).map((service, position) => (
               <SpotlightCard key={service} className="p-6">
                 <p className="section-index">0{position + 1}</p>
-                <p className="font-display mt-2 text-xl font-light">{service}</p>
+                <p className="font-display mt-2 text-xl">{service}</p>
               </SpotlightCard>
             ))}
           </div>
@@ -213,7 +213,7 @@ export function ComponentsShowcase() {
               className="border-line bg-paper-2 w-[76vw] shrink-0 space-y-2 border p-8 sm:w-[340px]"
             >
               <p className="section-index">0{position + 1}</p>
-              <h3 className="font-display text-2xl font-light">{industry}</h3>
+              <h3 className="font-display text-2xl">{industry}</h3>
             </article>
           ))}
         </ScrollCarousel>
@@ -225,7 +225,7 @@ export function ComponentsShowcase() {
             {company.services.slice(0, 3).map((service) => (
               <InteractiveCard key={service} className="p-6">
                 <p className="label-caps">Capability</p>
-                <p className="font-display mt-2 text-lg font-light">{service}</p>
+                <p className="font-display mt-2 text-lg">{service}</p>
               </InteractiveCard>
             ))}
           </div>

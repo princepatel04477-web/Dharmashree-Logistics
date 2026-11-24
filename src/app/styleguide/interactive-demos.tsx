@@ -47,7 +47,7 @@ export function RevealDemo() {
         mode="char"
         text={`${company.headquarters.city} ${company.headquarters.state}`}
         onComplete={() => setDone(true)}
-        className="font-display text-2xl font-light tracking-tight"
+        className="font-display text-2xl tracking-tight"
       />
       <p className="label-caps">{done ? "onComplete fired" : "revealing on scroll"}</p>
     </div>

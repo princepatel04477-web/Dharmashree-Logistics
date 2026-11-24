@@ -150,7 +150,7 @@ function StepperTrigger({ asChild = false, className, children, ...props }: Step
   return (
     <button
       className={cn(
-        "inline-flex cursor-pointer items-center gap-3 rounded-xs disabled:pointer-events-none disabled:opacity-50",
+        "tap-target inline-flex cursor-pointer items-center gap-3 rounded-xs disabled:pointer-events-none disabled:opacity-50",
         className,
       )}
       data-slot="stepper-trigger"

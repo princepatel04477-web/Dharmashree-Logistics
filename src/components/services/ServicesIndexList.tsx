@@ -3,7 +3,7 @@
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 import ResponsiveImage, { hasImage } from "@/components/media/ResponsiveImage";
-import { serviceImageKey } from "@/content/services";
+import { serviceImage } from "@/content/images";
 import type { Service } from "@/content/types";
 import { useHoverCapable } from "@/hooks/use-hover-capable";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
@@ -50,7 +50,10 @@ export function ServicesIndexList({ services }: ServicesIndexListProps) {
   const reduced = useReducedMotionSafe();
   const canHover = useHoverCapable();
   const isWide = useMediaQuery("(min-width: 64rem)");
-  const anyPhotos = services.some((service) => hasImage(serviceImageKey(service)));
+  const anyPhotos = services.some((service) => {
+    const slot = serviceImage(service.slug);
+    return slot !== null && hasImage(slot.key);
+  });
   const previewReady = isWide && canHover && !reduced && anyPhotos;
 
   const handlePointerMove = (event: ReactPointerEvent<HTMLOListElement>): void => {
@@ -83,6 +86,7 @@ export function ServicesIndexList({ services }: ServicesIndexListProps) {
   };
 
   const active = activeIndex === null ? undefined : services[activeIndex];
+  const activeSlot = active === undefined ? null : serviceImage(active.slug);
 
   return (
     <div className="relative">
@@ -109,8 +113,8 @@ export function ServicesIndexList({ services }: ServicesIndexListProps) {
           className="pointer-events-none absolute top-0 left-0 z-10 hidden lg:block"
         >
           <div className="border-line bg-paper-2 aspect-[4/5] w-[280px] overflow-hidden rounded-xs border">
-            {active !== undefined && (
-              <ResponsiveImage imageKey={serviceImageKey(active)} alt={active.name} sizes="280px" />
+            {activeSlot !== null && hasImage(activeSlot.key) && (
+              <ResponsiveImage imageKey={activeSlot.key} alt={activeSlot.alt} sizes="280px" />
             )}
           </div>
         </motion.div>

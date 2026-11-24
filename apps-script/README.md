@@ -1,7 +1,9 @@
 # Quote intake — Google Apps Script
 
-`Code.gs` is the whole backend for `/quote`. It appends one row per submission to
-a Google Sheet and emails the desk. There is no server to run and nothing to
+`Code.gs` is the whole backend for `/quote`, the `/partners` application, the
+`/attach-truck` application and the "Send us a message" box. It appends one row
+per submission to a Google Sheet (`Quotes`, `Partners`, `Truck attachments` or
+`Messages` tab) and emails the desk. There is no server to run and nothing to
 deploy besides the script itself.
 
 ## Setup
@@ -35,6 +37,41 @@ Editing the script does **not** change the live URL, but **Deploy › New
 deployment** creates a *new* URL. To keep the one already in the site's
 environment: **Deploy › Manage deployments › Edit (pencil) › Version: New
 version › Deploy**. The URL stays, the code updates.
+
+Delivery-partner applications from `/partners` arrive at the same URL with `kind: "partner"`; they are appended to a `Partners` tab (created on the first application, with its own header row) and mailed to `NOTIFY_EMAIL` with a `DSP-` reference.
+
+### Truck attachments (`kind: "truck"`) need a redeploy
+
+The truck attachment form on `/attach-truck` posts to the same URL with
+`kind: "truck"`. Until the updated `Code.gs` is pasted in and deployed as a **new
+version** (Deploy › Manage deployments › edit › New version), the live script
+treats those posts as quotes and refuses them, and the form reports "The desk's
+sheet refused the application." After the redeploy each application is appended
+to a `Truck attachments` tab (created with its header row on the first one) and
+mailed to `NOTIFY_EMAIL` with a `DST-` reference. The sheet holds the full bank
+account number as text; the email shows only its last four digits, so restrict
+who the workbook is shared with.
+
+### The message box (`kind: "message"`) needs a redeploy
+
+The "Send us a message" box on `/contact` and in the footer posts to the same
+URL with `kind: "message"`. A script deployed **before** that change does not know
+the kind and would file the message as a quote that fails with `Missing service`.
+So after pulling this change: paste the new `Code.gs` into the editor, save, then
+**Deploy › Manage deployments › Edit (pencil) › Version: New version › Deploy**.
+Do **not** use *New deployment* — that mints a new `/exec` URL and the site's
+`NEXT_PUBLIC_QUOTE_ENDPOINT` would have to change and be rebuilt. The first time
+a script change adds a service the editor may ask you to re-authorise (the
+message handler uses `LockService`); accept it, then redeploy.
+
+Messages are appended to a `Messages` tab (created on the first message, with its
+own frozen header row: `Received at`, `Reference`, `Name`, `Phone`, `Email`,
+`Message`, `Source page`) and mailed to `NOTIFY_EMAIL` with the subject
+`Website message DSM-<yyMMdd>-<4 digits> — <name>`; `replyTo` is the visitor's
+email when they gave one. The phone arrives as E.164 (`+91XXXXXXXXXX`) and is
+stored as plain text; the script refuses anything else with `Invalid phone`.
+Required: `name`, `phone`, `message`. The honeypot and `clean_()` apply as for
+the other kinds.
 
 The first submission after a fresh sheet creates the `Quotes` tab with its
 header row and freezes it. Re-running with an existing sheet appends only.

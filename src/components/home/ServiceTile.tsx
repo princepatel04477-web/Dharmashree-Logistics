@@ -1,94 +1,96 @@
 "use client";
 
 import { ArrowRightIcon } from "lucide-react";
-import Link from "next/link";
 import { motion } from "motion/react";
-import { ImageCurtain } from "@/components/motion/ImageCurtain";
-import ResponsiveImage, { hasImage } from "@/components/media/ResponsiveImage";
-import { SpotlightCard } from "@/components/vendor/reactbits";
-import { serviceImageKey } from "@/content/services";
+import Link from "next/link";
+import { Reveal } from "@/components/motion/Reveal";
+import { sectionLinks } from "@/content/home";
+import { images, serviceImage, type ImageSlot } from "@/content/images";
 import type { Service } from "@/content/types";
 import { MOTION_DURATIONS, MOTION_EASES } from "@/lib/motion-tokens";
-import { cn } from "@/lib/utils";
+import { HomeIcon, serviceIcon } from "./shared";
+import { SlotPhoto } from "./SlotPhoto";
 
-/* One service tile. The card itself is the vendored SpotlightCard (already
-   restyled to `--paper-2` + hairline); Motion owns only the arrow, which
-   nudges 4px right on hover. The card never scales. */
+/* One service card. Two owners, on different elements: GSAP's `Reveal` wraps
+   the card and runs the scroll reveal; Motion owns the hover, lifting the card
+   4px and zooming the photo to 1.04 (a `whileHover` variant on the card, read by
+   the photo and the arrow). Motion's reduced-motion setting drops those
+   transforms. The title link is stretched over the whole card, so the card is
+   one focus stop and one click target. */
 
 interface ServiceTileProps {
   service: Service;
   index: number;
-  total: number;
 }
 
-/* Asymmetric spans for the 12-column grid. Tailwind has to see the literals,
-   so they are written out per position rather than computed. */
-function spanClass(index: number, total: number): string {
-  if (index === 0) return "lg:col-span-7 lg:row-span-2";
-  if (index <= 2) return "lg:col-span-5";
-  /* A lone leftover fills the last row instead of leaving a hole. */
-  return total - index === 1 ? "lg:col-span-12" : "lg:col-span-6";
+const HOVER_TRANSITION = { duration: MOTION_DURATIONS.sm, ease: MOTION_EASES.out };
+
+/* The slot for the service's slug; an unknown slug falls back to the first
+   service's slot so the card still has a ground. */
+function slotFor(slug: string): ImageSlot {
+  return serviceImage(slug) ?? images.services["express-parcel"];
 }
 
-export function ServiceTile({ service, index, total }: ServiceTileProps) {
-  /* The tile asks the content layer for its manifest key, so `Service.image`
-     can point anywhere in the manifest. */
-  const imageKey = serviceImageKey(service);
-  const hasPhoto = hasImage(imageKey);
+export function ServiceTile({ service, index }: ServiceTileProps) {
+  const icon = serviceIcon(service.slug);
+  const slot = slotFor(service.slug);
 
   return (
-    <li className={cn("col-span-1 flex", spanClass(index, total))}>
-      {/* The li is a flex row so the card stretches to the grid cell; the
-          vendor's inner wrapper is pinned to that height so the tall first
-          tile can push its link to the bottom. */}
-      <SpotlightCard className="w-full [&>div]:h-full">
-        {/* Hover source for the arrow; the vendor card owns its own spotlight. */}
-        <motion.div
-          whileHover="arrow"
-          initial={false}
-          className="flex h-full flex-col justify-between gap-8 p-6 sm:p-8"
+    <li className="flex">
+      <Reveal delay={(index % 2) * 0.08} className="flex w-full">
+        <motion.article
+          initial="rest"
+          whileHover="hover"
+          variants={{ rest: { y: 0 }, hover: { y: -4 } }}
+          transition={HOVER_TRANSITION}
+          className="group/tile border-line bg-paper shadow-card hover:shadow-card-lift focus-within:shadow-card-lift relative flex w-full flex-col overflow-hidden rounded-md border transition-shadow duration-300"
         >
-          <div className="flex flex-col gap-4">
-            <h3 className="font-display text-ink leading-headline tracking-display text-3xl font-light">
-              {service.name}
-            </h3>
-            <p className="text-ink-2 max-w-measure text-sm font-light">{service.summary}</p>
+          <div className="bg-brand-tint aspect-[16/10] overflow-hidden">
+            <motion.div
+              variants={{ rest: { scale: 1 }, hover: { scale: 1.04 } }}
+              transition={{ duration: MOTION_DURATIONS.md, ease: MOTION_EASES.out }}
+              className="h-full w-full"
+            >
+              <SlotPhoto
+                slot={slot}
+                icon={icon}
+                sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 560px"
+              />
+            </motion.div>
           </div>
 
-          <div className="flex flex-col gap-6">
-            {hasPhoto && (
-              <ImageCurtain className="aspect-video w-full rounded-xs">
-                <ResponsiveImage
-                  imageKey={imageKey}
-                  alt={service.name}
-                  sizes="(max-width: 64rem) 100vw, 40vw"
-                />
-              </ImageCurtain>
-            )}
-
+          <div className="flex flex-1 flex-col gap-4 p-6 sm:p-7">
+            <span className="bg-brand-tint text-brand flex size-11 items-center justify-center rounded-full">
+              <HomeIcon name={icon} aria-hidden="true" className="size-5" strokeWidth={1.75} />
+            </span>
+            <div className="flex flex-col gap-2">
+              <h3 className="font-display text-ink leading-headline tracking-display text-2xl sm:text-3xl">
+                {service.name}
+              </h3>
+              <p className="text-ink/75 max-w-measure text-sm font-light sm:text-base">
+                {service.summary}
+              </p>
+            </div>
             <Link
               href={`/services/${service.slug}`}
-              className="group/tile text-accent-ink inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase"
+              className="text-brand mt-auto inline-flex items-center gap-2 pt-1 font-mono text-[11px] tracking-[0.14em] uppercase after:absolute after:inset-0 after:content-['']"
             >
-              <span className="relative">
-                Explore
-                <span
-                  aria-hidden="true"
-                  className="bg-accent absolute inset-x-0 -bottom-1 h-px origin-left scale-x-0 transition-transform duration-300 group-hover/tile:scale-x-100"
-                />
+              <span>
+                {sectionLinks.tileCta}
+                <span className="sr-only"> {service.name}</span>
               </span>
               <motion.span
                 aria-hidden="true"
-                variants={{ arrow: { x: 4 } }}
-                transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
+                variants={{ rest: { x: 0 }, hover: { x: 4 } }}
+                transition={HOVER_TRANSITION}
                 className="inline-flex"
               >
                 <ArrowRightIcon className="size-4" />
               </motion.span>
             </Link>
           </div>
-        </motion.div>
-      </SpotlightCard>
+        </motion.article>
+      </Reveal>
     </li>
   );
 }

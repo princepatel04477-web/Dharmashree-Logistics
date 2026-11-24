@@ -14,9 +14,11 @@ import { cn } from "@/lib/utils";
    service detail pages mount a mini map of their own; the reserve box and the
    width cap that keep the hero shift-free are what a small map needs too. */
 
-/* The fallback reserves exactly the box the map's viewBox will occupy, so
-   replacing it cannot shift the page. */
-function MapReserve() {
+/* The fallback reserves exactly the box the map will occupy — the stage at
+   the viewBox ratio, plus the readout line the hero mode prints under it —
+   so swapping the real map in cannot shift the page. It draws nothing: an
+   empty box that pops into a map reads better than a grey card that does. */
+function MapReserve({ mode }: { mode: MapCanvasProps["mode"] }) {
   const parts = INDIA_VIEWBOX.split(" ");
   const boxWidth = Number(parts[2]);
   const boxHeight = Number(parts[3]);
@@ -26,17 +28,21 @@ function MapReserve() {
       : undefined;
 
   return (
-    <div
-      aria-hidden="true"
-      style={aspectRatio === undefined ? undefined : { aspectRatio }}
-      className="border-line bg-paper-2 w-full rounded-xs border"
-    />
+    <div aria-hidden="true" className="w-full">
+      <div style={aspectRatio === undefined ? undefined : { aspectRatio }} className="w-full" />
+      {mode === "hero" && <div className="mt-3 h-[28px] w-full" />}
+    </div>
   );
 }
 
-const IndiaNetworkMap = dynamic(
+const HeroMap = dynamic(
   () => import("@/components/map/IndiaNetworkMap").then((mod) => mod.IndiaNetworkMap),
-  { ssr: false, loading: () => <MapReserve /> },
+  { ssr: false, loading: () => <MapReserve mode="hero" /> },
+);
+
+const FullMap = dynamic(
+  () => import("@/components/map/IndiaNetworkMap").then((mod) => mod.IndiaNetworkMap),
+  { ssr: false, loading: () => <MapReserve mode="full" /> },
 );
 
 interface MapCanvasProps {
@@ -47,7 +53,7 @@ interface MapCanvasProps {
 export function MapCanvas({ mode, className = "" }: MapCanvasProps) {
   return (
     <div className={cn("w-full", className)}>
-      <IndiaNetworkMap mode={mode} />
+      {mode === "hero" ? <HeroMap mode="hero" /> : <FullMap mode="full" />}
     </div>
   );
 }

@@ -38,24 +38,27 @@ export default function Template({ children }: { children: ReactNode }) {
         ScrollTrigger.refresh();
       }}
     >
-      <motion.div
-        key={`page-${pathname}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
-      >
-        {children}
+      {/* One keyed child (mode="wait" allows exactly one): the wrapper only
+          names the phase, and both layers below inherit it as a variant, so
+          the exit still waits for the wipe to close before the swap. */}
+      <motion.div key={pathname} className="contents" initial="enter" animate="shown" exit="leave">
+        <motion.div
+          variants={{ enter: { opacity: 0 }, shown: { opacity: 1 }, leave: { opacity: 0 } }}
+          transition={{ duration: MOTION_DURATIONS.xs, ease: MOTION_EASES.out }}
+        >
+          {children}
+        </motion.div>
+        <motion.div
+          aria-hidden="true"
+          className="bg-ink pointer-events-none fixed inset-0 z-[90]"
+          variants={{
+            enter: { scaleY: 1, transformOrigin: "top" },
+            shown: { scaleY: 0, transformOrigin: "top" },
+            leave: { scaleY: 1, transformOrigin: "bottom" },
+          }}
+          transition={{ duration: MOTION_DURATIONS.sm, ease: MOTION_EASES.inOut }}
+        />
       </motion.div>
-      <motion.div
-        key={`wipe-${pathname}`}
-        aria-hidden="true"
-        className="bg-ink pointer-events-none fixed inset-0 z-[90]"
-        initial={{ scaleY: 1, transformOrigin: "top" }}
-        animate={{ scaleY: 0, transformOrigin: "top" }}
-        exit={{ scaleY: 1, transformOrigin: "bottom" }}
-        transition={{ duration: MOTION_DURATIONS.sm, ease: MOTION_EASES.inOut }}
-      />
     </AnimatePresence>
   );
 }

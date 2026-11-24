@@ -1,8 +1,9 @@
 "use client";
 
-import { motion, useMotionValue, useReducedMotion, useSpring } from "motion/react";
+import { motion, useMotionValue, useSpring } from "motion/react";
 import { useRef, type MouseEvent, type ReactNode } from "react";
 import { useHoverCapable } from "@/hooks/use-hover-capable";
+import { useReducedMotionSafe } from "@/hooks/useReducedMotionSafe";
 
 interface MagnetProps {
   children: ReactNode;
@@ -15,7 +16,7 @@ interface MagnetProps {
    pointers. Reserved for the primary CTA and the WhatsApp button. */
 export function Magnet({ children, className = "", strength = 18 }: MagnetProps) {
   const canHover = useHoverCapable();
-  const prefersReduced = useReducedMotion();
+  const prefersReduced = useReducedMotionSafe();
   const ref = useRef<HTMLSpanElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);

@@ -20,6 +20,16 @@ const OUT = "public/img";
 const MANIFEST_PATH = "src/content/image-manifest.json";
 
 const WIDTHS = [480, 768, 1200, 1600, 2400] as const;
+const MAX_WIDTH = Math.max(...WIDTHS);
+
+/** Derivative widths for a source: every standard width below the source's own
+   width, then the source width itself (capped at the largest standard width).
+   A source is never upscaled, and no duplicate files are written for widths
+   the source cannot fill. */
+function widthsFor(sourceWidth: number): number[] {
+  const top = Math.min(sourceWidth, MAX_WIDTH);
+  return [...WIDTHS.filter((w) => w < top), top];
+}
 
 const FORMATS = [
   ["avif", { quality: 55, effort: 4 }],
@@ -78,7 +88,9 @@ for (const group of groups) {
     const width = meta.width ?? 0;
     const height = meta.height ?? 0;
 
-    for (const w of WIDTHS) {
+    const widths = widthsFor(width);
+
+    for (const w of widths) {
       for (const [fmt, opts] of FORMATS) {
         const ext = fmt === "jpg" ? "jpeg" : fmt;
         await sharp(input)
@@ -101,7 +113,7 @@ for (const group of groups) {
       width,
       height,
       blurDataURL: `data:image/webp;base64,${lqip.toString("base64")}`,
-      widths: [...WIDTHS],
+      widths,
     };
     console.log(`built ${group}/${name} (${width}x${height})`);
   }

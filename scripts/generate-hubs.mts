@@ -5,7 +5,11 @@
    copy and `since` years have no field in the Hub interface (see map-port.md).
    Region mapping: source tabs verbatim, extended so every hub is covered —
    ncr-north += haryana/uttarakhand/jammu-and-kashmir, central-others +=
-   west-bengal/andhra-pradesh. Gujarat holds only the origin (catch-all). */
+   west-bengal/andhra-pradesh. Gujarat holds only the origin (catch-all).
+   `primary` is the source's `isPrimary` flag (21 nodes); `stateId` is the
+   source state slug, used to tint served states; `distanceKm` is the
+   great-circle distance from Surat, rounded to 10 km and always labelled as
+   straight-line in the UI (it is geometry, not a road or transit figure). */
 
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -627,6 +631,47 @@ const RAW_NODES: readonly RawNode[] = [
   },
 ];
 
+/* Source `isPrimary: true` nodes, verbatim (IndiaReachMap.tsx). */
+const PRIMARY_IDS = new Set<string>([
+  "delhi",
+  "kanpur",
+  "lucknow",
+  "varanasi",
+  "patna",
+  "gorakhpur",
+  "jaipur",
+  "kolkata",
+  "ranchi",
+  "dhanbad",
+  "ludhiana",
+  "indore",
+  "bhopal",
+  "raipur",
+  "meerut",
+  "muzaffarnagar",
+  "bareilly",
+  "allahabad",
+  "muzaffarpur",
+  "saharanpur",
+  "jammu",
+]);
+
+const ORIGIN_LAT = 21.1702;
+const ORIGIN_LNG = 72.8311;
+const EARTH_RADIUS_KM = 6371;
+
+/* Haversine great-circle distance from Surat, rounded to the nearest 10 km. */
+function distanceFromOriginKm(lat: number, lng: number): number {
+  const rad = (deg: number): number => (deg * Math.PI) / 180;
+  const dLat = rad(lat - ORIGIN_LAT);
+  const dLng = rad(lng - ORIGIN_LNG);
+  const h =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(rad(ORIGIN_LAT)) * Math.cos(rad(lat)) * Math.sin(dLng / 2) ** 2;
+  const km = 2 * EARTH_RADIUS_KM * Math.asin(Math.sqrt(h));
+  return Math.round(km / 10) * 10;
+}
+
 const REGION_BY_STATE: Record<string, string> = {
   "uttar-pradesh": "uttar-pradesh",
   bihar: "bihar-jharkhand",
@@ -658,18 +703,27 @@ function main(): void {
   lines.push("  name: string;");
   lines.push("  state: string;");
   lines.push("  region: RegionId;");
+  lines.push("  /** Source state slug (matches `INDIA_STATES` ids). */");
+  lines.push("  stateId: string;");
+  lines.push("  /** Source `isPrimary`: a principal market, labelled first on the map. */");
+  lines.push("  primary: boolean;");
+  lines.push("  /** Great-circle km from Surat, rounded to 10. Straight-line, not road. */");
+  lines.push("  distanceKm: number;");
   lines.push("  x: number;");
   lines.push("  y: number;");
   lines.push("  verifiedOn: string | null;");
   lines.push("  transitDays: { min: number; max: number } | null;");
   lines.push("}");
   lines.push("");
-  const origin = projectPoint(21.1702, 72.8311);
+  const origin = projectPoint(ORIGIN_LAT, ORIGIN_LNG);
   lines.push("export const ORIGIN: Hub = {");
   lines.push('  id: "surat",');
   lines.push('  name: "Surat",');
   lines.push('  state: "Gujarat",');
   lines.push('  region: "central-others",');
+  lines.push('  stateId: "gujarat",');
+  lines.push("  primary: true,");
+  lines.push("  distanceKm: 0,");
   lines.push(`  x: ${r2(origin.x)},`);
   lines.push(`  y: ${r2(origin.y)},`);
   lines.push("  verifiedOn: null,");
@@ -682,7 +736,7 @@ function main(): void {
     if (region === undefined) throw new Error(`unmapped state ${node.stateId}`);
     const pt = projectPoint(node.lat, node.lng);
     lines.push(
-      `  { id: ${q(node.id)}, name: ${q(node.name)}, state: ${q(node.state)}, region: "${region}", x: ${r2(pt.x)}, y: ${r2(pt.y)}, verifiedOn: null, transitDays: null },`,
+      `  { id: ${q(node.id)}, name: ${q(node.name)}, state: ${q(node.state)}, region: "${region}", stateId: ${q(node.stateId)}, primary: ${String(PRIMARY_IDS.has(node.id))}, distanceKm: ${String(distanceFromOriginKm(node.lat, node.lng))}, x: ${r2(pt.x)}, y: ${r2(pt.y)}, verifiedOn: null, transitDays: null },`,
     );
   }
   lines.push("];");

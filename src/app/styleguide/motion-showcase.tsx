@@ -41,7 +41,7 @@ export function MotionShowcase() {
     <section aria-labelledby="sg-motion" className="space-y-8">
       <div className="wrap space-y-3">
         <p className="section-index">05 — Motion</p>
-        <h2 id="sg-motion" className="font-display text-3xl font-light tracking-tight">
+        <h2 id="sg-motion" className="font-display text-3xl tracking-tight">
           One system: Lenis, GSAP, Motion
         </h2>
       </div>
@@ -53,7 +53,7 @@ export function MotionShowcase() {
           note="Rises 24px and fades in once at 85% viewport. Transform + opacity only."
         >
           <Reveal>
-            <p className="font-display text-2xl font-light">Corridors, documented.</p>
+            <p className="font-display text-2xl">Corridors, documented.</p>
           </Reveal>
           <Reveal delay={0.15}>
             <p className="text-ink-2 mt-2 text-sm font-light">
@@ -71,7 +71,7 @@ export function MotionShowcase() {
             index="MO-2 — Motion"
             title="Freight, drawn in order"
             as="h3"
-            titleClassName="font-display text-3xl font-light tracking-tight"
+            titleClassName="font-display text-3xl tracking-tight"
           />
         </DemoPanel>
 
@@ -81,7 +81,7 @@ export function MotionShowcase() {
           note="Clip-path wipe opens downward; media settles from 1.08 scale."
         >
           <ImageCurtain className="aspect-[16/10]">
-            <div className="bg-accent-ink text-paper flex h-full w-full items-center justify-center">
+            <div className="bg-brand-deep text-paper flex h-full w-full items-center justify-center">
               <p className="font-mono text-xs tracking-[0.2em] uppercase">Media reveals here</p>
             </div>
           </ImageCurtain>
@@ -116,11 +116,11 @@ export function MotionShowcase() {
               <path
                 data-trace
                 d="M8 100 C 80 100, 90 20, 160 20 S 250 90, 312 40"
-                stroke="var(--accent)"
+                stroke="var(--brand)"
                 strokeWidth="2"
               />
-              <circle cx="8" cy="100" r="4" fill="var(--accent)" />
-              <circle cx="312" cy="40" r="4" fill="var(--accent)" />
+              <circle cx="8" cy="100" r="4" fill="var(--brand)" />
+              <circle cx="312" cy="40" r="4" fill="var(--brand)" />
             </svg>
           </CorridorTrace>
         </DemoPanel>
@@ -133,10 +133,8 @@ export function MotionShowcase() {
           <MarqueeLoop>
             {company.services.map((service) => (
               <span key={service} className="flex items-center">
-                <span className="font-display mx-6 text-xl font-light whitespace-nowrap">
-                  {service}
-                </span>
-                <span aria-hidden="true" className="text-accent">
+                <span className="font-display mx-6 text-xl whitespace-nowrap">{service}</span>
+                <span aria-hidden="true" className="text-brand">
                   ·
                 </span>
               </span>
