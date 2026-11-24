@@ -39,6 +39,7 @@
 
 import {
   bareMobile,
+  customerMobiles,
   mobileMatchesBooking,
   parseLrQuery,
   readVendorLr,
@@ -184,8 +185,15 @@ export async function onRequestPost(context: PagesContext): Promise<Response> {
 
   const reading = readVendorLr(vendorBody, query);
   if (reading.kind === "unreadable") return json(502, { code: "UPSTREAM_UNREADABLE" });
-  /* Unknown LR, wrong mobile, no customer mobile on file: one answer. */
+  /* Unknown LR: one answer. */
   if (reading.kind === "not-found") return notVerified(address);
-  if (!mobileMatchesBooking(reading.record.details, mobile)) return notVerified(address);
+
+  const customerNums = customerMobiles(reading.record.details);
+  /* If the vendor record carries customer mobiles on file, verify against them.
+     When the vendor API returns no customer contact numbers (as is the case with
+     E-Transport LRInquiry today), allow the verified mobile to view the shipment. */
+  if (customerNums.length > 0 && !customerNums.includes(mobile)) {
+    return notVerified(address);
+  }
   return json(200, reading.record);
 }

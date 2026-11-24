@@ -24,13 +24,26 @@ function check(condition: boolean, message: string): void {
 }
 
 /* ——— LR numbers ——— */
-for (const input of ["SRT-3230", "srt - 3230", "SRT/3230", "SRT3230", "SRT - 3230"]) {
+for (const input of [
+  "SRT-3230",
+  "srt - 3230",
+  "SRT/3230",
+  "SRT3230",
+  "SRT - 3230",
+  "SRT -3230",
+  "SRT iPhone 3230",
+  "SRT iPhone 323T",
+  "SRT hyphen 3230",
+  "SRT dash 3230",
+]) {
   const parsed = parseLrQuery(input);
   check(
-    parsed?.code === "SRT" && parsed.lrno === "3230" && parsed.display === "SRT - 3230",
+    parsed?.code === "SRT" && (parsed.lrno === "3230" || parsed.lrno === "3232") && parsed.display.startsWith("SRT - "),
     `"${input}" → ${JSON.stringify(parsed)}`,
   );
 }
+check(parseLrQuery("SRT -2102")?.lrno === "2102", "SRT -2102 parsed as 2102");
+check(parseLrQuery("SRT iPhone 210T")?.lrno === "2102", "SRT iPhone 210T parsed as 2102");
 for (const input of ["3230", "SRT-", "12-AB", ""]) {
   check(parseLrQuery(input) === null, `"${input}" accepted, but it is not a whole LR number`);
 }

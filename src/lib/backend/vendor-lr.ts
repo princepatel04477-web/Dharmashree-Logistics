@@ -44,11 +44,36 @@ export interface LrQuery {
   display: string;
 }
 
+/** Replaces voice-to-text dictation artifacts, spoken punctuation, word digits,
+    and trailing T / TO / TWO typos, yielding a clean string for LR parsing. */
+export function cleanLrInput(input: string): string {
+  let v = input.trim().toUpperCase();
+  v = v.replace(/\b(IPHONE|HYPHEN|DASH|MINUS|SLASH)\b/gi, "-");
+  const words: Record<string, string> = {
+    ZERO: "0",
+    ONE: "1",
+    TWO: "2",
+    THREE: "3",
+    FOUR: "4",
+    FIVE: "5",
+    SIX: "6",
+    SEVEN: "7",
+    EIGHT: "8",
+    NINE: "9",
+  };
+  for (const [w, d] of Object.entries(words)) {
+    v = v.replace(new RegExp(`\\b${w}\\b`, "gi"), d);
+  }
+  v = v.replace(/(\d+)\s*(?:T|TO|TOO)\b/gi, "$12");
+  v = v.replace(/[\u2013\u2014]/g, "-");
+  return v;
+}
+
 /** The whole LR number: branch code and number — `SRT - 3230`, `SRT-3230`,
     `srt 3230`, `SRT/3230` or `SRT3230`. A bare number is refused: the same
     number exists at every branch, so without its code it is not one LR. */
 export function parseLrQuery(input: string): LrQuery | null {
-  const value = input.trim().toUpperCase().replace(/\s+/g, "");
+  const value = cleanLrInput(input).replace(/\s+/g, "");
   const branched = /^([A-Z]{2,6})[-/]?(\d{1,10})$/.exec(value);
   if (branched === null || branched[1] === undefined || branched[2] === undefined) return null;
   return { code: branched[1], lrno: branched[2], display: lrDisplay(branched[1], branched[2]) };
@@ -326,9 +351,25 @@ function phoneList(...values: (string | null)[]): string[] {
 }
 
 /** A typed mobile as the bare 10 digits: `+91 98765 43210`, `098765 43210` and
-    `9876543210` are one number. Anything else comes back as the digits it has. */
+    `9876543210` are one number. Spoken digits and punctuation are cleaned. */
 export function bareMobile(value: string): string {
-  const digits = value.replace(/\D/g, "");
+  let v = value.trim().toLowerCase();
+  const words: Record<string, string> = {
+    zero: "0",
+    one: "1",
+    two: "2",
+    three: "3",
+    four: "4",
+    five: "5",
+    six: "6",
+    seven: "7",
+    eight: "8",
+    nine: "9",
+  };
+  for (const [w, d] of Object.entries(words)) {
+    v = v.replace(new RegExp(`\\b${w}\\b`, "gi"), d);
+  }
+  const digits = v.replace(/\D/g, "");
   if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
   if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
   return digits;

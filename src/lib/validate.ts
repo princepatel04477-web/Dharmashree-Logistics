@@ -8,6 +8,7 @@
    come from the site. */
 
 import type { QuotePayload } from "./quote";
+import { cleanLrInput, parseLrQuery } from "./backend/vendor-lr";
 
 /* ——— Quote fields ——— */
 
@@ -60,9 +61,26 @@ const STEP_FIELDS: Record<QuoteStep, readonly QuoteFieldName[]> = {
 
 /* ——— Primitives ——— */
 
-/** Strips an optional `+91`, `91` or leading `0`, then keeps the digits. */
+/** Strips an optional `+91`, `91` or leading `0`, then keeps the digits.
+    Handles spoken digits if voice dictation was used. */
 export function normalizePhone(value: string): string {
-  const digits = value.replace(/\D/g, "");
+  let v = value.trim().toLowerCase();
+  const words: Record<string, string> = {
+    zero: "0",
+    one: "1",
+    two: "2",
+    three: "3",
+    four: "4",
+    five: "5",
+    six: "6",
+    seven: "7",
+    eight: "8",
+    nine: "9",
+  };
+  for (const [w, d] of Object.entries(words)) {
+    v = v.replace(new RegExp(`\\b${w}\\b`, "gi"), d);
+  }
+  const digits = v.replace(/\D/g, "");
   if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
   if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
   return digits;
@@ -250,10 +268,12 @@ export const LR_CODES = ["LrRequired", "LrFormat"] as const;
 export type LrCode = (typeof LR_CODES)[number];
 
 /** LR numbers are quoted in upper case, sometimes with a hyphen or a slash:
-    `normalizeLr` upper-cases and drops whitespace but keeps the separators, so
-    the number the desk reads is the number the visitor typed. */
+    `normalizeLr` upper-cases, cleans voice dictation artifacts (e.g. "iPhone" → "-",
+    trailing "T" → "2"), and formats as branch-number (e.g. SRT-2102). */
 export function normalizeLr(value: string): string {
-  return value.trim().toUpperCase().replace(/\s+/g, "");
+  const query = parseLrQuery(value);
+  if (query !== null) return `${query.code}-${query.lrno}`;
+  return cleanLrInput(value).replace(/\s+/g, "");
 }
 
 /** The characters that count towards "4 to 20": separators are allowed but are
